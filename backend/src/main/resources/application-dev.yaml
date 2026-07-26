@@ -18,3 +18,10 @@ spring:
   sql:
     init:
       mode: never
+
+      flyway:
+        enabled: true
+
+      sql:
+        init:
+          mode: never

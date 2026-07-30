@@ -1,5 +1,6 @@
 package com.smartcivic.backend.user.controller;
 
+import com.smartcivic.backend.common.response.ApiResponse;
 import com.smartcivic.backend.user.dto.RegisterUserRequest;
 import com.smartcivic.backend.user.service.UserService;
 import jakarta.validation.Valid;
@@ -18,13 +19,18 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<String> registerUser(
+    public ResponseEntity<ApiResponse<Void>> registerUser(
             @Valid @RequestBody RegisterUserRequest request) {
 
         userService.registerUser(request);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body("User registered successfully.");
+                .body(
+                        ApiResponse.success(
+                                "User registered successfully",
+                                null
+                        )
+                );
     }
 }

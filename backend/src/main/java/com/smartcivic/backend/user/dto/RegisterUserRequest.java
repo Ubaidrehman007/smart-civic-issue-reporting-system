@@ -18,7 +18,7 @@ public record RegisterUserRequest(
         @NotBlank(message = "PhoneNumber is Required")
         @Pattern(
                 regexp = "^[6-9][0-9]{9}$",
-                message = "hone number must be a valid 10-digit Indian mobile number"
+                message = "Phone number must be a valid 10-digit Indian mobile number"
         )
         String phoneNumber,
 

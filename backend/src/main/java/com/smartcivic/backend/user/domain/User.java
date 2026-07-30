@@ -19,6 +19,8 @@ import java.util.UUID;
 @Table(name = "users")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+
+
 public class User {
 
     @Id
@@ -40,6 +42,21 @@ public class User {
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false, length = 30)
     private Role role;
+
+    // constructor
+    public User(String fullName,
+                String email,
+                String phoneNumber,
+                String passwordHash,
+                Role role) {
+
+        this.fullName = fullName;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+        this.passwordHash = passwordHash;
+        this.role = role;
+    }
+
 
     @Enumerated(EnumType.STRING)
     @Column(name = "account_status", nullable = false, length = 30)

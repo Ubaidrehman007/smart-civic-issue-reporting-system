@@ -2,6 +2,7 @@ package com.smartcivic.backend.issue.service;
 
 import com.smartcivic.backend.issue.dto.request.CreateIssueRequest;
 import com.smartcivic.backend.issue.dto.response.IssueResponse;
+import com.smartcivic.backend.issue.dto.response.IssueSummaryResponse;
 import com.smartcivic.backend.issue.entity.Issue;
 import com.smartcivic.backend.issue.enums.IssuePriority;
 import com.smartcivic.backend.issue.enums.IssueStatus;
@@ -9,6 +10,8 @@ import com.smartcivic.backend.issue.repository.IssueRepository;
 import com.smartcivic.backend.user.domain.User;
 import com.smartcivic.backend.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -54,5 +57,23 @@ public class IssueServiceImpl implements IssueService {
                 .createdAt(savedIssue.getCreatedAt())
                 .updatedAt(savedIssue.getUpdatedAt())
                 .build();
+    }
+
+    @Override
+    public Page<IssueSummaryResponse> getAllIssues(Pageable pageable) {
+
+        Page<Issue> issues = issueRepository.findAll(pageable);
+
+        return issues.map(issue ->
+                IssueSummaryResponse.builder()
+                        .id(issue.getId())
+                        .title(issue.getTitle())
+                        .category(issue.getCategory())
+                        .priority(issue.getPriority())
+                        .status(issue.getStatus())
+                        .address(issue.getAddress())
+                        .createdAt(issue.getCreatedAt())
+                        .build()
+        );
     }
 }

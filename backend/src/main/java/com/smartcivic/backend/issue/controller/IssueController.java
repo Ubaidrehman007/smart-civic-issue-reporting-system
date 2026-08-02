@@ -9,6 +9,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import com.smartcivic.backend.issue.dto.response.IssueSummaryResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.data.domain.Sort;
 
 @RestController
 @RequestMapping("/api/issues")
@@ -16,6 +21,25 @@ import org.springframework.web.bind.annotation.*;
 public class IssueController {
 
     private final IssueService issueService;
+
+
+    @GetMapping
+    public ResponseEntity<Page<IssueSummaryResponse>> getAllIssues(
+
+            @PageableDefault(
+                    page = 0,
+                    size = 10,
+                    sort = "createdAt",
+                    direction = Sort.Direction.DESC
+            )
+            Pageable pageable
+    ) {
+
+        Page<IssueSummaryResponse> response =
+                issueService.getAllIssues(pageable);
+
+        return ResponseEntity.ok(response);
+    }
 
     @PostMapping
     public ResponseEntity<IssueResponse> createIssue(

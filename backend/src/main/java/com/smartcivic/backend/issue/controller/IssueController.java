@@ -15,6 +15,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.domain.Sort;
 
+
+
+
+
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/api/issues")
 @RequiredArgsConstructor
@@ -53,4 +59,38 @@ public class IssueController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<IssueResponse> getIssueById(
+            @PathVariable UUID id
+    ) {
+
+        IssueResponse response = issueService.getIssueById(id);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/my")
+    public ResponseEntity<Page<IssueSummaryResponse>> getMyIssues(
+
+            Authentication authentication,
+
+            @PageableDefault(
+                    page = 0,
+                    size = 10,
+                    sort = "createdAt",
+                    direction = Sort.Direction.DESC
+            )
+            Pageable pageable
+    ) {
+
+        return ResponseEntity.ok(
+                issueService.getMyIssues(
+                        authentication.getName(),
+                        pageable
+                )
+        );
+    }
+
+
 }

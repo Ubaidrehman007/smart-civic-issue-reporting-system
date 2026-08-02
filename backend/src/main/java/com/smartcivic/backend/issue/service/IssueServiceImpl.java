@@ -4,6 +4,7 @@ import com.smartcivic.backend.issue.dto.request.CreateIssueRequest;
 import com.smartcivic.backend.issue.dto.response.IssueResponse;
 import com.smartcivic.backend.issue.dto.response.IssueSummaryResponse;
 import com.smartcivic.backend.issue.entity.Issue;
+import com.smartcivic.backend.issue.enums.IssueCategory;
 import com.smartcivic.backend.issue.enums.IssuePriority;
 import com.smartcivic.backend.issue.enums.IssueStatus;
 import com.smartcivic.backend.issue.exception.IssueNotFoundException;
@@ -136,5 +137,47 @@ public class IssueServiceImpl implements IssueService {
                         .createdAt(issue.getCreatedAt())
                         .build());
     }
+
+
+    @Transactional(readOnly = true)
+    @Override
+    public Page<IssueSummaryResponse> getIssuesByStatus(
+            IssueStatus status,
+            Pageable pageable
+    ) {
+
+        return issueRepository.findByStatus(status, pageable)
+                .map(issue -> IssueSummaryResponse.builder()
+                        .id(issue.getId())
+                        .title(issue.getTitle())
+                        .category(issue.getCategory())
+                        .priority(issue.getPriority())
+                        .status(issue.getStatus())
+                        .address(issue.getAddress())
+                        .createdAt(issue.getCreatedAt())
+                        .build());
+    }
+
+
+
+    @Transactional(readOnly = true)
+    @Override
+    public Page<IssueSummaryResponse> getIssuesByCategory(
+            IssueCategory category,
+            Pageable pageable
+    ) {
+
+        return issueRepository.findByCategory(category, pageable)
+                .map(issue -> IssueSummaryResponse.builder()
+                        .id(issue.getId())
+                        .title(issue.getTitle())
+                        .category(issue.getCategory())
+                        .priority(issue.getPriority())
+                        .status(issue.getStatus())
+                        .address(issue.getAddress())
+                        .createdAt(issue.getCreatedAt())
+                        .build());
+    }
+
 
 }

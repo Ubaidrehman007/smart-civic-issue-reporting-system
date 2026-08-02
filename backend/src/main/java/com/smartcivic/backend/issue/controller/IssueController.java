@@ -2,6 +2,8 @@ package com.smartcivic.backend.issue.controller;
 
 import com.smartcivic.backend.issue.dto.request.CreateIssueRequest;
 import com.smartcivic.backend.issue.dto.response.IssueResponse;
+import com.smartcivic.backend.issue.enums.IssueCategory;
+import com.smartcivic.backend.issue.enums.IssueStatus;
 import com.smartcivic.backend.issue.service.IssueService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -89,6 +91,46 @@ public class IssueController {
                         authentication.getName(),
                         pageable
                 )
+        );
+    }
+
+
+    @GetMapping("/status/{status}")
+    public ResponseEntity<Page<IssueSummaryResponse>> getIssuesByStatus(
+
+            @PathVariable IssueStatus status,
+
+            @PageableDefault(
+                    page = 0,
+                    size = 10,
+                    sort = "createdAt",
+                    direction = Sort.Direction.DESC
+            )
+            Pageable pageable
+    ) {
+
+        return ResponseEntity.ok(
+                issueService.getIssuesByStatus(status, pageable)
+        );
+    }
+
+
+    @GetMapping("/category/{category}")
+    public ResponseEntity<Page<IssueSummaryResponse>> getIssuesByCategory(
+
+            @PathVariable IssueCategory category,
+
+            @PageableDefault(
+                    page = 0,
+                    size = 10,
+                    sort = "createdAt",
+                    direction = Sort.Direction.DESC
+            )
+            Pageable pageable
+    ) {
+
+        return ResponseEntity.ok(
+                issueService.getIssuesByCategory(category, pageable)
         );
     }
 

@@ -1,5 +1,6 @@
 package com.smartcivic.backend.issue.service;
 
+import com.smartcivic.backend.issue.dto.UpdateIssueRequest;
 import com.smartcivic.backend.issue.dto.request.CreateIssueRequest;
 import com.smartcivic.backend.issue.dto.response.IssueResponse;
 import com.smartcivic.backend.issue.dto.response.IssueSummaryResponse;
@@ -7,6 +8,7 @@ import com.smartcivic.backend.issue.entity.Issue;
 import com.smartcivic.backend.issue.enums.IssueCategory;
 import com.smartcivic.backend.issue.enums.IssuePriority;
 import com.smartcivic.backend.issue.enums.IssueStatus;
+import com.smartcivic.backend.issue.exception.IssueAccessDeniedException;
 import com.smartcivic.backend.issue.exception.IssueNotFoundException;
 import com.smartcivic.backend.issue.repository.IssueRepository;
 import com.smartcivic.backend.user.domain.User;
@@ -31,7 +33,11 @@ public class IssueServiceImpl implements IssueService {
     public IssueResponse createIssue(CreateIssueRequest request, String userEmail) {
 
         User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() ->
+                        new UsernameNotFoundException(
+                                "User not found with email: " + userEmail
+                        )
+                );
 
         Issue issue = Issue.builder()
                 .title(request.getTitle())
@@ -48,21 +54,7 @@ public class IssueServiceImpl implements IssueService {
 
         Issue savedIssue = issueRepository.save(issue);
 
-        return IssueResponse.builder()
-                .id(savedIssue.getId())
-                .title(savedIssue.getTitle())
-                .description(savedIssue.getDescription())
-                .category(savedIssue.getCategory())
-                .priority(savedIssue.getPriority())
-                .status(savedIssue.getStatus())
-                .imageUrl(savedIssue.getImageUrl())
-                .latitude(savedIssue.getLatitude())
-                .longitude(savedIssue.getLongitude())
-                .address(savedIssue.getAddress())
-                .reportedBy(savedIssue.getReportedBy().getEmail())
-                .createdAt(savedIssue.getCreatedAt())
-                .updatedAt(savedIssue.getUpdatedAt())
-                .build();
+        return mapToIssueResponse(savedIssue);
     }
 
     @Override
@@ -94,21 +86,7 @@ public class IssueServiceImpl implements IssueService {
                         )
                 );
 
-        return IssueResponse.builder()
-                .id(issue.getId())
-                .title(issue.getTitle())
-                .description(issue.getDescription())
-                .category(issue.getCategory())
-                .priority(issue.getPriority())
-                .status(issue.getStatus())
-                .imageUrl(issue.getImageUrl())
-                .latitude(issue.getLatitude())
-                .longitude(issue.getLongitude())
-                .address(issue.getAddress())
-                .reportedBy(issue.getReportedBy().getEmail())
-                .createdAt(issue.getCreatedAt())
-                .updatedAt(issue.getUpdatedAt())
-                .build();
+        return mapToIssueResponse(issue);
     }
 
 
@@ -177,6 +155,72 @@ public class IssueServiceImpl implements IssueService {
                         .address(issue.getAddress())
                         .createdAt(issue.getCreatedAt())
                         .build());
+    }
+
+
+    @Override
+    @Transactional
+    public IssueResponse updateIssue(
+            UUID issueId,
+            UpdateIssueRequest request,
+            String email) {
+
+        // Find logged-in user
+        User currentUser = userRepository.findByEmail(email)
+                .orElseThrow(() ->
+                        new UsernameNotFoundException(
+                                "User not found with email: " + email
+                        )
+                );
+
+        // Find issue
+        Issue issue = issueRepository.findById(issueId)
+                .orElseThrow(() ->
+                        new IssueNotFoundException("Issue not found with ID: " + issueId));
+
+        // Ownership check
+        if (!issue.getReportedBy().getId().equals(currentUser.getId())) {
+            throw new IssueAccessDeniedException(
+                    "You are not authorized to update this issue."
+            );
+        }
+
+        // Update editable fields
+        issue.setTitle(request.getTitle());
+        issue.setDescription(request.getDescription());
+        issue.setCategory(request.getCategory());
+        issue.setPriority(request.getPriority());
+        issue.setImageUrl(request.getImageUrl());
+        issue.setLatitude(request.getLatitude());
+        issue.setLongitude(request.getLongitude());
+        issue.setAddress(request.getAddress());
+
+        // Save updated issue
+        Issue updatedIssue = issueRepository.save(issue);
+
+        return mapToIssueResponse(updatedIssue);
+    }
+
+    /**
+     * Convert Issue Entity to IssueResponse DTO
+     */
+    private IssueResponse mapToIssueResponse(Issue issue) {
+
+        return IssueResponse.builder()
+                .id(issue.getId())
+                .title(issue.getTitle())
+                .description(issue.getDescription())
+                .category(issue.getCategory())
+                .priority(issue.getPriority())
+                .status(issue.getStatus())
+                .imageUrl(issue.getImageUrl())
+                .latitude(issue.getLatitude())
+                .longitude(issue.getLongitude())
+                .address(issue.getAddress())
+                .reportedBy(issue.getReportedBy().getFullName())
+                .createdAt(issue.getCreatedAt())
+                .updatedAt(issue.getUpdatedAt())
+                .build();
     }
 
 

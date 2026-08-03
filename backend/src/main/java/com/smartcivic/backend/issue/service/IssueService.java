@@ -1,5 +1,6 @@
 package com.smartcivic.backend.issue.service;
 
+import com.smartcivic.backend.issue.dto.UpdateIssueRequest;
 import com.smartcivic.backend.issue.dto.request.CreateIssueRequest;
 import com.smartcivic.backend.issue.dto.response.IssueResponse;
 import com.smartcivic.backend.issue.dto.response.IssueSummaryResponse;
@@ -34,6 +35,12 @@ public interface IssueService {
     Page<IssueSummaryResponse> getIssuesByCategory(
             IssueCategory category,
             Pageable pageable
+    );
+
+    IssueResponse updateIssue(
+            UUID issueId,
+            UpdateIssueRequest request,
+            String email
     );
 
 }

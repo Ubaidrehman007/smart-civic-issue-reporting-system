@@ -1,5 +1,7 @@
 package com.smartcivic.backend.issue.controller;
 
+import com.smartcivic.backend.common.response.ApiResponse;
+import com.smartcivic.backend.issue.dto.UpdateIssueRequest;
 import com.smartcivic.backend.issue.dto.request.CreateIssueRequest;
 import com.smartcivic.backend.issue.dto.response.IssueResponse;
 import com.smartcivic.backend.issue.enums.IssueCategory;
@@ -131,6 +133,33 @@ public class IssueController {
 
         return ResponseEntity.ok(
                 issueService.getIssuesByCategory(category, pageable)
+        );
+    }
+
+
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResponse<IssueResponse>> updateIssue(
+
+            @PathVariable UUID id,
+
+            @Valid
+            @RequestBody UpdateIssueRequest request,
+
+            Authentication authentication
+    ) {
+
+        IssueResponse response = issueService.updateIssue(
+                id,
+                request,
+                authentication.getName()
+        );
+
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        "Issue updated successfully.",
+                        response
+                )
         );
     }
 

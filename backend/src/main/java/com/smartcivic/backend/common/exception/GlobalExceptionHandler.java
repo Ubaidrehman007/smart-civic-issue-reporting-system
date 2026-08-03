@@ -2,6 +2,7 @@ package com.smartcivic.backend.common.exception;
 
 import com.smartcivic.backend.auth.exception.InvalidCredentialsException;
 import com.smartcivic.backend.common.response.ApiResponse;
+import com.smartcivic.backend.issue.exception.IssueAccessDeniedException;
 import com.smartcivic.backend.issue.exception.IssueNotFoundException;
 import com.smartcivic.backend.user.exception.UserAlreadyExistsException;
 import org.springframework.http.HttpStatus;
@@ -64,6 +65,22 @@ public class GlobalExceptionHandler {
                                 "'. Please provide a valid value.",
                         null
                 ));
+    }
+
+
+    @ExceptionHandler(IssueAccessDeniedException.class)
+    public ResponseEntity<ApiResponse<Void>> handleIssueAccessDeniedException(
+            IssueAccessDeniedException ex
+    ) {
+
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body(
+                        ApiResponse.error(
+                                ex.getMessage(),
+                                null
+                        )
+                );
     }
 
     @ExceptionHandler(Exception.class)

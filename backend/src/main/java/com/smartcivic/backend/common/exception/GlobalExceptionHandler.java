@@ -3,6 +3,7 @@ package com.smartcivic.backend.common.exception;
 import com.smartcivic.backend.auth.exception.InvalidCredentialsException;
 import com.smartcivic.backend.common.response.ApiResponse;
 import com.smartcivic.backend.issue.exception.IssueAccessDeniedException;
+import com.smartcivic.backend.issue.exception.IssueDeletionNotAllowedException;
 import com.smartcivic.backend.issue.exception.IssueNotFoundException;
 import com.smartcivic.backend.user.exception.UserAlreadyExistsException;
 import org.springframework.http.HttpStatus;
@@ -101,5 +102,16 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.UNAUTHORIZED)
                 .body(ApiResponse.error(ex.getMessage(), null));
     }
+
+
+    @ExceptionHandler(IssueDeletionNotAllowedException.class)
+    public ResponseEntity<ApiResponse<Void>> handleIssueDeletionNotAllowedException(
+            IssueDeletionNotAllowedException ex
+    ) {
+
+        return ResponseEntity.badRequest()
+                .body(ApiResponse.error(ex.getMessage(), null));
+    }
+
 
 }

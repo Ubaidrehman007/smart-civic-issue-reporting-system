@@ -43,4 +43,10 @@ public interface IssueService {
             String email
     );
 
+    void deleteIssue(
+            UUID issueId,
+            String email
+    );
+
+
 }

@@ -9,6 +9,7 @@ import com.smartcivic.backend.issue.enums.IssueCategory;
 import com.smartcivic.backend.issue.enums.IssuePriority;
 import com.smartcivic.backend.issue.enums.IssueStatus;
 import com.smartcivic.backend.issue.exception.IssueAccessDeniedException;
+import com.smartcivic.backend.issue.exception.IssueDeletionNotAllowedException;
 import com.smartcivic.backend.issue.exception.IssueNotFoundException;
 import com.smartcivic.backend.issue.repository.IssueRepository;
 import com.smartcivic.backend.user.domain.User;
@@ -222,6 +223,48 @@ public class IssueServiceImpl implements IssueService {
                 .updatedAt(issue.getUpdatedAt())
                 .build();
     }
+
+    @Override
+    @Transactional
+    public void deleteIssue(
+            UUID issueId,
+            String email) {
+
+        // Find logged-in user
+        User currentUser = userRepository.findByEmail(email)
+                .orElseThrow(() ->
+                        new UsernameNotFoundException(
+                                "User not found with email: " + email
+                        )
+                );
+
+        // Find issue
+        Issue issue = issueRepository.findById(issueId)
+                .orElseThrow(() ->
+                        new IssueNotFoundException(
+                                "Issue not found with ID: " + issueId
+                        )
+                );
+
+        // Ownership check
+        if (!issue.getReportedBy().getId().equals(currentUser.getId())) {
+            throw new IssueAccessDeniedException(
+                    "You are not authorized to delete this issue."
+            );
+        }
+
+        // Business Rule:
+        // Only REPORTED issues can be deleted
+        if (issue.getStatus() != IssueStatus.REPORTED) {
+            throw new IssueDeletionNotAllowedException(
+                    "Only issues with REPORTED status can be deleted."
+            );
+        }
+
+        // Delete issue
+        issueRepository.delete(issue);
+    }
+
 
 
 }

@@ -161,6 +161,28 @@ public class IssueController {
                         response
                 )
         );
+
+
+
+    }
+
+    @DeleteMapping("/{issueId}")
+    public ResponseEntity<ApiResponse<Void>> deleteIssue(
+            @PathVariable UUID issueId,
+            Authentication authentication
+    ) {
+
+        issueService.deleteIssue(
+                issueId,
+                authentication.getName()
+        );
+
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        "Issue deleted successfully.",
+                        null
+                )
+        );
     }
 
 

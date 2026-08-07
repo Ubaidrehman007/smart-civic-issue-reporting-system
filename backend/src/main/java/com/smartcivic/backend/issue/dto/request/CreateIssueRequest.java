@@ -4,6 +4,7 @@ import com.smartcivic.backend.issue.enums.IssueCategory;
 import jakarta.validation.constraints.*;
 
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Setter
@@ -23,7 +24,7 @@ public class CreateIssueRequest {
     @NotNull(message = "Category is required")
     private IssueCategory category;
 
-    private String imageUrl;
+    private MultipartFile image;
 
     @NotNull
     private Double latitude;

@@ -12,6 +12,7 @@ import com.smartcivic.backend.issue.exception.IssueAccessDeniedException;
 import com.smartcivic.backend.issue.exception.IssueDeletionNotAllowedException;
 import com.smartcivic.backend.issue.exception.IssueNotFoundException;
 import com.smartcivic.backend.issue.repository.IssueRepository;
+import com.smartcivic.backend.storage.service.ImageStorageService;
 import com.smartcivic.backend.user.domain.User;
 import com.smartcivic.backend.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,7 @@ public class IssueServiceImpl implements IssueService {
 
     private final IssueRepository issueRepository;
     private final UserRepository userRepository;
+    private final ImageStorageService imageStorageService;
 
     @Override
     public IssueResponse createIssue(CreateIssueRequest request, String userEmail) {
@@ -39,12 +41,17 @@ public class IssueServiceImpl implements IssueService {
                                 "User not found with email: " + userEmail
                         )
                 );
+        String imageFileName = null;
+
+        if (request.getImage() != null && !request.getImage().isEmpty()) {
+            imageFileName = imageStorageService.storeImage(request.getImage());
+        }
 
         Issue issue = Issue.builder()
                 .title(request.getTitle())
                 .description(request.getDescription())
                 .category(request.getCategory())
-                .imageUrl(request.getImageUrl())
+                .imageUrl(imageFileName)
                 .latitude(request.getLatitude())
                 .longitude(request.getLongitude())
                 .address(request.getAddress())

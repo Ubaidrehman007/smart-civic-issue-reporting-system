@@ -1,5 +1,6 @@
 package com.smartcivic.backend.issue.repository;
 
+import com.smartcivic.backend.issue.dto.projection.NearbyIssueProjection;
 import com.smartcivic.backend.issue.entity.Issue;
 import com.smartcivic.backend.issue.enums.IssueCategory;
 import com.smartcivic.backend.issue.enums.IssuePriority;
@@ -26,34 +27,54 @@ public interface IssueRepository extends JpaRepository<Issue, UUID> {
 
     @Query(
             value = """
-                SELECT *
-                FROM issues
-                WHERE ST_DWithin(
+            SELECT
+                id,
+                title,
+                category,
+                priority,
+                status,
+                address,
+                created_at AS createdAt,
+
+                ST_Distance(
                     location::geography,
                     ST_SetSRID(
                         ST_MakePoint(:longitude, :latitude),
                         4326
-                    )::geography,
-                    :radius
-                )
-                """,
+                    )::geography
+                ) AS distance
+
+            FROM issues
+
+            WHERE ST_DWithin(
+                location::geography,
+                ST_SetSRID(
+                    ST_MakePoint(:longitude, :latitude),
+                    4326
+                )::geography,
+                :radius
+            )
+
+            ORDER BY distance ASC
+            """,
 
             countQuery = """
-                SELECT COUNT(*)
-                FROM issues
-                WHERE ST_DWithin(
-                    location::geography,
-                    ST_SetSRID(
-                        ST_MakePoint(:longitude, :latitude),
-                        4326
-                    )::geography,
-                    :radius
-                )
-                """,
+            SELECT COUNT(*)
+            FROM issues
+
+            WHERE ST_DWithin(
+                location::geography,
+                ST_SetSRID(
+                    ST_MakePoint(:longitude, :latitude),
+                    4326
+                )::geography,
+                :radius
+            )
+            """,
 
             nativeQuery = true
     )
-    Page<Issue> findNearbyIssues(
+    Page<NearbyIssueProjection> findNearbyIssues(
             @Param("latitude") double latitude,
             @Param("longitude") double longitude,
             @Param("radius") double radius,

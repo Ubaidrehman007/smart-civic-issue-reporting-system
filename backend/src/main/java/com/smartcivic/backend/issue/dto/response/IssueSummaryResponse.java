@@ -26,4 +26,6 @@ public class IssueSummaryResponse {
     private String address;
 
     private LocalDateTime createdAt;
+
+    private Double distance;
 }

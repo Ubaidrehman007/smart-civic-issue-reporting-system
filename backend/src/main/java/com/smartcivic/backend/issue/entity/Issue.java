@@ -42,7 +42,11 @@ public class Issue {
     @Column(nullable = false)
     private Double longitude;
 
-    @Column(columnDefinition = "geometry(Point,4326)")
+    @Column(
+            name = "location",
+            nullable = false,
+            columnDefinition = "geometry(Point,4326)"
+    )
     private Point location;
 
 

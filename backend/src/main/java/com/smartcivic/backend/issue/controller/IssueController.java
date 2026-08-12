@@ -9,6 +9,9 @@ import com.smartcivic.backend.issue.enums.IssuePriority;
 import com.smartcivic.backend.issue.enums.IssueStatus;
 import com.smartcivic.backend.issue.service.IssueService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -79,11 +82,31 @@ public class IssueController {
     @GetMapping("/nearby")
     public ResponseEntity<Page<IssueSummaryResponse>> getNearbyIssues(
 
-            @RequestParam double latitude,
+            @RequestParam
+            @DecimalMin(
+                    value = "-90.0",
+                    message = "Latitude must be between -90 and 90"
+            )
+            @DecimalMax(
+                    value = "90.0",
+                    message = "Latitude must be between -90 and 90"
+            )
+            double latitude,
 
-            @RequestParam double longitude,
+            @RequestParam
+            @DecimalMin(
+                    value = "-180.0",
+                    message = "Longitude must be between -180 and 180"
+            )
+            @DecimalMax(
+                    value = "180.0",
+                    message = "Longitude must be between -180 and 180"
+            )
+            double longitude,
 
-            @RequestParam(defaultValue = "5") double radius,
+            @RequestParam(defaultValue = "5")
+            @Positive(message = "Radius must be greater than 0")
+            double radius,
 
             @PageableDefault(
                     page = 0,

@@ -19,7 +19,7 @@ import lombok.RequiredArgsConstructor;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
-import org.locationtech.jts.geom.PrecisionModel;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -35,6 +35,7 @@ public class IssueServiceImpl implements IssueService {
     private final IssueRepository issueRepository;
     private final UserRepository userRepository;
     private final ImageStorageService imageStorageService;
+    private final GeometryFactory geometryFactory;
 
     @Override
     public IssueResponse createIssue(CreateIssueRequest request, String userEmail) {
@@ -51,14 +52,11 @@ public class IssueServiceImpl implements IssueService {
             imageFileName = imageStorageService.storeImage(request.getImage());
         }
 
-        GeometryFactory geometryFactory =
-                new GeometryFactory(new PrecisionModel(), 4326);
 
-        Point location = geometryFactory.createPoint(
-                new Coordinate(
-                        request.getLongitude(),
-                        request.getLatitude()
-                )
+
+        Point location = createLocation(
+                request.getLatitude(),
+                request.getLongitude()
         );
 
         Issue issue = Issue.builder()
@@ -207,6 +205,7 @@ public class IssueServiceImpl implements IssueService {
                         .status(issue.getStatus())
                         .address(issue.getAddress())
                         .createdAt(issue.getCreatedAt())
+                        .distance(issue.getDistance())
                         .build()
                 );
     }
@@ -250,17 +249,14 @@ public class IssueServiceImpl implements IssueService {
         issue.setAddress(request.getAddress());
 
 
-        GeometryFactory geometryFactory =
-                new GeometryFactory(new PrecisionModel(), 4326);
 
-        Point location = geometryFactory.createPoint(
-                new Coordinate(
-                        request.getLongitude(),
-                        request.getLatitude()
+
+        issue.setLocation(
+                createLocation(
+                        request.getLatitude(),
+                        request.getLongitude()
                 )
         );
-
-        issue.setLocation(location);
 
 
         // Save updated issue
@@ -353,6 +349,16 @@ public class IssueServiceImpl implements IssueService {
                 .address(issue.getAddress())
                 .createdAt(issue.getCreatedAt())
                 .build();
+    }
+
+
+    private Point createLocation(
+            double latitude,
+            double longitude
+    ) {
+        return geometryFactory.createPoint(
+                new Coordinate(longitude, latitude)
+        );
     }
 
 }

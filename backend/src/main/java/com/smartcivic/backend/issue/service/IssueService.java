@@ -5,6 +5,7 @@ import com.smartcivic.backend.issue.dto.request.CreateIssueRequest;
 import com.smartcivic.backend.issue.dto.response.IssueResponse;
 import com.smartcivic.backend.issue.dto.response.IssueSummaryResponse;
 import com.smartcivic.backend.issue.enums.IssueCategory;
+import com.smartcivic.backend.issue.enums.IssuePriority;
 import com.smartcivic.backend.issue.enums.IssueStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -44,4 +45,18 @@ public interface IssueService {
     );
 
     void deleteIssue(UUID issueId, String name);
+
+
+    Page<IssueSummaryResponse> getNearbyIssues(
+            double latitude,
+            double longitude,
+            double radius,
+            Pageable pageable
+    );
+
+    Page<IssueSummaryResponse> getIssuesByPriority(
+            IssuePriority priority,
+            Pageable pageable
+    );
+
 }

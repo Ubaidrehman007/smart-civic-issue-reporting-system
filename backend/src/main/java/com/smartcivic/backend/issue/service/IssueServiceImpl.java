@@ -16,6 +16,10 @@ import com.smartcivic.backend.storage.service.ImageStorageService;
 import com.smartcivic.backend.user.domain.User;
 import com.smartcivic.backend.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.PrecisionModel;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -47,6 +51,16 @@ public class IssueServiceImpl implements IssueService {
             imageFileName = imageStorageService.storeImage(request.getImage());
         }
 
+        GeometryFactory geometryFactory =
+                new GeometryFactory(new PrecisionModel(), 4326);
+
+        Point location = geometryFactory.createPoint(
+                new Coordinate(
+                        request.getLongitude(),
+                        request.getLatitude()
+                )
+        );
+
         Issue issue = Issue.builder()
                 .title(request.getTitle())
                 .description(request.getDescription())
@@ -54,6 +68,7 @@ public class IssueServiceImpl implements IssueService {
                 .imageUrl(imageFileName)
                 .latitude(request.getLatitude())
                 .longitude(request.getLongitude())
+                .location(location)
                 .address(request.getAddress())
                 .priority(IssuePriority.MEDIUM)
                 .status(IssueStatus.REPORTED)
@@ -167,6 +182,37 @@ public class IssueServiceImpl implements IssueService {
 
 
     @Override
+    @Transactional(readOnly = true)
+    public Page<IssueSummaryResponse> getNearbyIssues(
+            double latitude,
+            double longitude,
+            double radius,
+            Pageable pageable
+    ) {
+
+        // API radius is in kilometers
+        double radiusInMeters = radius * 1000;
+
+        return issueRepository.findNearbyIssues(
+                        latitude,
+                        longitude,
+                        radiusInMeters,
+                        pageable
+                )
+                .map(issue -> IssueSummaryResponse.builder()
+                        .id(issue.getId())
+                        .title(issue.getTitle())
+                        .category(issue.getCategory())
+                        .priority(issue.getPriority())
+                        .status(issue.getStatus())
+                        .address(issue.getAddress())
+                        .createdAt(issue.getCreatedAt())
+                        .build()
+                );
+    }
+
+
+    @Override
     @Transactional
     public IssueResponse updateIssue(
             UUID issueId,
@@ -202,6 +248,20 @@ public class IssueServiceImpl implements IssueService {
         issue.setLatitude(request.getLatitude());
         issue.setLongitude(request.getLongitude());
         issue.setAddress(request.getAddress());
+
+
+        GeometryFactory geometryFactory =
+                new GeometryFactory(new PrecisionModel(), 4326);
+
+        Point location = geometryFactory.createPoint(
+                new Coordinate(
+                        request.getLongitude(),
+                        request.getLatitude()
+                )
+        );
+
+        issue.setLocation(location);
+
 
         // Save updated issue
         Issue updatedIssue = issueRepository.save(issue);
@@ -272,6 +332,27 @@ public class IssueServiceImpl implements IssueService {
         issueRepository.delete(issue);
     }
 
+    @Override
+    public Page<IssueSummaryResponse> getIssuesByPriority(
+            IssuePriority priority,
+            Pageable pageable
+    ) {
 
+        return issueRepository
+                .findByPriority(priority, pageable)
+                .map(this::mapToIssueSummaryResponse);
+    }
+    private IssueSummaryResponse mapToIssueSummaryResponse(Issue issue) {
+
+        return IssueSummaryResponse.builder()
+                .id(issue.getId())
+                .title(issue.getTitle())
+                .category(issue.getCategory())
+                .priority(issue.getPriority())
+                .status(issue.getStatus())
+                .address(issue.getAddress())
+                .createdAt(issue.getCreatedAt())
+                .build();
+    }
 
 }

@@ -5,6 +5,7 @@ import com.smartcivic.backend.issue.dto.UpdateIssueRequest;
 import com.smartcivic.backend.issue.dto.request.CreateIssueRequest;
 import com.smartcivic.backend.issue.dto.response.IssueResponse;
 import com.smartcivic.backend.issue.enums.IssueCategory;
+import com.smartcivic.backend.issue.enums.IssuePriority;
 import com.smartcivic.backend.issue.enums.IssueStatus;
 import com.smartcivic.backend.issue.service.IssueService;
 import jakarta.validation.Valid;
@@ -73,6 +74,34 @@ public class IssueController {
         IssueResponse response = issueService.getIssueById(id);
 
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/nearby")
+    public ResponseEntity<Page<IssueSummaryResponse>> getNearbyIssues(
+
+            @RequestParam double latitude,
+
+            @RequestParam double longitude,
+
+            @RequestParam(defaultValue = "5") double radius,
+
+            @PageableDefault(
+                    page = 0,
+                    size = 10,
+                    sort = "created_at",
+                    direction = Sort.Direction.DESC
+            )
+            Pageable pageable
+    ) {
+
+        return ResponseEntity.ok(
+                issueService.getNearbyIssues(
+                        latitude,
+                        longitude,
+                        radius,
+                        pageable
+                )
+        );
     }
 
     @GetMapping("/my")
@@ -186,5 +215,26 @@ public class IssueController {
         );
     }
 
+    @GetMapping("/priority/{priority}")
+    public ResponseEntity<Page<IssueSummaryResponse>> getIssuesByPriority(
+
+            @PathVariable IssuePriority priority,
+
+            @PageableDefault(
+                    page = 0,
+                    size = 10,
+                    sort = "createdAt",
+                    direction = Sort.Direction.DESC
+            )
+            Pageable pageable
+    ) {
+
+        return ResponseEntity.ok(
+                issueService.getIssuesByPriority(
+                        priority,
+                        pageable
+                )
+        );
+    }
 
 }

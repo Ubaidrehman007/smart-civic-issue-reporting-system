@@ -8,6 +8,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.locationtech.jts.geom.Point;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -40,6 +41,10 @@ public class Issue {
 
     @Column(nullable = false)
     private Double longitude;
+
+    @Column(columnDefinition = "geometry(Point,4326)")
+    private Point location;
+
 
     @Column(nullable = false, columnDefinition = "TEXT")
     private String address;

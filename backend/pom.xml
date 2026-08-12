@@ -105,6 +105,20 @@
             <scope>runtime</scope>
         </dependency>
 
+        <!-- Hibernate Spatial support for PostGIS -->
+        <dependency>
+            <groupId>org.hibernate.orm</groupId>
+            <artifactId>hibernate-spatial</artifactId>
+        </dependency>
+
+        <!-- JTS Geometry types -->
+        <dependency>
+            <groupId>org.locationtech.jts</groupId>
+            <artifactId>jts-core</artifactId>
+            <version>1.20.0</version>
+        </dependency>
+
+
     </dependencies>
 
     <build>

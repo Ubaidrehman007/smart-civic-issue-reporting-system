@@ -3,6 +3,7 @@ package com.smartcivic.backend.issue.controller;
 import com.smartcivic.backend.common.response.ApiResponse;
 import com.smartcivic.backend.issue.dto.UpdateIssueRequest;
 import com.smartcivic.backend.issue.dto.request.CreateIssueRequest;
+import com.smartcivic.backend.issue.dto.request.UpdateIssueStatusRequest;
 import com.smartcivic.backend.issue.dto.response.IssueResponse;
 import com.smartcivic.backend.issue.enums.IssueCategory;
 import com.smartcivic.backend.issue.enums.IssuePriority;
@@ -214,9 +215,25 @@ public class IssueController {
                         response
                 )
         );
+    }
 
+    @PatchMapping("/{issueId}/status")
+    public ResponseEntity<ApiResponse<IssueResponse>> updateIssueStatus(
+            @PathVariable UUID issueId,
+            @Valid @RequestBody UpdateIssueStatusRequest request
+    ) {
 
+        IssueResponse response = issueService.updateIssueStatus(
+                issueId,
+                request.getStatus()
+        );
 
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        "Issue status updated successfully.",
+                        response
+                )
+        );
     }
 
     @DeleteMapping("/{issueId}")

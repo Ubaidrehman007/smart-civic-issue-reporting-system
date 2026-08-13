@@ -44,6 +44,11 @@ public interface IssueService {
             String email
     );
 
+    IssueResponse updateIssueStatus(
+            UUID issueId,
+            IssueStatus newStatus
+    );
+
     void deleteIssue(UUID issueId, String name);
 
 

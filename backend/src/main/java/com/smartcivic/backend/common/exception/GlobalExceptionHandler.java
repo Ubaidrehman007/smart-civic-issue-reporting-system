@@ -2,6 +2,7 @@ package com.smartcivic.backend.common.exception;
 
 import com.smartcivic.backend.auth.exception.InvalidCredentialsException;
 import com.smartcivic.backend.common.response.ApiResponse;
+import com.smartcivic.backend.issue.exception.InvalidIssueStatusTransitionException;
 import com.smartcivic.backend.issue.exception.IssueAccessDeniedException;
 import com.smartcivic.backend.issue.exception.IssueDeletionNotAllowedException;
 import com.smartcivic.backend.issue.exception.IssueNotFoundException;
@@ -118,6 +119,22 @@ public class GlobalExceptionHandler {
                         ApiResponse.error(
                                 "Validation failed",
                                 errors
+                        )
+                );
+    }
+
+
+    @ExceptionHandler(InvalidIssueStatusTransitionException.class)
+    public ResponseEntity<ApiResponse<Void>> handleInvalidIssueStatusTransition(
+            InvalidIssueStatusTransitionException ex
+    ) {
+
+        return ResponseEntity
+                .badRequest()
+                .body(
+                        ApiResponse.error(
+                                ex.getMessage(),
+                                null
                         )
                 );
     }

@@ -8,6 +8,8 @@ import com.smartcivic.backend.issue.entity.Issue;
 import com.smartcivic.backend.issue.enums.IssueCategory;
 import com.smartcivic.backend.issue.enums.IssuePriority;
 import com.smartcivic.backend.issue.enums.IssueStatus;
+import com.smartcivic.backend.issue.enums.IssueStatusTransition;
+import com.smartcivic.backend.issue.exception.InvalidIssueStatusTransitionException;
 import com.smartcivic.backend.issue.exception.IssueAccessDeniedException;
 import com.smartcivic.backend.issue.exception.IssueDeletionNotAllowedException;
 import com.smartcivic.backend.issue.exception.IssueNotFoundException;
@@ -264,6 +266,48 @@ public class IssueServiceImpl implements IssueService {
 
         return mapToIssueResponse(updatedIssue);
     }
+
+    @Override
+    @Transactional
+    public IssueResponse updateIssueStatus(
+            UUID issueId,
+            IssueStatus newStatus
+    ) {
+
+        // Find issue
+        Issue issue = issueRepository.findById(issueId)
+                .orElseThrow(() ->
+                        new IssueNotFoundException(
+                                "Issue not found with ID: " + issueId
+                        )
+                );
+
+        // Get current status
+        IssueStatus currentStatus = issue.getStatus();
+
+        // Validate status transition
+        if (!IssueStatusTransition.isValidTransition(
+                currentStatus,
+                newStatus
+        )) {
+            throw new InvalidIssueStatusTransitionException(
+                    "Invalid status transition from "
+                            + currentStatus
+                            + " to "
+                            + newStatus
+            );
+        }
+
+        // Update status
+        issue.setStatus(newStatus);
+
+        // Save updated issue
+        Issue updatedIssue = issueRepository.save(issue);
+
+        return mapToIssueResponse(updatedIssue);
+    }
+
+
 
     /**
      * Convert Issue Entity to IssueResponse DTO

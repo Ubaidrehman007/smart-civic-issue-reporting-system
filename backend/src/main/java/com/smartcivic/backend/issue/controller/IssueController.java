@@ -5,6 +5,7 @@ import com.smartcivic.backend.issue.dto.UpdateIssueRequest;
 import com.smartcivic.backend.issue.dto.request.CreateIssueRequest;
 import com.smartcivic.backend.issue.dto.request.UpdateIssueStatusRequest;
 import com.smartcivic.backend.issue.dto.response.IssueResponse;
+import com.smartcivic.backend.issue.dto.response.IssueStatusHistoryResponse;
 import com.smartcivic.backend.issue.enums.IssueCategory;
 import com.smartcivic.backend.issue.enums.IssuePriority;
 import com.smartcivic.backend.issue.enums.IssueStatus;
@@ -26,9 +27,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.data.domain.Sort;
 
 
-
-
-
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -220,12 +219,16 @@ public class IssueController {
     @PatchMapping("/{issueId}/status")
     public ResponseEntity<ApiResponse<IssueResponse>> updateIssueStatus(
             @PathVariable UUID issueId,
-            @Valid @RequestBody UpdateIssueStatusRequest request
+            @Valid @RequestBody UpdateIssueStatusRequest request,
+            Authentication authentication
     ) {
+
+        String email = authentication.getName();
 
         IssueResponse response = issueService.updateIssueStatus(
                 issueId,
-                request.getStatus()
+                request.getStatus(),
+                email
         );
 
         return ResponseEntity.ok(
@@ -276,5 +279,16 @@ public class IssueController {
                 )
         );
     }
+
+
+    @GetMapping("/{issueId}/status-history")
+    public ResponseEntity<List<IssueStatusHistoryResponse>> getIssueStatusHistory(
+            @PathVariable UUID issueId
+    ) {
+        return ResponseEntity.ok(
+                issueService.getIssueStatusHistory(issueId)
+        );
+    }
+
 
 }

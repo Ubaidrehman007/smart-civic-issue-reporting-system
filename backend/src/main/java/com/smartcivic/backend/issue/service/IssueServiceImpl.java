@@ -3,8 +3,10 @@ package com.smartcivic.backend.issue.service;
 import com.smartcivic.backend.issue.dto.UpdateIssueRequest;
 import com.smartcivic.backend.issue.dto.request.CreateIssueRequest;
 import com.smartcivic.backend.issue.dto.response.IssueResponse;
+import com.smartcivic.backend.issue.dto.response.IssueStatusHistoryResponse;
 import com.smartcivic.backend.issue.dto.response.IssueSummaryResponse;
 import com.smartcivic.backend.issue.entity.Issue;
+import com.smartcivic.backend.issue.entity.IssueStatusHistory;
 import com.smartcivic.backend.issue.enums.IssueCategory;
 import com.smartcivic.backend.issue.enums.IssuePriority;
 import com.smartcivic.backend.issue.enums.IssueStatus;
@@ -14,6 +16,7 @@ import com.smartcivic.backend.issue.exception.IssueAccessDeniedException;
 import com.smartcivic.backend.issue.exception.IssueDeletionNotAllowedException;
 import com.smartcivic.backend.issue.exception.IssueNotFoundException;
 import com.smartcivic.backend.issue.repository.IssueRepository;
+import com.smartcivic.backend.issue.repository.IssueStatusHistoryRepository;
 import com.smartcivic.backend.storage.service.ImageStorageService;
 import com.smartcivic.backend.user.domain.User;
 import com.smartcivic.backend.user.repository.UserRepository;
@@ -28,6 +31,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -38,6 +43,7 @@ public class IssueServiceImpl implements IssueService {
     private final UserRepository userRepository;
     private final ImageStorageService imageStorageService;
     private final GeometryFactory geometryFactory;
+    private final IssueStatusHistoryRepository issueStatusHistoryRepository;
 
     @Override
     public IssueResponse createIssue(CreateIssueRequest request, String userEmail) {
@@ -271,8 +277,17 @@ public class IssueServiceImpl implements IssueService {
     @Transactional
     public IssueResponse updateIssueStatus(
             UUID issueId,
-            IssueStatus newStatus
+            IssueStatus newStatus,
+            String email
     ) {
+
+        // Find logged-in user
+        User currentUser = userRepository.findByEmail(email)
+                .orElseThrow(() ->
+                        new UsernameNotFoundException(
+                                "User not found with email: " + email
+                        )
+                );
 
         // Find issue
         Issue issue = issueRepository.findById(issueId)
@@ -298,15 +313,27 @@ public class IssueServiceImpl implements IssueService {
             );
         }
 
-        // Update status
+        // Update issue status
         issue.setStatus(newStatus);
 
         // Save updated issue
         Issue updatedIssue = issueRepository.save(issue);
 
+        // Create status history
+        IssueStatusHistory statusHistory =
+                IssueStatusHistory.builder()
+                        .issue(updatedIssue)
+                        .fromStatus(currentStatus)
+                        .toStatus(newStatus)
+                        .changedBy(currentUser)
+                        .changedAt(Instant.now())
+                        .build();
+
+        // Save status history
+        issueStatusHistoryRepository.save(statusHistory);
+
         return mapToIssueResponse(updatedIssue);
     }
-
 
 
     /**
@@ -404,5 +431,42 @@ public class IssueServiceImpl implements IssueService {
                 new Coordinate(longitude, latitude)
         );
     }
+
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<IssueStatusHistoryResponse> getIssueStatusHistory(UUID issueId) {
+
+        // Check whether issue exists
+        Issue issue = issueRepository.findById(issueId)
+                .orElseThrow(() ->
+                        new IssueNotFoundException(
+                                "Issue not found with ID: " + issueId
+                        )
+                );
+
+        // Get complete status history
+        List<IssueStatusHistory> historyList =
+                issueStatusHistoryRepository
+                        .findByIssueIdOrderByChangedAtAsc(issue.getId());
+
+        // Convert entities into response DTOs
+        return historyList.stream()
+                .map(history -> IssueStatusHistoryResponse.builder()
+                        .id(history.getId())
+                        .fromStatus(history.getFromStatus())
+                        .toStatus(history.getToStatus())
+                        .changedById(history.getChangedBy().getId())
+                        .changedByEmail(history.getChangedBy().getEmail())
+                        .remark(history.getRemark())
+                        .changedAt(history.getChangedAt())
+                        .build())
+                .toList();
+    }
+
+
+
+
+
 
 }

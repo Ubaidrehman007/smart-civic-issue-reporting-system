@@ -3,6 +3,7 @@ package com.smartcivic.backend.issue.service;
 import com.smartcivic.backend.issue.dto.UpdateIssueRequest;
 import com.smartcivic.backend.issue.dto.request.CreateIssueRequest;
 import com.smartcivic.backend.issue.dto.response.IssueResponse;
+import com.smartcivic.backend.issue.dto.response.IssueStatusHistoryResponse;
 import com.smartcivic.backend.issue.dto.response.IssueSummaryResponse;
 import com.smartcivic.backend.issue.enums.IssueCategory;
 import com.smartcivic.backend.issue.enums.IssuePriority;
@@ -10,6 +11,7 @@ import com.smartcivic.backend.issue.enums.IssueStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface IssueService {
@@ -46,7 +48,8 @@ public interface IssueService {
 
     IssueResponse updateIssueStatus(
             UUID issueId,
-            IssueStatus newStatus
+            IssueStatus newStatus,
+            String email
     );
 
     void deleteIssue(UUID issueId, String name);
@@ -63,5 +66,7 @@ public interface IssueService {
             IssuePriority priority,
             Pageable pageable
     );
+
+    List<IssueStatusHistoryResponse> getIssueStatusHistory(UUID issueId);
 
 }

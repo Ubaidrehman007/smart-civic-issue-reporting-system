@@ -9,7 +9,9 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.locationtech.jts.geom.Point;
-
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -76,5 +78,9 @@ public class Issue {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
     private IssueStatus status;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "assigned_to")
+    private User assignedTo;
 
 }

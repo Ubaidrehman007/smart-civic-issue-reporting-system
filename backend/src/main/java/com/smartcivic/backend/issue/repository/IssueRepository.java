@@ -80,4 +80,9 @@ public interface IssueRepository extends JpaRepository<Issue, UUID> {
             @Param("radius") double radius,
             Pageable pageable
     );
+
+    Page<Issue> findByAssignedTo_Id(
+            UUID fieldWorkerId,
+            Pageable pageable
+    );
 }

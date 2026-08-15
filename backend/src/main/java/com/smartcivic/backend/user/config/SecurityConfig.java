@@ -62,6 +62,15 @@ public class SecurityConfig {
                                 HttpMethod.PATCH,
                                 "/api/issues/*/status"
                         ).hasAnyAuthority("FIELD_WORKER", "ADMIN")
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/issues/assigned"
+                        ).hasAuthority("FIELD_WORKER")
+
+                        .requestMatchers(
+                                HttpMethod.PATCH,
+                                "/api/v1/issues/*/assign"
+                        ).hasAuthority("ADMIN")
 
                         .requestMatchers(
                                 HttpMethod.PATCH,

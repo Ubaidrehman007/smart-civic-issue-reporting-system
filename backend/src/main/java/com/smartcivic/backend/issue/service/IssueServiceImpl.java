@@ -1,5 +1,6 @@
 package com.smartcivic.backend.issue.service;
 
+import com.smartcivic.backend.issue.dto.AssignIssueRequest;
 import com.smartcivic.backend.issue.dto.UpdateIssueRequest;
 import com.smartcivic.backend.issue.dto.request.CreateIssueRequest;
 import com.smartcivic.backend.issue.dto.response.IssueResponse;
@@ -18,7 +19,10 @@ import com.smartcivic.backend.issue.exception.IssueNotFoundException;
 import com.smartcivic.backend.issue.repository.IssueRepository;
 import com.smartcivic.backend.issue.repository.IssueStatusHistoryRepository;
 import com.smartcivic.backend.storage.service.ImageStorageService;
+import com.smartcivic.backend.user.entity.AccountStatus;
+import com.smartcivic.backend.user.entity.Role;
 import com.smartcivic.backend.user.entity.User;
+import com.smartcivic.backend.user.exception.UserNotFoundException;
 import com.smartcivic.backend.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.locationtech.jts.geom.Coordinate;
@@ -465,8 +469,58 @@ public class IssueServiceImpl implements IssueService {
     }
 
 
+    @Override
+    public void assignIssue(
+            UUID issueId,
+            AssignIssueRequest request
+    ) {
 
+        Issue issue = issueRepository.findById(issueId)
+                .orElseThrow(() ->
+                        new IssueNotFoundException("Issue not found")
+                );
 
+        User fieldWorker = userRepository
+                .findById(request.fieldWorkerId())
+                .orElseThrow(() ->
+                        new UserNotFoundException("Field worker not found")
+                );
 
+        if (fieldWorker.getRole() != Role.FIELD_WORKER) {
+            throw new IllegalArgumentException(
+                    "Issue can only be assigned to a field worker"
+            );
+        }
+
+        if (fieldWorker.getAccountStatus() != AccountStatus.ACTIVE) {
+            throw new IllegalArgumentException(
+                    "Issue can only be assigned to an active field worker"
+            );
+        }
+
+        issue.setAssignedTo(fieldWorker);
+
+        issueRepository.save(issue);
+    }
+
+    @Override
+    public Page<IssueSummaryResponse> getAssignedIssues(
+            String email,
+            Pageable pageable
+    ) {
+
+        User fieldWorker = userRepository
+                .findByEmail(email)
+                .orElseThrow(() ->
+                        new UserNotFoundException("User not found")
+                );
+
+        Page<Issue> issues = issueRepository.findByAssignedTo_Id(
+                fieldWorker.getId(),
+                pageable
+        );
+
+        return issues.map(this::mapToIssueSummaryResponse);
+    }
 
 }

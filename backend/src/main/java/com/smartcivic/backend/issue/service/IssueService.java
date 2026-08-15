@@ -1,5 +1,6 @@
 package com.smartcivic.backend.issue.service;
 
+import com.smartcivic.backend.issue.dto.AssignIssueRequest;
 import com.smartcivic.backend.issue.dto.UpdateIssueRequest;
 import com.smartcivic.backend.issue.dto.request.CreateIssueRequest;
 import com.smartcivic.backend.issue.dto.response.IssueResponse;
@@ -69,4 +70,13 @@ public interface IssueService {
 
     List<IssueStatusHistoryResponse> getIssueStatusHistory(UUID issueId);
 
+    void assignIssue(
+            UUID issueId,
+            AssignIssueRequest request
+    );
+
+    Page<IssueSummaryResponse> getAssignedIssues(
+            String email,
+            Pageable pageable
+    );
 }

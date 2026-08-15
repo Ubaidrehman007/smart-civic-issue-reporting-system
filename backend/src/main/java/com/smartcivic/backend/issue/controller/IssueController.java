@@ -1,6 +1,7 @@
 package com.smartcivic.backend.issue.controller;
 
 import com.smartcivic.backend.common.response.ApiResponse;
+import com.smartcivic.backend.issue.dto.AssignIssueRequest;
 import com.smartcivic.backend.issue.dto.UpdateIssueRequest;
 import com.smartcivic.backend.issue.dto.request.CreateIssueRequest;
 import com.smartcivic.backend.issue.dto.request.UpdateIssueStatusRequest;
@@ -67,6 +68,27 @@ public class IssueController {
         IssueResponse response = issueService.createIssue(request, userEmail);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @GetMapping("/assigned")
+    public ResponseEntity<Page<IssueSummaryResponse>> getAssignedIssues(
+            Authentication authentication,
+
+            @PageableDefault(
+                    page = 0,
+                    size = 10,
+                    sort = "createdAt",
+                    direction = Sort.Direction.DESC
+            )
+            Pageable pageable
+    ) {
+
+        return ResponseEntity.ok(
+                issueService.getAssignedIssues(
+                        authentication.getName(),
+                        pageable
+                )
+        );
     }
 
     @GetMapping("/{id}")
@@ -289,6 +311,23 @@ public class IssueController {
                 issueService.getIssueStatusHistory(issueId)
         );
     }
+
+    @PatchMapping("/{issueId}/assign")
+    public ResponseEntity<ApiResponse<Void>> assignIssue(
+            @PathVariable UUID issueId,
+            @Valid @RequestBody AssignIssueRequest request
+    ) {
+
+        issueService.assignIssue(issueId, request);
+
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        "Issue assigned successfully",
+                        null
+                )
+        );
+    }
+
 
 
 }

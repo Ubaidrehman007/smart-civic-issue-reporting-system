@@ -2,6 +2,7 @@ package com.smartcivic.backend.user.service;
 
 import com.smartcivic.backend.user.dto.CreateFieldWorkerRequest;
 import com.smartcivic.backend.user.dto.UpdateAccountStatusRequest;
+import com.smartcivic.backend.user.dto.UserResponse;
 import com.smartcivic.backend.user.entity.Role;
 import com.smartcivic.backend.user.entity.User;
 import com.smartcivic.backend.user.dto.RegisterUserRequest;
@@ -11,6 +12,7 @@ import com.smartcivic.backend.user.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -85,6 +87,22 @@ public class UserService {
         );
 
         userRepository.save(fieldWorker);
+    }
+
+    public List<UserResponse> getAllUsers() {
+
+        return userRepository.findAll()
+                .stream()
+                .map(user -> new UserResponse(
+                        user.getId(),
+                        user.getFullName(),
+                        user.getEmail(),
+                        user.getPhoneNumber(),
+                        user.getRole(),
+                        user.getAccountStatus(),
+                        user.getCreatedAt()
+                ))
+                .toList();
     }
 
 

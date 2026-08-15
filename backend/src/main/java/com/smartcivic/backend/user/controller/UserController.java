@@ -4,6 +4,7 @@ import com.smartcivic.backend.common.response.ApiResponse;
 import com.smartcivic.backend.user.dto.CreateFieldWorkerRequest;
 import com.smartcivic.backend.user.dto.RegisterUserRequest;
 import com.smartcivic.backend.user.dto.UpdateAccountStatusRequest;
+import com.smartcivic.backend.user.dto.UserResponse;
 import com.smartcivic.backend.user.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -67,6 +69,20 @@ public class UserController {
         userService.updateAccountStatus(userId, request);
 
         return ResponseEntity.noContent().build();
+    }
+
+
+    @GetMapping
+    public ResponseEntity<ApiResponse<List<UserResponse>>> getAllUsers() {
+
+        List<UserResponse> users = userService.getAllUsers();
+
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        "Users fetched successfully",
+                        users
+                )
+        );
     }
 
 

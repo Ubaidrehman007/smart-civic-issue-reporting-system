@@ -68,6 +68,11 @@ public class SecurityConfig {
                                 "/api/v1/users/*/account-status"
                         ).hasAuthority("ADMIN")
 
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/v1/users"
+                        ).hasAuthority("ADMIN")
+
                         .anyRequest().authenticated()
                 )
 

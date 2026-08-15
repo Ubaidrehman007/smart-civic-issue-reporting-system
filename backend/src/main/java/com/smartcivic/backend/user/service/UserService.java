@@ -154,4 +154,23 @@ public class UserService {
     }
 
 
+
+    public UserResponse getUserById(UUID userId) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() ->
+                        new UserNotFoundException("User not found")
+                );
+
+        return new UserResponse(
+                user.getId(),
+                user.getFullName(),
+                user.getEmail(),
+                user.getPhoneNumber(),
+                user.getRole(),
+                user.getAccountStatus(),
+                user.getCreatedAt()
+        );
+    }
+
 }

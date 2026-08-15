@@ -77,6 +77,10 @@ public class SecurityConfig {
                                 HttpMethod.GET,
                                 "/api/v1/users/search"
                         ).hasAuthority("ADMIN")
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/v1/users/*"
+                        ).hasAuthority("ADMIN")
 
                         .anyRequest().authenticated()
                 )

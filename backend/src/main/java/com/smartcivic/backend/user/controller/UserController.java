@@ -108,4 +108,19 @@ public class UserController {
     }
 
 
+    @GetMapping("/{userId}")
+    public ResponseEntity<ApiResponse<UserResponse>> getUserById(
+            @PathVariable UUID userId
+    ) {
+
+        UserResponse user = userService.getUserById(userId);
+
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        "User fetched successfully",
+                        user
+                )
+        );
+    }
+
 }

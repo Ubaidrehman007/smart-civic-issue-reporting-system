@@ -1,5 +1,6 @@
 package com.smartcivic.backend.auth.service;
 
+import com.smartcivic.backend.user.entity.AccountStatus;
 import com.smartcivic.backend.user.entity.User;
 import com.smartcivic.backend.user.repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -28,8 +29,12 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .withUsername(user.getEmail())
                 .password(user.getPasswordHash())
                 .authorities(user.getRole().name())
-                .accountLocked(false)
-                .disabled(false)
+                .accountLocked(
+                        user.getAccountStatus() == AccountStatus.SUSPENDED
+                )
+                .disabled(
+                        user.getAccountStatus() == AccountStatus.DISABLED
+                )
                 .build();
     }
 }

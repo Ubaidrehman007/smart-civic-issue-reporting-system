@@ -4,6 +4,7 @@ import com.smartcivic.backend.auth.dto.LoginRequest;
 import com.smartcivic.backend.auth.dto.LoginResponse;
 import com.smartcivic.backend.auth.exception.InvalidCredentialsException;
 import com.smartcivic.backend.auth.security.JwtService;
+import com.smartcivic.backend.user.entity.AccountStatus;
 import com.smartcivic.backend.user.entity.User;
 import com.smartcivic.backend.user.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -29,7 +30,16 @@ public class AuthenticationService {
 
         User user = userRepository.findByEmail(request.email())
                 .orElseThrow(() ->
-                        new InvalidCredentialsException("Invalid email or password"));
+                        new InvalidCredentialsException(
+                                "Invalid email or password"
+                        )
+                );
+
+        if (user.getAccountStatus() != AccountStatus.ACTIVE) {
+            throw new InvalidCredentialsException(
+                    "Your account is not active"
+            );
+        }
 
         boolean passwordMatches = passwordEncoder.matches(
                 request.password(),
@@ -37,7 +47,9 @@ public class AuthenticationService {
         );
 
         if (!passwordMatches) {
-            throw new InvalidCredentialsException("Invalid email or password");
+            throw new InvalidCredentialsException(
+                    "Invalid email or password"
+            );
         }
 
         String token = jwtService.generateToken(user.getEmail());
@@ -45,6 +57,7 @@ public class AuthenticationService {
         return new LoginResponse(
                 token,
                 "Bearer"
+
         );
     }
 }

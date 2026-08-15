@@ -3,6 +3,7 @@ package com.smartcivic.backend.user.service;
 import com.smartcivic.backend.user.dto.CreateFieldWorkerRequest;
 import com.smartcivic.backend.user.dto.UpdateAccountStatusRequest;
 import com.smartcivic.backend.user.dto.UserResponse;
+import com.smartcivic.backend.user.entity.AccountStatus;
 import com.smartcivic.backend.user.entity.Role;
 import com.smartcivic.backend.user.entity.User;
 import com.smartcivic.backend.user.dto.RegisterUserRequest;
@@ -89,10 +90,36 @@ public class UserService {
         userRepository.save(fieldWorker);
     }
 
-    public List<UserResponse> getAllUsers() {
+    public List<UserResponse> getAllUsers(
+            Role role,
+            AccountStatus accountStatus
+    ) {
 
-        return userRepository.findAll()
-                .stream()
+        List<User> users;
+
+        if (role != null && accountStatus != null) {
+
+            users = userRepository
+                    .findByRoleAndAccountStatus(
+                            role,
+                            accountStatus
+                    );
+
+        } else if (role != null) {
+
+            users = userRepository.findByRole(role);
+
+        } else if (accountStatus != null) {
+
+            users = userRepository
+                    .findByAccountStatus(accountStatus);
+
+        } else {
+
+            users = userRepository.findAll();
+        }
+
+        return users.stream()
                 .map(user -> new UserResponse(
                         user.getId(),
                         user.getFullName(),

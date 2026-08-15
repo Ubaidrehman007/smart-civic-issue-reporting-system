@@ -5,6 +5,8 @@ import com.smartcivic.backend.user.dto.CreateFieldWorkerRequest;
 import com.smartcivic.backend.user.dto.RegisterUserRequest;
 import com.smartcivic.backend.user.dto.UpdateAccountStatusRequest;
 import com.smartcivic.backend.user.dto.UserResponse;
+import com.smartcivic.backend.user.entity.AccountStatus;
+import com.smartcivic.backend.user.entity.Role;
 import com.smartcivic.backend.user.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -73,9 +75,13 @@ public class UserController {
 
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<UserResponse>>> getAllUsers() {
+    public ResponseEntity<ApiResponse<List<UserResponse>>> getAllUsers(
+            @RequestParam(required = false) Role role,
+            @RequestParam(required = false) AccountStatus status
+    ) {
 
-        List<UserResponse> users = userService.getAllUsers();
+        List<UserResponse> users =
+                userService.getAllUsers(role, status);
 
         return ResponseEntity.ok(
                 ApiResponse.success(

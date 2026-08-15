@@ -1,8 +1,11 @@
 package com.smartcivic.backend.user.repository;
 
+import com.smartcivic.backend.user.entity.AccountStatus;
+import com.smartcivic.backend.user.entity.Role;
 import com.smartcivic.backend.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -15,4 +18,12 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     boolean existsByEmail(String email);
      boolean existsByPhoneNumber(String phoneNumber);
 
+    List<User> findByRole(Role role);
+
+    List<User> findByAccountStatus(AccountStatus accountStatus);
+
+    List<User> findByRoleAndAccountStatus(
+            Role role,
+            AccountStatus accountStatus
+    );
 }

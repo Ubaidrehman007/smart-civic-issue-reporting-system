@@ -73,6 +73,11 @@ public class SecurityConfig {
                                 "/api/v1/users"
                         ).hasAuthority("ADMIN")
 
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/v1/users/search"
+                        ).hasAuthority("ADMIN")
+
                         .anyRequest().authenticated()
                 )
 

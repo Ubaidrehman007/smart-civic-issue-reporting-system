@@ -133,4 +133,25 @@ public class UserService {
     }
 
 
+    public List<UserResponse> searchUsers(String keyword) {
+
+        return userRepository
+                .findByFullNameContainingIgnoreCaseOrEmailContainingIgnoreCase(
+                        keyword,
+                        keyword
+                )
+                .stream()
+                .map(user -> new UserResponse(
+                        user.getId(),
+                        user.getFullName(),
+                        user.getEmail(),
+                        user.getPhoneNumber(),
+                        user.getRole(),
+                        user.getAccountStatus(),
+                        user.getCreatedAt()
+                ))
+                .toList();
+    }
+
+
 }

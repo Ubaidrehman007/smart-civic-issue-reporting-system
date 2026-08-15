@@ -92,4 +92,20 @@ public class UserController {
     }
 
 
+    @GetMapping("/search")
+    public ResponseEntity<ApiResponse<List<UserResponse>>> searchUsers(
+            @RequestParam String keyword
+    ) {
+
+        List<UserResponse> users = userService.searchUsers(keyword);
+
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        "Users fetched successfully",
+                        users
+                )
+        );
+    }
+
+
 }

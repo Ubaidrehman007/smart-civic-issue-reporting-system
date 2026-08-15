@@ -20,6 +20,12 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
     List<User> findByRole(Role role);
 
+    List<User> findByFullNameContainingIgnoreCaseOrEmailContainingIgnoreCase(
+            String fullName,
+            String email
+    );
+
+
     List<User> findByAccountStatus(AccountStatus accountStatus);
 
     List<User> findByRoleAndAccountStatus(

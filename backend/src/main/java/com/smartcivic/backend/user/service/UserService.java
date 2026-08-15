@@ -1,13 +1,17 @@
 package com.smartcivic.backend.user.service;
 
 import com.smartcivic.backend.user.dto.CreateFieldWorkerRequest;
+import com.smartcivic.backend.user.dto.UpdateAccountStatusRequest;
 import com.smartcivic.backend.user.entity.Role;
 import com.smartcivic.backend.user.entity.User;
 import com.smartcivic.backend.user.dto.RegisterUserRequest;
 import com.smartcivic.backend.user.exception.UserAlreadyExistsException;
+import com.smartcivic.backend.user.exception.UserNotFoundException;
 import com.smartcivic.backend.user.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 
 @Service
 public class UserService {
@@ -39,6 +43,22 @@ public class UserService {
                 request.phoneNumber(),
                 passwordHash,
                 Role.CITIZEN);
+
+        userRepository.save(user);
+    }
+
+
+    public void updateAccountStatus(
+            UUID userId,
+            UpdateAccountStatusRequest request
+    ) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() ->
+                        new UserNotFoundException("User not found")
+                );
+
+        user.setAccountStatus(request.accountStatus());
 
         userRepository.save(user);
     }

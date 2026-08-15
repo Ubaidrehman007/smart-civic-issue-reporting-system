@@ -62,6 +62,10 @@ public class User {
     @Column(name = "account_status", nullable = false, length = 30)
     private AccountStatus accountStatus;
 
+    public void setAccountStatus(AccountStatus accountStatus) {
+        this.accountStatus = accountStatus;
+    }
+
     @Column(name = "email_verified", nullable = false)
     private boolean emailVerified;
 
@@ -73,6 +77,9 @@ public class User {
 
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
+
+
+
 
     @PrePersist
     protected void onCreate() {

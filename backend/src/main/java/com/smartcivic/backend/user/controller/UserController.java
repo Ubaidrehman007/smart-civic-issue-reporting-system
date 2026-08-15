@@ -3,12 +3,15 @@ package com.smartcivic.backend.user.controller;
 import com.smartcivic.backend.common.response.ApiResponse;
 import com.smartcivic.backend.user.dto.CreateFieldWorkerRequest;
 import com.smartcivic.backend.user.dto.RegisterUserRequest;
+import com.smartcivic.backend.user.dto.UpdateAccountStatusRequest;
 import com.smartcivic.backend.user.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -52,6 +55,18 @@ public class UserController {
                                 null
                         )
                 );
+    }
+
+
+    @PatchMapping("/{userId}/account-status")
+    public ResponseEntity<Void> updateAccountStatus(
+            @PathVariable UUID userId,
+            @Valid @RequestBody UpdateAccountStatusRequest request
+    ) {
+
+        userService.updateAccountStatus(userId, request);
+
+        return ResponseEntity.noContent().build();
     }
 
 

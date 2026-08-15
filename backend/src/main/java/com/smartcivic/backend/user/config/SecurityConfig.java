@@ -44,22 +44,37 @@ public class SecurityConfig {
 
         http.csrf(csrf -> csrf.disable())
 
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
 
                 .authenticationProvider(authenticationProvider())
 
                 .authorizeHttpRequests(auth -> auth
 
-                        .requestMatchers("/api/v1/users/register",
+                        .requestMatchers(
+                                "/api/v1/users/register",
                                 "/api/v1/auth/login",
-                                "/api/images/**").permitAll()
+                                "/api/images/**"
+                        ).permitAll()
 
-                        .requestMatchers(HttpMethod.PATCH,
-                                "/api/issues/*/status").hasAnyAuthority("FIELD_WORKER", "ADMIN")
+                        .requestMatchers(
+                                HttpMethod.PATCH,
+                                "/api/issues/*/status"
+                        ).hasAnyAuthority("FIELD_WORKER", "ADMIN")
 
-                        .anyRequest().authenticated())
+                        .requestMatchers(
+                                HttpMethod.PATCH,
+                                "/api/v1/users/*/account-status"
+                        ).hasAuthority("ADMIN")
 
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                        .anyRequest().authenticated()
+                )
+
+                .addFilterBefore(
+                        jwtAuthenticationFilter,
+                        UsernamePasswordAuthenticationFilter.class
+                );
 
         return http.build();
     }

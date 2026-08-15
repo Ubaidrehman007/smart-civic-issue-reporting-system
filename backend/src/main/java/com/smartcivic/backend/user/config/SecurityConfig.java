@@ -70,13 +70,18 @@ public class SecurityConfig {
 
                         .requestMatchers(
                                 HttpMethod.GET,
+                                "/api/v1/users/search"
+                        ).hasAuthority("ADMIN")
+                        .requestMatchers(
+                                HttpMethod.GET,
                                 "/api/v1/users"
                         ).hasAuthority("ADMIN")
 
                         .requestMatchers(
                                 HttpMethod.GET,
-                                "/api/v1/users/search"
+                                "/api/v1/users/dashboard"
                         ).hasAuthority("ADMIN")
+
                         .requestMatchers(
                                 HttpMethod.GET,
                                 "/api/v1/users/*"

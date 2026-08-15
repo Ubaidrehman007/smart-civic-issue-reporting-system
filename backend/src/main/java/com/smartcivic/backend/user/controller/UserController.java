@@ -1,10 +1,7 @@
 package com.smartcivic.backend.user.controller;
 
 import com.smartcivic.backend.common.response.ApiResponse;
-import com.smartcivic.backend.user.dto.CreateFieldWorkerRequest;
-import com.smartcivic.backend.user.dto.RegisterUserRequest;
-import com.smartcivic.backend.user.dto.UpdateAccountStatusRequest;
-import com.smartcivic.backend.user.dto.UserResponse;
+import com.smartcivic.backend.user.dto.*;
 import com.smartcivic.backend.user.entity.AccountStatus;
 import com.smartcivic.backend.user.entity.Role;
 import com.smartcivic.backend.user.service.UserService;
@@ -119,6 +116,20 @@ public class UserController {
                 ApiResponse.success(
                         "User fetched successfully",
                         user
+                )
+        );
+    }
+
+
+    @GetMapping("/dashboard")
+    public ResponseEntity<ApiResponse<DashboardStatsResponse>> getDashboardStats() {
+
+        DashboardStatsResponse stats = userService.getDashboardStats();
+
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        "Dashboard statistics fetched successfully",
+                        stats
                 )
         );
     }

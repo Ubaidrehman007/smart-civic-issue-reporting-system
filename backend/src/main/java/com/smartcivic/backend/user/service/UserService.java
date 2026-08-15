@@ -1,12 +1,9 @@
 package com.smartcivic.backend.user.service;
 
-import com.smartcivic.backend.user.dto.CreateFieldWorkerRequest;
-import com.smartcivic.backend.user.dto.UpdateAccountStatusRequest;
-import com.smartcivic.backend.user.dto.UserResponse;
+import com.smartcivic.backend.user.dto.*;
 import com.smartcivic.backend.user.entity.AccountStatus;
 import com.smartcivic.backend.user.entity.Role;
 import com.smartcivic.backend.user.entity.User;
-import com.smartcivic.backend.user.dto.RegisterUserRequest;
 import com.smartcivic.backend.user.exception.UserAlreadyExistsException;
 import com.smartcivic.backend.user.exception.UserNotFoundException;
 import com.smartcivic.backend.user.repository.UserRepository;
@@ -172,5 +169,30 @@ public class UserService {
                 user.getCreatedAt()
         );
     }
+
+    public DashboardStatsResponse getDashboardStats() {
+
+        long totalUsers = userRepository.count();
+
+        long totalCitizens = userRepository.countByRole(Role.CITIZEN);
+
+        long totalFieldWorkers =
+                userRepository.countByRole(Role.FIELD_WORKER);
+
+        long activeUsers =
+                userRepository.countByAccountStatus(AccountStatus.ACTIVE);
+
+        long suspendedUsers =
+                userRepository.countByAccountStatus(AccountStatus.SUSPENDED);
+
+        return new DashboardStatsResponse(
+                totalUsers,
+                totalCitizens,
+                totalFieldWorkers,
+                activeUsers,
+                suspendedUsers
+        );
+    }
+
 
 }

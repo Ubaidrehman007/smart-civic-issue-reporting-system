@@ -32,4 +32,9 @@ public interface UserRepository extends JpaRepository<User, UUID> {
             Role role,
             AccountStatus accountStatus
     );
+
+    long countByRole(Role role);
+
+    long countByAccountStatus(AccountStatus accountStatus);
+
 }

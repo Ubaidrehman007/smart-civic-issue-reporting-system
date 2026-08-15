@@ -1,11 +1,13 @@
 package com.smartcivic.backend.user.controller;
 
 import com.smartcivic.backend.common.response.ApiResponse;
+import com.smartcivic.backend.user.dto.CreateFieldWorkerRequest;
 import com.smartcivic.backend.user.dto.RegisterUserRequest;
 import com.smartcivic.backend.user.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -33,4 +35,24 @@ public class UserController {
                         )
                 );
     }
+
+
+    @PostMapping("/field-workers")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<ApiResponse<Void>> createFieldWorker(
+            @Valid @RequestBody CreateFieldWorkerRequest request) {
+
+        userService.createFieldWorker(request);
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(
+                        ApiResponse.success(
+                                "Field worker created successfully",
+                                null
+                        )
+                );
+    }
+
+
 }

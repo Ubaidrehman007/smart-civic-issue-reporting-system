@@ -1,5 +1,6 @@
 package com.smartcivic.backend.user.service;
 
+import com.smartcivic.backend.user.dto.CreateFieldWorkerRequest;
 import com.smartcivic.backend.user.entity.Role;
 import com.smartcivic.backend.user.entity.User;
 import com.smartcivic.backend.user.dto.RegisterUserRequest;
@@ -40,6 +41,30 @@ public class UserService {
                 Role.CITIZEN);
 
         userRepository.save(user);
+    }
+
+
+    public void createFieldWorker(CreateFieldWorkerRequest request) {
+
+        if (userRepository.existsByEmail(request.email())) {
+            throw new UserAlreadyExistsException("Email already exists");
+        }
+
+        if (userRepository.existsByPhoneNumber(request.phoneNumber())) {
+            throw new UserAlreadyExistsException("Phone number already exists");
+        }
+
+        String passwordHash = passwordEncoder.encode(request.password());
+
+        User fieldWorker = new User(
+                request.fullName(),
+                request.email().trim().toLowerCase(),
+                request.phoneNumber(),
+                passwordHash,
+                Role.FIELD_WORKER
+        );
+
+        userRepository.save(fieldWorker);
     }
 
 

@@ -1,6 +1,6 @@
 package com.smartcivic.backend.user.repository;
 
-import com.smartcivic.backend.user.domain.User;
+import com.smartcivic.backend.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

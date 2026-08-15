@@ -1,7 +1,7 @@
 package com.smartcivic.backend.issue.entity;
 
 import com.smartcivic.backend.issue.enums.IssueStatus;
-import com.smartcivic.backend.user.domain.User;
+import com.smartcivic.backend.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 

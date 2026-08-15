@@ -5,7 +5,7 @@ import com.smartcivic.backend.issue.entity.Issue;
 import com.smartcivic.backend.issue.enums.IssueCategory;
 import com.smartcivic.backend.issue.enums.IssuePriority;
 import com.smartcivic.backend.issue.enums.IssueStatus;
-import com.smartcivic.backend.user.domain.User;
+import com.smartcivic.backend.user.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -4,7 +4,7 @@ import com.smartcivic.backend.auth.dto.LoginRequest;
 import com.smartcivic.backend.auth.dto.LoginResponse;
 import com.smartcivic.backend.auth.exception.InvalidCredentialsException;
 import com.smartcivic.backend.auth.security.JwtService;
-import com.smartcivic.backend.user.domain.User;
+import com.smartcivic.backend.user.entity.User;
 import com.smartcivic.backend.user.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

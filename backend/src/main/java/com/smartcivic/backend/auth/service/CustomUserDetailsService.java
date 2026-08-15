@@ -1,6 +1,6 @@
 package com.smartcivic.backend.auth.service;
 
-import com.smartcivic.backend.user.domain.User;
+import com.smartcivic.backend.user.entity.User;
 import com.smartcivic.backend.user.repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

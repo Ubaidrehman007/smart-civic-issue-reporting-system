@@ -1,11 +1,10 @@
 package com.smartcivic.backend.user.service;
 
-import com.smartcivic.backend.user.domain.Role;
-import com.smartcivic.backend.user.domain.User;
+import com.smartcivic.backend.user.entity.Role;
+import com.smartcivic.backend.user.entity.User;
 import com.smartcivic.backend.user.dto.RegisterUserRequest;
 import com.smartcivic.backend.user.exception.UserAlreadyExistsException;
 import com.smartcivic.backend.user.repository.UserRepository;
-import jdk.jshell.spi.ExecutionControl;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 

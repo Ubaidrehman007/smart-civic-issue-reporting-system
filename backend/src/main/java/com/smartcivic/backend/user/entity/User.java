@@ -1,4 +1,4 @@
-package com.smartcivic.backend.user.domain;
+package com.smartcivic.backend.user.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

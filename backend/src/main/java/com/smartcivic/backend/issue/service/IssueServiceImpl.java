@@ -18,7 +18,7 @@ import com.smartcivic.backend.issue.exception.IssueNotFoundException;
 import com.smartcivic.backend.issue.repository.IssueRepository;
 import com.smartcivic.backend.issue.repository.IssueStatusHistoryRepository;
 import com.smartcivic.backend.storage.service.ImageStorageService;
-import com.smartcivic.backend.user.domain.User;
+import com.smartcivic.backend.user.entity.User;
 import com.smartcivic.backend.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.locationtech.jts.geom.Coordinate;

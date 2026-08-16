@@ -94,10 +94,14 @@ public class IssueController {
 
     @GetMapping("/{id}")
     public ResponseEntity<IssueResponse> getIssueById(
-            @PathVariable UUID id
+            @PathVariable UUID id,
+            Authentication authentication
     ) {
 
-        IssueResponse response = issueService.getIssueById(id);
+        IssueResponse response = issueService.getIssueById(
+                id,
+                authentication.getName()
+        );
 
         return ResponseEntity.ok(response);
     }

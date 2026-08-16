@@ -107,17 +107,33 @@ public class IssueServiceImpl implements IssueService {
                         .build()
         );
     }
-
     @Transactional(readOnly = true)
     @Override
-    public IssueResponse getIssueById(UUID id) {
+    public IssueResponse getIssueById(
+            UUID id,
+            String userEmail
+    ) {
 
         Issue issue = issueRepository.findById(id)
                 .orElseThrow(() ->
-                        new IssueNotFoundException(
-                                "Issue not found with ID: " + id
-                        )
+                        new IssueNotFoundException("Issue not found")
                 );
+
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() ->
+                        new UserNotFoundException("User not found")
+                );
+
+        if (user.getRole() == Role.FIELD_WORKER) {
+
+            if (issue.getAssignedTo() == null ||
+                    !issue.getAssignedTo().getId().equals(user.getId())) {
+
+                throw new IssueAccessDeniedException(
+                        "You are not allowed to access this issue"
+                );
+            }
+        }
 
         return mapToIssueResponse(issue);
     }

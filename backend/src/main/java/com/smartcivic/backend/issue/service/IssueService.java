@@ -21,7 +21,10 @@ public interface IssueService {
 
     Page<IssueSummaryResponse> getAllIssues(Pageable pageable);
 
-    IssueResponse getIssueById(UUID id);
+    IssueResponse getIssueById(
+            UUID id,
+            String userEmail
+    );
 
 
     Page<IssueSummaryResponse> getMyIssues(

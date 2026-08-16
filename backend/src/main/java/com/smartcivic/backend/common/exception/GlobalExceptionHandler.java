@@ -10,6 +10,7 @@ import com.smartcivic.backend.user.exception.UserAlreadyExistsException;
 import com.smartcivic.backend.user.exception.UserNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -160,6 +161,22 @@ public class GlobalExceptionHandler {
                         )
                 );
     }
+
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    public ResponseEntity<ApiResponse<Void>> handleAuthorizationDenied(
+            AuthorizationDeniedException ex
+    ) {
+
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body(
+                        ApiResponse.error(
+                                "You do not have permission to perform this action.",
+                                null
+                        )
+                );
+    }
+
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<Void>> handleGeneralException(

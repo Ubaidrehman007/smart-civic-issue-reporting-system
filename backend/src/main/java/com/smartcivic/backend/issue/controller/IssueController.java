@@ -19,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import com.smartcivic.backend.issue.dto.response.IssueSummaryResponse;
@@ -302,17 +303,8 @@ public class IssueController {
         );
     }
 
-
-    @GetMapping("/{issueId}/status-history")
-    public ResponseEntity<List<IssueStatusHistoryResponse>> getIssueStatusHistory(
-            @PathVariable UUID issueId
-    ) {
-        return ResponseEntity.ok(
-                issueService.getIssueStatusHistory(issueId)
-        );
-    }
-
     @PatchMapping("/{issueId}/assign")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<ApiResponse<Void>> assignIssue(
             @PathVariable UUID issueId,
             @Valid @RequestBody AssignIssueRequest request
@@ -325,6 +317,16 @@ public class IssueController {
                         "Issue assigned successfully",
                         null
                 )
+        );
+    }
+
+
+    @GetMapping("/{issueId}/status-history")
+    public ResponseEntity<List<IssueStatusHistoryResponse>> getIssueStatusHistory(
+            @PathVariable UUID issueId
+    ) {
+        return ResponseEntity.ok(
+                issueService.getIssueStatusHistory(issueId)
         );
     }
 

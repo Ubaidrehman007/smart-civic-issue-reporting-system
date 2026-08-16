@@ -484,7 +484,7 @@ public class IssueServiceImpl implements IssueService {
                 .toList();
     }
 
-
+    @Transactional
     @Override
     public void assignIssue(
             UUID issueId,
@@ -520,6 +520,7 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<IssueSummaryResponse> getAssignedIssues(
             String email,
             Pageable pageable

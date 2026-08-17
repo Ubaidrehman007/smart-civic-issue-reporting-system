@@ -83,4 +83,14 @@ public class Issue {
     @JoinColumn(name = "assigned_to")
     private User assignedTo;
 
+    @Column(name = "sla_due_at")
+    private LocalDateTime slaDueAt;
+
+    @Column(name = "sla_breached", nullable = false)
+    @Builder.Default
+    private Boolean slaBreached = false;
+
+    @Column(name = "sla_breached_at")
+    private LocalDateTime slaBreachedAt;
+
 }

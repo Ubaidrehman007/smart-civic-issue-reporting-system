@@ -6,6 +6,7 @@ import com.smartcivic.backend.issue.dto.request.CreateIssueRequest;
 import com.smartcivic.backend.issue.dto.response.IssueResponse;
 import com.smartcivic.backend.issue.dto.response.IssueStatusHistoryResponse;
 import com.smartcivic.backend.issue.dto.response.IssueSummaryResponse;
+import com.smartcivic.backend.issue.dto.response.SlaStatisticsResponse;
 import com.smartcivic.backend.issue.enums.IssueCategory;
 import com.smartcivic.backend.issue.enums.IssuePriority;
 import com.smartcivic.backend.issue.enums.IssueStatus;
@@ -82,4 +83,11 @@ public interface IssueService {
             String email,
             Pageable pageable
     );
+
+    Page<IssueSummaryResponse> getSlaBreachedIssues(
+            Pageable pageable
+    );
+
+    SlaStatisticsResponse getSlaStatistics();
+
 }

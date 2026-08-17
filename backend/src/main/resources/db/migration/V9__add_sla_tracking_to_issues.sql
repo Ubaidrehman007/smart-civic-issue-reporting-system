@@ -1,0 +1,8 @@
+ALTER TABLE issues
+    ADD COLUMN sla_due_at TIMESTAMP;
+
+ALTER TABLE issues
+    ADD COLUMN sla_breached BOOLEAN NOT NULL DEFAULT FALSE;
+
+ALTER TABLE issues
+    ADD COLUMN sla_breached_at TIMESTAMP;

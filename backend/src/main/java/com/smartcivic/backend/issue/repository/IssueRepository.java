@@ -12,6 +12,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 public interface IssueRepository extends JpaRepository<Issue, UUID> {
@@ -85,4 +87,19 @@ public interface IssueRepository extends JpaRepository<Issue, UUID> {
             UUID fieldWorkerId,
             Pageable pageable
     );
+
+    List<Issue> findBySlaDueAtBeforeAndSlaBreachedFalseAndStatusNot(
+            LocalDateTime currentTime,
+            IssueStatus status
+    );
+
+
+    Page<Issue> findBySlaBreachedTrue(Pageable pageable);
+
+    long countBySlaBreachedTrue();
+
+    long countBySlaBreachedFalse();
+
+    long countByStatus(IssueStatus status);
+
 }

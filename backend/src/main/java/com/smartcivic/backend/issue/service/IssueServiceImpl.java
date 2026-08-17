@@ -6,6 +6,7 @@ import com.smartcivic.backend.issue.dto.request.CreateIssueRequest;
 import com.smartcivic.backend.issue.dto.response.IssueResponse;
 import com.smartcivic.backend.issue.dto.response.IssueStatusHistoryResponse;
 import com.smartcivic.backend.issue.dto.response.IssueSummaryResponse;
+import com.smartcivic.backend.issue.dto.response.SlaStatisticsResponse;
 import com.smartcivic.backend.issue.entity.Issue;
 import com.smartcivic.backend.issue.entity.IssueStatusHistory;
 import com.smartcivic.backend.issue.enums.IssueCategory;
@@ -36,6 +37,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -48,6 +50,7 @@ public class IssueServiceImpl implements IssueService {
     private final ImageStorageService imageStorageService;
     private final GeometryFactory geometryFactory;
     private final IssueStatusHistoryRepository issueStatusHistoryRepository;
+    private final SlaService slaService;
 
     @Override
     public IssueResponse createIssue(CreateIssueRequest request, String userEmail) {
@@ -71,6 +74,14 @@ public class IssueServiceImpl implements IssueService {
                 request.getLongitude()
         );
 
+        IssuePriority priority = IssuePriority.MEDIUM;
+
+        LocalDateTime slaDueAt = slaService.calculateSlaDueAt(
+                request.getCategory(),
+                priority,
+                LocalDateTime.now()
+        );
+
         Issue issue = Issue.builder()
                 .title(request.getTitle())
                 .description(request.getDescription())
@@ -79,9 +90,9 @@ public class IssueServiceImpl implements IssueService {
                 .latitude(request.getLatitude())
                 .longitude(request.getLongitude())
                 .location(location)
-                .address(request.getAddress())
-                .priority(IssuePriority.MEDIUM)
+                .priority(priority)
                 .status(IssueStatus.REPORTED)
+                .slaDueAt(slaDueAt)
                 .reportedBy(user)
                 .build();
 
@@ -539,5 +550,42 @@ public class IssueServiceImpl implements IssueService {
 
         return issues.map(this::mapToIssueSummaryResponse);
     }
+
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<IssueSummaryResponse> getSlaBreachedIssues(
+            Pageable pageable
+    ) {
+        return issueRepository
+                .findBySlaBreachedTrue(pageable)
+                .map(this::mapToIssueSummaryResponse);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public SlaStatisticsResponse getSlaStatistics() {
+
+        long totalIssues = issueRepository.count();
+
+        long breachedIssues =
+                issueRepository.countBySlaBreachedTrue();
+
+        long withinSlaIssues =
+                issueRepository.countBySlaBreachedFalse();
+
+        long resolvedIssues =
+                issueRepository.countByStatus(
+                        IssueStatus.RESOLVED
+                );
+
+        return SlaStatisticsResponse.builder()
+                .totalIssues(totalIssues)
+                .breachedIssues(breachedIssues)
+                .withinSlaIssues(withinSlaIssues)
+                .resolvedIssues(resolvedIssues)
+                .build();
+    }
+
 
 }

@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/issues")
+@RequestMapping("/api/v1/issues")
 @RequiredArgsConstructor
 public class IssueController {
 

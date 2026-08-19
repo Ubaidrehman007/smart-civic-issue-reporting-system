@@ -147,6 +147,46 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void updateProfile(
+            UUID userId,
+            UpdateProfileRequest request
+    ) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() ->
+                        new UserNotFoundException("User not found")
+                );
+
+        user.setFullName(request.fullName());
+
+        if (!user.getPhoneNumber().equals(request.phoneNumber())
+                && userRepository.existsByPhoneNumber(
+                request.phoneNumber()
+        )) {
+
+            throw new UserAlreadyExistsException(
+                    "Phone number already exists"
+            );
+        }
+
+        user.setPhoneNumber(request.phoneNumber());
+
+        userRepository.save(user);
+    }
+
+    @Override
+    public UserResponse getUserByEmail(String email) {
+
+        User user = userRepository.findByEmail(
+                email.trim().toLowerCase()
+        ).orElseThrow(() ->
+                new UserNotFoundException("User not found")
+        );
+
+        return mapToUserResponse(user);
+    }
+
+    @Override
     public DashboardStatsResponse getDashboardStats() {
 
         long totalUsers = userRepository.count();

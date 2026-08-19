@@ -32,8 +32,17 @@ public interface UserService {
     UserResponse getUserById(
             UUID userId
     );
+    UserResponse getUserByEmail(
+            String email
+    );
 
     DashboardStatsResponse getDashboardStats();
 
     void deleteUser(UUID userId);
+
+    void updateProfile(
+            UUID userId,
+            UpdateProfileRequest request
+    );
 }
+

@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -42,7 +43,9 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-        http.csrf(csrf -> csrf.disable())
+        http
+                .cors(Customizer.withDefaults())
+                .csrf(csrf -> csrf.disable())
 
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -60,11 +63,12 @@ public class SecurityConfig {
 
                         .requestMatchers(
                                 HttpMethod.PATCH,
-                                "/api/issues/*/status"
+                                "/api/v1/issues/*/status"
                         ).hasAnyAuthority("FIELD_WORKER", "ADMIN")
+
                         .requestMatchers(
                                 HttpMethod.GET,
-                                "/api/issues/assigned"
+                                "/api/v1/issues/assigned"
                         ).hasAuthority("FIELD_WORKER")
 
                         .requestMatchers(
@@ -91,6 +95,10 @@ public class SecurityConfig {
                                 "/api/v1/users/dashboard"
                         ).hasAuthority("ADMIN")
 
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/v1/users/me"
+                        ).authenticated()
                         .requestMatchers(
                                 HttpMethod.GET,
                                 "/api/v1/users/*"

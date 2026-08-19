@@ -89,6 +89,7 @@ public class IssueServiceImpl implements IssueService {
                 .imageUrl(imageFileName)
                 .latitude(request.getLatitude())
                 .longitude(request.getLongitude())
+                .address(request.getAddress())
                 .location(location)
                 .priority(priority)
                 .status(IssueStatus.REPORTED)

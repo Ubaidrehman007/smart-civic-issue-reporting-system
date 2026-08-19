@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -104,6 +105,24 @@ public class UserController {
         );
     }
 
+    @GetMapping("/me")
+    public ResponseEntity<ApiResponse<UserResponse>> getCurrentUser(
+            Authentication authentication
+    ) {
+
+        String email = authentication.getName();
+
+        UserResponse user =
+                userService.getUserByEmail(email);
+
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        "Current user fetched successfully",
+                        user
+                )
+        );
+    }
+
 
     @GetMapping("/{userId}")
     public ResponseEntity<ApiResponse<UserResponse>> getUserById(
@@ -120,6 +139,21 @@ public class UserController {
         );
     }
 
+    @PutMapping("/{userId}/profile")
+    public ResponseEntity<ApiResponse<Void>> updateProfile(
+            @PathVariable UUID userId,
+            @Valid @RequestBody UpdateProfileRequest request
+    ) {
+
+        userService.updateProfile(userId, request);
+
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        "Profile updated successfully",
+                        null
+                )
+        );
+    }
 
     @GetMapping("/dashboard")
     public ResponseEntity<ApiResponse<DashboardStatsResponse>> getDashboardStats() {

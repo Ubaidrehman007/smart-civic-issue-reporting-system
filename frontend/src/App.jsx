@@ -9,6 +9,8 @@ import CitizenLayout from './components/CitizenLayout'
 import MyIssuesPage from './pages/MyIssuesPage'
 import ProfilePage from './pages/ProfilePage'
 import IssueDetailsPage from './pages/IssueDetailsPage'
+import ProtectedRoute from './components/ProtectedRoute'
+import UnauthorizedPage from './pages/UnauthorizedPage'
 
 function App() {
     return (
@@ -17,37 +19,50 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
-
-            <Route element={<CitizenLayout />}>
-
-                <Route
-                    path="/dashboard"
-                    element={<DashboardPage />}
-                />
-
-                <Route
-                    path="/profile"
-                    element={<ProfilePage />}
-                />
-
-                <Route
-                    path="/my-issues"
-                    element={<MyIssuesPage />}
-                />
-                <Route
-                    path="/my-issues/:issueId"
-                    element={<IssueDetailsPage />}
-                />
-
-                <Route
-                    path="/report-issue"
-                    element={<ReportIssuePage />}
-                />
+            <Route
+                path="/unauthorized"
+                element={<UnauthorizedPage />}
+            />
 
 
+            <Route
+                element={
+                    <ProtectedRoute
+                        allowedRoles={['CITIZEN']}
+                    />
+                }
+            >
+
+                <Route element={<CitizenLayout />}>
+
+                    <Route
+                        path="/dashboard"
+                        element={<DashboardPage />}
+                    />
+
+                    <Route
+                        path="/profile"
+                        element={<ProfilePage />}
+                    />
+
+                    <Route
+                        path="/my-issues"
+                        element={<MyIssuesPage />}
+                    />
+
+                    <Route
+                        path="/my-issues/:issueId"
+                        element={<IssueDetailsPage />}
+                    />
+
+                    <Route
+                        path="/report-issue"
+                        element={<ReportIssuePage />}
+                    />
+
+                </Route>
 
             </Route>
-
             <Route path="*" element={<NotFoundPage />} />
 
 

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Eye, EyeOff, LockKeyhole, Mail } from 'lucide-react'
 import { loginUser } from '../api/authApi'
+import { getCurrentUser } from '../api/userApi'
 
 function LoginPage() {
     const navigate = useNavigate()
@@ -27,12 +28,29 @@ function LoginPage() {
 
             localStorage.setItem('token', token)
 
+            const userResponse = await getCurrentUser()
+
+            console.log(
+                'Current user after login:',
+                userResponse
+            )
+
+            const user = userResponse.data
+
+            localStorage.setItem(
+                'user',
+                JSON.stringify(user)
+            )
+
             navigate('/dashboard')
+
         } catch (error) {
+
             setError(
                 error.response?.data?.message ||
                 'Login failed. Please try again.'
             )
+
         } finally {
             setLoading(false)
         }

@@ -5,9 +5,7 @@ import com.smartcivic.backend.issue.dto.AssignIssueRequest;
 import com.smartcivic.backend.issue.dto.UpdateIssueRequest;
 import com.smartcivic.backend.issue.dto.request.CreateIssueRequest;
 import com.smartcivic.backend.issue.dto.request.UpdateIssueStatusRequest;
-import com.smartcivic.backend.issue.dto.response.IssueResponse;
-import com.smartcivic.backend.issue.dto.response.IssueStatusHistoryResponse;
-import com.smartcivic.backend.issue.dto.response.SlaStatisticsResponse;
+import com.smartcivic.backend.issue.dto.response.*;
 import com.smartcivic.backend.issue.enums.IssueCategory;
 import com.smartcivic.backend.issue.enums.IssuePriority;
 import com.smartcivic.backend.issue.enums.IssueStatus;
@@ -23,7 +21,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import com.smartcivic.backend.issue.dto.response.IssueSummaryResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -185,7 +182,7 @@ public class IssueController {
     }
 
     @GetMapping("/possible-duplicates")
-    public ResponseEntity<Page<IssueSummaryResponse>> getPossibleDuplicates(
+    public ResponseEntity<PossibleDuplicateResponse> getPossibleDuplicates(
 
             @RequestParam
             @DecimalMin(

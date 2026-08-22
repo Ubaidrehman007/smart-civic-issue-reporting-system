@@ -3,10 +3,7 @@ package com.smartcivic.backend.issue.service;
 import com.smartcivic.backend.issue.dto.AssignIssueRequest;
 import com.smartcivic.backend.issue.dto.UpdateIssueRequest;
 import com.smartcivic.backend.issue.dto.request.CreateIssueRequest;
-import com.smartcivic.backend.issue.dto.response.IssueResponse;
-import com.smartcivic.backend.issue.dto.response.IssueStatusHistoryResponse;
-import com.smartcivic.backend.issue.dto.response.IssueSummaryResponse;
-import com.smartcivic.backend.issue.dto.response.SlaStatisticsResponse;
+import com.smartcivic.backend.issue.dto.response.*;
 import com.smartcivic.backend.issue.entity.Issue;
 import com.smartcivic.backend.issue.entity.IssueStatusHistory;
 import com.smartcivic.backend.issue.enums.IssueCategory;
@@ -253,7 +250,7 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<IssueSummaryResponse> getPossibleDuplicates(
+    public PossibleDuplicateResponse getPossibleDuplicates(
             double latitude,
             double longitude,
             IssueCategory category,
@@ -264,24 +261,31 @@ public class IssueServiceImpl implements IssueService {
         // API radius is in kilometers
         double radiusInMeters = radius * 1000;
 
-        return issueRepository.findNearbyIssuesByCategory(
-                        latitude,
-                        longitude,
-                        radiusInMeters,
-                        category.name(),
-                        pageable
-                )
-                .map(issue -> IssueSummaryResponse.builder()
-                        .id(issue.getId())
-                        .title(issue.getTitle())
-                        .category(issue.getCategory())
-                        .priority(issue.getPriority())
-                        .status(issue.getStatus())
-                        .address(issue.getAddress())
-                        .createdAt(issue.getCreatedAt())
-                        .distance(issue.getDistance())
-                        .build()
-                );
+        Page<IssueSummaryResponse> duplicatePage =
+                issueRepository.findNearbyIssuesByCategory(
+                                latitude,
+                                longitude,
+                                radiusInMeters,
+                                category.name(),
+                                pageable
+                        )
+                        .map(issue -> IssueSummaryResponse.builder()
+                                .id(issue.getId())
+                                .title(issue.getTitle())
+                                .category(issue.getCategory())
+                                .priority(issue.getPriority())
+                                .status(issue.getStatus())
+                                .address(issue.getAddress())
+                                .createdAt(issue.getCreatedAt())
+                                .distance(issue.getDistance())
+                                .build()
+                        );
+
+        return PossibleDuplicateResponse.builder()
+                .possibleDuplicate(!duplicatePage.isEmpty())
+                .duplicateCount(duplicatePage.getTotalElements())
+                .duplicates(duplicatePage.getContent())
+                .build();
     }
 
     @Override

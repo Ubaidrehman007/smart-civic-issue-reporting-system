@@ -67,6 +67,14 @@ public interface IssueService {
             Pageable pageable
     );
 
+    Page<IssueSummaryResponse> getPossibleDuplicates(
+            double latitude,
+            double longitude,
+            IssueCategory category,
+            double radius,
+            Pageable pageable
+    );
+
     Page<IssueSummaryResponse> getIssuesByPriority(
             IssuePriority priority,
             Pageable pageable

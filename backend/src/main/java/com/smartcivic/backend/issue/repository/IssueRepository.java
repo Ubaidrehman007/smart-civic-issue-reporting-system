@@ -83,6 +83,67 @@ public interface IssueRepository extends JpaRepository<Issue, UUID> {
             Pageable pageable
     );
 
+    @Query(
+            value = """
+        SELECT
+            id,
+            title,
+            category,
+            priority,
+            status,
+            address,
+            created_at AS createdAt,
+
+            ST_Distance(
+                location::geography,
+                ST_SetSRID(
+                    ST_MakePoint(:longitude, :latitude),
+                    4326
+                )::geography
+            ) AS distance
+
+        FROM issues
+
+        WHERE category = :category
+
+        AND ST_DWithin(
+            location::geography,
+            ST_SetSRID(
+                ST_MakePoint(:longitude, :latitude),
+                4326
+            )::geography,
+            :radius
+        )
+
+        ORDER BY distance ASC
+        """,
+
+            countQuery = """
+        SELECT COUNT(*)
+        FROM issues
+
+        WHERE category = :category
+
+        AND ST_DWithin(
+            location::geography,
+            ST_SetSRID(
+                ST_MakePoint(:longitude, :latitude),
+                4326
+            )::geography,
+            :radius
+        )
+        """,
+
+            nativeQuery = true
+    )
+    Page<NearbyIssueProjection> findNearbyIssuesByCategory(
+            @Param("latitude") double latitude,
+            @Param("longitude") double longitude,
+            @Param("radius") double radius,
+            @Param("category") String category,
+            Pageable pageable
+    );
+
     Page<Issue> findByAssignedTo_Id(
             UUID fieldWorkerId,
             Pageable pageable

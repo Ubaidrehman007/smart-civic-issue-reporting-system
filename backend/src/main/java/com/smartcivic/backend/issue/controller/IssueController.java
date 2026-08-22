@@ -184,6 +184,57 @@ public class IssueController {
         );
     }
 
+    @GetMapping("/possible-duplicates")
+    public ResponseEntity<Page<IssueSummaryResponse>> getPossibleDuplicates(
+
+            @RequestParam
+            @DecimalMin(
+                    value = "-90.0",
+                    message = "Latitude must be between -90 and 90"
+            )
+            @DecimalMax(
+                    value = "90.0",
+                    message = "Latitude must be between -90 and 90"
+            )
+            double latitude,
+
+            @RequestParam
+            @DecimalMin(
+                    value = "-180.0",
+                    message = "Longitude must be between -180 and 180"
+            )
+            @DecimalMax(
+                    value = "180.0",
+                    message = "Longitude must be between -180 and 180"
+            )
+            double longitude,
+
+            @RequestParam
+            IssueCategory category,
+
+            @RequestParam(defaultValue = "1")
+            @Positive(message = "Radius must be greater than 0")
+            double radius,
+
+            @PageableDefault(
+                    page = 0,
+                    size = 10
+            )
+            Pageable pageable
+    ) {
+
+        return ResponseEntity.ok(
+                issueService.getPossibleDuplicates(
+                        latitude,
+                        longitude,
+                        category,
+                        radius,
+                        pageable
+                )
+        );
+    }
+
+
     @GetMapping("/my")
     public ResponseEntity<Page<IssueSummaryResponse>> getMyIssues(
 

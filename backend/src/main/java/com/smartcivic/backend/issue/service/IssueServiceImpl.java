@@ -252,6 +252,39 @@ public class IssueServiceImpl implements IssueService {
 
 
     @Override
+    @Transactional(readOnly = true)
+    public Page<IssueSummaryResponse> getPossibleDuplicates(
+            double latitude,
+            double longitude,
+            IssueCategory category,
+            double radius,
+            Pageable pageable
+    ) {
+
+        // API radius is in kilometers
+        double radiusInMeters = radius * 1000;
+
+        return issueRepository.findNearbyIssuesByCategory(
+                        latitude,
+                        longitude,
+                        radiusInMeters,
+                        category.name(),
+                        pageable
+                )
+                .map(issue -> IssueSummaryResponse.builder()
+                        .id(issue.getId())
+                        .title(issue.getTitle())
+                        .category(issue.getCategory())
+                        .priority(issue.getPriority())
+                        .status(issue.getStatus())
+                        .address(issue.getAddress())
+                        .createdAt(issue.getCreatedAt())
+                        .distance(issue.getDistance())
+                        .build()
+                );
+    }
+
+    @Override
     @Transactional
     public IssueResponse updateIssue(
             UUID issueId,

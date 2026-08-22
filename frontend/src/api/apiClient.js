@@ -22,4 +22,28 @@ apiClient.interceptors.request.use(
     },
 )
 
+apiClient.interceptors.response.use(
+
+    (response) => {
+        return response
+    },
+
+    (error) => {
+
+        if (
+            error.response?.status === 401 ||
+            error.response?.status === 403
+        ) {
+
+            localStorage.removeItem('token')
+            localStorage.removeItem('user')
+            localStorage.removeItem('userRole')
+
+            window.location.href = '/login'
+        }
+
+        return Promise.reject(error)
+    }
+)
+
 export default apiClient

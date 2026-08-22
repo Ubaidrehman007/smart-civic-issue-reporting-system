@@ -7,6 +7,18 @@ function DashboardPage() {
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
 
+    const storedUser = localStorage.getItem('user')
+
+    const user = storedUser
+        ? JSON.parse(storedUser)
+        : null
+
+    const fullName = user?.fullName || 'Citizen'
+
+    const firstName = fullName.split(' ')[0]
+
+    const userInitial = fullName.charAt(0).toUpperCase()
+
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -47,14 +59,18 @@ function DashboardPage() {
         (issue) => issue.status === 'RESOLVED'
     ).length
 
+    const formatStatus = (status) => {
+        if (!status) return ''
+
+        return status
+            .toLowerCase()
+            .split('_')
+            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(' ')
+    }
     return (
         <div >
-
-
-
-
-
-                <header className="dashboard-header">
+            <header className="dashboard-header">
                     <div>
                         <p className="dashboard-breadcrumb">
                             CITIZEN PORTAL
@@ -65,7 +81,7 @@ function DashboardPage() {
 
                     <div className="dashboard-user">
                         <div className="dashboard-user-avatar">
-                            U
+                            {userInitial}
                         </div>
                     </div>
                 </header>
@@ -79,7 +95,7 @@ function DashboardPage() {
                             </p>
 
                             <h2>
-                                Welcome back.
+                                Welcome back, {firstName}.
                             </h2>
 
                             <p>
@@ -200,7 +216,13 @@ function DashboardPage() {
                         {!loading && !error && issues.length > 0 && (
                             <div className="issues-list">
                                 {issues.slice(0, 5).map((issue) => (
-                                    <div className="issue-row" key={issue.id}>
+                                    <div
+                                        className="issue-row"
+                                        key={issue.id}
+                                        onClick={() => navigate(`/my-issues/${issue.id}`)}
+                                        role="button"
+                                        tabIndex={0}
+                                    >
                                         <div className="issue-row-main">
                                             <h3>{issue.title}</h3>
 
@@ -210,9 +232,9 @@ function DashboardPage() {
                                         </div>
 
                                         <div className="issue-row-meta">
-                        <span className="issue-status">
-                            {issue.status}
-                        </span>
+                       <span className="issue-status">
+    {formatStatus(issue.status)}
+</span>
 
                                             <span className="issue-date">
                             {issue.createdAt

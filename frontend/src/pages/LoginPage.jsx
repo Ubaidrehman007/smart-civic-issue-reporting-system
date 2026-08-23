@@ -43,7 +43,13 @@ function LoginPage() {
                 JSON.stringify(user)
             )
 
-            navigate('/dashboard')
+            if (user.role === 'ADMIN') {
+                navigate('/admin/dashboard')
+            } else if (user.role === 'FIELD_WORKER') {
+                navigate('/worker/dashboard')
+            } else {
+                navigate('/dashboard')
+            }
 
         } catch (error) {
 

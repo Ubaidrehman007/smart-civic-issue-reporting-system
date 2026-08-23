@@ -63,6 +63,21 @@ function App() {
                 </Route>
 
             </Route>
+
+
+            <Route
+                element={
+                    <ProtectedRoute
+                        allowedRoles={['ADMIN']}
+                    />
+                }
+            >
+                <Route
+                    path="/admin/dashboard"
+                    element={<div>Admin Dashboard</div>}
+                />
+            </Route>
+
             <Route path="*" element={<NotFoundPage />} />
 
 

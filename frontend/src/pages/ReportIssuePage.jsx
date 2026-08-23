@@ -1,7 +1,10 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { MapPin, Upload, X } from 'lucide-react'
-import { createIssue } from '../api/issueApi'
+import {
+    createIssue,
+    getPossibleDuplicates,
+} from '../api/issueApi'
 import '../styles/citizenCSS/reportIssue.css'
 import IssueLocationPicker from '../components/issue/IssueLocationPicker'
 
@@ -23,6 +26,11 @@ function ReportIssuePage() {
     const [error, setError] = useState('')
     const [success, setSuccess] = useState('')
     const [gettingCurrentLocation, setGettingCurrentLocation] = useState(false)
+    const [duplicateData, setDuplicateData] = useState(null)
+    const [checkingDuplicates, setCheckingDuplicates] = useState(false)
+    const [duplicateWarning, setDuplicateWarning] = useState(false)
+    const [duplicateConfirmed, setDuplicateConfirmed] = useState(false)
+    const formRef = useRef(null)
 
     const handleChange = (event) => {
         const { name, value } = event.target
@@ -235,6 +243,54 @@ function ReportIssuePage() {
         setImages(selectedFiles)
     }
 
+    const checkForDuplicates = async () => {
+
+        const latitude = Number(formData.latitude)
+        const longitude = Number(formData.longitude)
+
+        if (
+            !Number.isFinite(latitude) ||
+            !Number.isFinite(longitude) ||
+            latitude === 0 ||
+            longitude === 0 ||
+            !formData.category
+        ) {
+            return null
+        }
+
+        try {
+
+            setCheckingDuplicates(true)
+
+            const response = await getPossibleDuplicates({
+                latitude,
+                longitude,
+                category: formData.category,
+                radius: 1,
+            })
+
+            console.log(
+                'Possible duplicate response:',
+                response
+            )
+
+            return response
+
+        } catch (error) {
+
+            console.error(
+                'Duplicate check failed:',
+                error
+            )
+
+            return null
+
+        } finally {
+
+            setCheckingDuplicates(false)
+
+        }
+    }
     const handleSubmit = async (event) => {
         event.preventDefault()
 
@@ -242,7 +298,24 @@ function ReportIssuePage() {
         setError('')
         setSuccess('')
 
+        const latitude = Number(formData.latitude)
+        const longitude = Number(formData.longitude)
+
+        if (
+            !Number.isFinite(latitude) ||
+            !Number.isFinite(longitude) ||
+            latitude === 0 ||
+            longitude === 0
+        ) {
+            setError(
+                'Please select a valid issue location on the map or use the location search.'
+            )
+            setLoading(false)
+            return
+        }
+
         try {
+
             const data = new FormData()
 
             data.append('title', formData.title)
@@ -252,30 +325,56 @@ function ReportIssuePage() {
 
             data.append(
                 'latitude',
-                Number(formData.latitude)
+                latitude
             )
 
             data.append(
                 'longitude',
-                Number(formData.longitude)
+                longitude
             )
 
             images.forEach((image) => {
                 data.append('image', image)
             })
 
-            for (const [key, value] of data.entries()) {
-                console.log('FormData:', key, value)
+            if (!duplicateConfirmed) {
+
+                const duplicateResult =
+                    await checkForDuplicates()
+
+                console.log(
+                    'DUPLICATE RESULT:',
+                    duplicateResult
+                )
+
+                if (
+                    duplicateResult?.possibleDuplicate &&
+                    duplicateResult?.duplicates?.length > 0
+                ) {
+
+                    setDuplicateData(duplicateResult)
+                    setDuplicateWarning(true)
+
+                    return
+                }
             }
+
             await createIssue(data)
 
-            setSuccess('Issue reported successfully! Redirecting to dashboard...')
+            setSuccess(
+                'Issue reported successfully! Redirecting to dashboard...'
+            )
 
             setTimeout(() => {
                 navigate('/dashboard')
             }, 1500)
+
         } catch (err) {
-            console.error('Failed to create issue:', err)
+
+            console.error(
+                'Failed to create issue:',
+                err
+            )
 
             setError(
                 err.response?.data?.message ||
@@ -283,12 +382,109 @@ function ReportIssuePage() {
             )
 
         } finally {
+
             setLoading(false)
         }
     }
     return (
 
         <main className="report-issue-page">
+
+            {duplicateWarning && duplicateData && (
+                <div className="duplicate-warning-overlay">
+                    <div className="duplicate-warning-card">
+
+                        <div className="duplicate-warning-icon">
+                            ⚠
+                        </div>
+
+                        <div className="duplicate-warning-content">
+
+                            <h2>
+                                Similar Issue Found
+                            </h2>
+
+                            <p>
+                                We found {duplicateData.duplicateCount} similar
+                                issue
+                                {duplicateData.duplicateCount !== 1 ? 's' : ''} near
+                                this location.
+                            </p>
+
+                            <div className="duplicate-warning-list">
+
+                                {duplicateData.duplicates.map((issue) => (
+                                    <div
+                                        className="duplicate-warning-item"
+                                        key={issue.id}
+                                    >
+                                        <div>
+                                            <h3>
+                                                {issue.title}
+                                            </h3>
+
+                                            <p>
+                                                {issue.category}
+                                            </p>
+
+                                            <span>
+                                    {issue.address}
+                                </span>
+                                        </div>
+
+                                        <div className="duplicate-warning-meta">
+
+                                <span className="issue-status">
+                                    {issue.status
+                                        ?.replaceAll('_', ' ')}
+                                </span>
+
+                                            {issue.distance !== undefined && (
+                                                <small>
+                                                    {issue.distance} km away
+                                                </small>
+                                            )}
+
+                                        </div>
+                                    </div>
+                                ))}
+
+                            </div>
+
+                            <div className="duplicate-warning-actions">
+
+                                <button
+                                    type="button"
+                                    className="duplicate-cancel-button"
+                                    onClick={() => {
+                                        setDuplicateWarning(false)
+                                        setDuplicateData(null)
+                                    }}
+                                >
+                                    Cancel
+                                </button>
+
+                                <button
+                                    type="button"
+                                    className="duplicate-continue-button"
+                                    onClick={() => {
+                                        setDuplicateWarning(false)
+                                        setDuplicateConfirmed(true)
+
+                                        setTimeout(() => {
+                                            formRef.current?.requestSubmit()
+                                        }, 0)
+                                    }}
+                                >
+                                    Continue Anyway
+                                </button>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+            )}
 
             <div className="report-issue-container">
 
@@ -316,6 +512,7 @@ function ReportIssuePage() {
                 </div>
 
                 <form
+                    ref={formRef}
                     className="report-issue-form"
                     onSubmit={handleSubmit}
                 >

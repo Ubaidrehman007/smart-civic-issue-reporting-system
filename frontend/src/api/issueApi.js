@@ -47,3 +47,27 @@ export const deleteIssue = async (issueId) => {
 
     return response.data
 }
+
+export const getPossibleDuplicates = async ({
+                                                latitude,
+                                                longitude,
+                                                category,
+                                                radius = 1,
+                                            }) => {
+
+    const response = await apiClient.get(
+        '/issues/possible-duplicates',
+        {
+            params: {
+                latitude,
+                longitude,
+                category,
+                radius,
+                page: 0,
+                size: 10,
+            },
+        }
+    )
+
+    return response.data
+}

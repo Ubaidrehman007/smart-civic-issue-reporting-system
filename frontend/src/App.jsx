@@ -11,6 +11,7 @@ import ProfilePage from './pages/ProfilePage'
 import IssueDetailsPage from './pages/IssueDetailsPage'
 import ProtectedRoute from './components/ProtectedRoute'
 import UnauthorizedPage from './pages/UnauthorizedPage'
+import AdminLayout from './components/AdminLayout'
 
 function App() {
     return (
@@ -72,10 +73,14 @@ function App() {
                     />
                 }
             >
-                <Route
-                    path="/admin/dashboard"
-                    element={<div>Admin Dashboard</div>}
-                />
+                <Route element={<AdminLayout />}>
+
+                    <Route
+                        path="/admin/dashboard"
+                        element={<div>Admin Dashboard</div>}
+                    />
+
+                </Route>
             </Route>
 
             <Route path="*" element={<NotFoundPage />} />

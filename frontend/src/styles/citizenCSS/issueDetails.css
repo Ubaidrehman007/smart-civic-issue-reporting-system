@@ -1,0 +1,542 @@
+/* =============================
+   ISSUE IMAGE
+============================= */
+
+.issue-image-section {
+    margin-top: 28px;
+}
+
+.issue-image-section > span {
+    display: block;
+
+    margin: 12px;
+
+    color: #64748b;
+
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.issue-image-wrapper {
+    width: 100%;
+    max-width: 700px;
+
+    margin: 28px;
+
+    overflow: hidden;
+
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+
+    background: #f8fafc;
+}
+
+.issue-image {
+    display: block;
+
+    width: 100%;
+    max-height: 450px;
+
+    object-fit: cover;
+}
+
+
+/* =============================
+   BACK BUTTON
+============================= */
+
+.back-to-issues-button {
+    display: inline-flex;
+    align-items: center;
+
+    gap: 8px;
+
+    padding: 10px 16px;
+
+    margin-bottom: 24px;
+
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+
+    background: #ffffff;
+    color: #334155;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    transition: all 0.2s ease;
+}
+
+.back-to-issues-button:hover {
+    background: #f1f5f9;
+    border-color: #94a3b8;
+}
+
+
+/* =============================
+   MAIN CARD
+============================= */
+
+.issue-details-card {
+    overflow: hidden;
+
+    background: #ffffff;
+
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+
+    box-shadow:
+            0 10px 30px rgba(15, 23, 42, 0.06);
+}
+
+
+/* =============================
+   HEADER
+============================= */
+
+.issue-details-header {
+    display: flex;
+
+    justify-content: space-between;
+    align-items: flex-start;
+
+    gap: 20px;
+
+    padding: 28px 32px;
+
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.issue-details-header h2 {
+    margin-top: 6px;
+
+    color: #1e293b;
+
+    font-size: 28px;
+    font-weight: 700;
+}
+
+
+/* =============================
+   STATUS
+============================= */
+
+.issue-status {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 8px 14px;
+
+    border-radius: 999px;
+
+    background: #dbeafe;
+    color: #2563eb;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    letter-spacing: 0.5px;
+}
+
+.issue-status.reported {
+    background: #dbeafe;
+    color: #2563eb;
+}
+
+.issue-status.assigned {
+    background: #ede9fe;
+    color: #7c3aed;
+}
+
+.issue-status.under-review {
+    background: #f3e8ff;
+    color: #9333ea;
+}
+
+.issue-status.in-progress {
+    background: #fef3c7;
+    color: #d97706;
+}
+
+.issue-status.resolved {
+    background: #dcfce7;
+    color: #16a34a;
+}
+
+.issue-status.rejected {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+
+/* =============================
+   DETAILS GRID
+============================= */
+
+.issue-details-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+}
+
+.issue-detail-item {
+    padding: 24px 32px;
+
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.issue-detail-item:nth-child(odd) {
+    border-right: 1px solid #e2e8f0;
+}
+
+.issue-detail-item span {
+    display: block;
+
+    margin-bottom: 8px;
+
+    color: #64748b;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    letter-spacing: 1px;
+}
+
+.issue-detail-item p {
+    margin: 0;
+
+    color: #1e293b;
+
+    font-size: 16px;
+    font-weight: 600;
+}
+
+
+/* =============================
+   DESCRIPTION
+============================= */
+
+.issue-description-section {
+    padding: 28px 32px 32px;
+}
+
+.issue-description-section span {
+    display: block;
+
+    margin-bottom: 12px;
+
+    color: #64748b;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    letter-spacing: 1px;
+}
+
+.issue-description-section p {
+    max-width: 900px;
+
+    margin: 0;
+
+    color: #475569;
+
+    font-size: 15px;
+
+    line-height: 1.8;
+}
+
+
+/* =============================
+   STATUS HISTORY
+============================= */
+
+.status-history-card {
+    margin-top: 24px;
+
+    overflow: hidden;
+
+    background: #ffffff;
+
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+
+    box-shadow:
+            0 10px 30px rgba(15, 23, 42, 0.06);
+}
+
+.status-history-header {
+    padding: 28px 32px;
+
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.status-history-header h2 {
+    margin-top: 6px;
+
+    color: #1e293b;
+
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.status-history-header p:last-child {
+    margin-top: 8px;
+
+    color: #64748b;
+
+    font-size: 14px;
+}
+
+
+/* =============================
+   TIMELINE
+============================= */
+
+.status-timeline {
+    padding: 28px 32px;
+}
+
+.status-timeline-item {
+    display: flex;
+
+    position: relative;
+
+    gap: 20px;
+
+    padding-bottom: 32px;
+}
+
+.status-timeline-item:last-child {
+    padding-bottom: 0;
+}
+
+.status-timeline-marker {
+    position: relative;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    min-width: 20px;
+}
+
+.status-timeline-dot {
+    width: 12px;
+    height: 12px;
+
+    z-index: 1;
+
+    border-radius: 50%;
+
+    background: #2563eb;
+
+    box-shadow:
+            0 0 0 5px #dbeafe;
+}
+
+.status-timeline-dot.initial {
+    background: #16a34a;
+
+    box-shadow:
+            0 0 0 5px #dcfce7;
+}
+
+.status-timeline-item:not(:last-child)
+.status-timeline-marker::after {
+
+    content: '';
+
+    position: absolute;
+
+    top: 16px;
+    bottom: -32px;
+
+    width: 2px;
+
+    background: #e2e8f0;
+}
+
+.status-timeline-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.status-timeline-statuses {
+    display: flex;
+    align-items: center;
+
+    flex-wrap: wrap;
+
+    gap: 10px;
+}
+
+.timeline-from-status {
+    padding: 6px 10px;
+
+    border-radius: 6px;
+
+    background: #f1f5f9;
+    color: #475569;
+
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.timeline-arrow {
+    color: #94a3b8;
+
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.timeline-to-status {
+    padding: 6px 10px;
+
+    border-radius: 6px;
+
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.timeline-to-status.reported {
+    background: #dbeafe;
+    color: #2563eb;
+}
+
+.timeline-to-status.under-review {
+    background: #f3e8ff;
+    color: #9333ea;
+}
+
+.timeline-to-status.assigned {
+    background: #ede9fe;
+    color: #7c3aed;
+}
+
+.timeline-to-status.in-progress {
+    background: #fef3c7;
+    color: #d97706;
+}
+
+.timeline-to-status.resolved {
+    background: #dcfce7;
+    color: #16a34a;
+}
+
+.timeline-to-status.rejected {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.status-timeline-date {
+    margin-top: 10px;
+
+    color: #64748b;
+
+    font-size: 13px;
+}
+
+.status-timeline-user {
+    margin-top: 6px;
+
+    color: #475569;
+
+    font-size: 13px;
+}
+
+.status-timeline-remark {
+    margin-top: 16px;
+
+    padding: 14px 16px;
+
+    border-left: 3px solid #2563eb;
+    border-radius: 6px;
+
+    background: #f8fafc;
+}
+
+.status-timeline-remark span {
+    display: block;
+
+    margin-bottom: 6px;
+
+    color: #64748b;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    letter-spacing: 1px;
+}
+
+.status-timeline-remark p {
+    margin: 0;
+
+    color: #334155;
+
+    font-size: 14px;
+
+    line-height: 1.6;
+}
+
+
+/* =============================
+   MOBILE
+============================= */
+
+@media (max-width: 768px) {
+
+    .issue-details-header {
+        flex-direction: column;
+
+        padding: 24px;
+    }
+
+    .issue-details-header h2 {
+        font-size: 24px;
+    }
+
+    .issue-details-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .issue-detail-item:nth-child(odd) {
+        border-right: none;
+    }
+
+    .issue-detail-item {
+        padding: 20px 24px;
+    }
+
+    .issue-description-section {
+        padding: 24px;
+    }
+
+    .back-to-issues-button {
+        margin-bottom: 20px;
+    }
+
+    .issue-image-wrapper {
+        width: auto;
+        margin: 16px;
+    }
+
+    .status-history-header {
+        padding: 24px;
+    }
+
+    .status-timeline {
+        padding: 24px;
+    }
+
+    .status-timeline-item {
+        gap: 16px;
+    }
+
+    .status-timeline-statuses {
+        gap: 8px;
+    }
+
+}

@@ -1,4 +1,5 @@
 import {useEffect, useState} from 'react'
+import '../styles/citizenCSS/myIssues.css'
 
 import { useNavigate } from 'react-router-dom'
 import {getMyIssues} from '../api/issueApi'

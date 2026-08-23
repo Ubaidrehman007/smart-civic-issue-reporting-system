@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { getMyIssues } from '../api/issueApi'
 import { useNavigate } from 'react-router-dom'
+import '../styles/citizenCSS/dashboard.css'
 
 function DashboardPage() {
     const [issues, setIssues] = useState([])

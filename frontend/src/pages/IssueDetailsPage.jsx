@@ -1,9 +1,7 @@
 import {useEffect, useState} from 'react'
 import {useNavigate, useParams} from 'react-router-dom'
-import {
-    getIssueById,
-    getIssueStatusHistory
-} from '../api/issueApi'
+import {getIssueById, getIssueStatusHistory} from '../api/issueApi'
+import '../styles/citizenCSS/issueDetails.css'
 
 function IssueDetailsPage() {
 
@@ -256,6 +254,24 @@ function IssueDetailsPage() {
                         </p>
 
                     </div>
+
+                    {issue?.imageUrl && (
+                        <div className="issue-image-section">
+
+        <span>
+            Attached Photo
+        </span>
+
+                            <div className="issue-image-wrapper">
+                                <img
+                                    src={`http://localhost:8080/api/images/${encodeURIComponent(issue.imageUrl)}`}
+                                    alt={issue.title}
+                                    className="issue-image"
+                                />
+                            </div>
+
+                        </div>
+                    )}
 
                 </div>
 

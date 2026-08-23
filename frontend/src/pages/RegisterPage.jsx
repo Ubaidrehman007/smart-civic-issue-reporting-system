@@ -1,14 +1,8 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import {
-    Eye,
-    EyeOff,
-    LockKeyhole,
-    Mail,
-    Phone,
-    User,
-} from 'lucide-react'
+import {Eye, EyeOff, LockKeyhole, Mail, Phone, User,} from 'lucide-react'
 import { registerUser } from '../api/authApi'
+import "../styles/auth.css";
 
 function RegisterPage() {
     const [formData, setFormData] = useState({
@@ -65,6 +59,9 @@ function RegisterPage() {
     return (
         <main className="auth-page">
             <section className="auth-card">
+                <Link to="/" className="auth-home-button">
+                    ← Back to Home
+                </Link>
                 <div className="auth-header">
                     <div className="auth-logo">
                         SC

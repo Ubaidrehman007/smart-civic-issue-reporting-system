@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { Eye, EyeOff, LockKeyhole, Mail } from 'lucide-react'
 import { loginUser } from '../api/authApi'
 import { getCurrentUser } from '../api/userApi'
+import "../styles/auth.css";
 
 function LoginPage() {
     const navigate = useNavigate()
@@ -59,6 +60,9 @@ function LoginPage() {
     return (
         <main className="auth-page">
             <section className="auth-card">
+                <Link to="/" className="auth-home-button">
+                    ← Back to Home
+                </Link>
                 <div className="auth-header">
                     <div className="auth-logo">
                         SC

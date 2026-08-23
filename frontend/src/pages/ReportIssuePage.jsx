@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { MapPin, Upload, X } from 'lucide-react'
 import { createIssue } from '../api/issueApi'
+import '../styles/citizenCSS/reportIssue.css'
 
 function ReportIssuePage() {
     const navigate = useNavigate()
@@ -18,6 +19,7 @@ function ReportIssuePage() {
     const [images, setImages] = useState([])
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState('')
+    const [success, setSuccess] = useState('')
 
     const handleChange = (event) => {
         const { name, value } = event.target
@@ -39,6 +41,7 @@ function ReportIssuePage() {
 
         setLoading(true)
         setError('')
+        setSuccess('')
 
         try {
             const data = new FormData()
@@ -59,12 +62,19 @@ function ReportIssuePage() {
             )
 
             images.forEach((image) => {
-                data.append('images', image)
+                data.append('image', image)
             })
 
+            for (const [key, value] of data.entries()) {
+                console.log('FormData:', key, value)
+            }
             await createIssue(data)
 
-            navigate('/dashboard')
+            setSuccess('Issue reported successfully! Redirecting to dashboard...')
+
+            setTimeout(() => {
+                navigate('/dashboard')
+            }, 1500)
         } catch (err) {
             console.error('Failed to create issue:', err)
 
@@ -72,12 +82,13 @@ function ReportIssuePage() {
                 err.response?.data?.message ||
                 'Failed to report the issue. Please try again.'
             )
+
         } finally {
             setLoading(false)
         }
     }
-
     return (
+
         <main className="report-issue-page">
 
             <div className="report-issue-container">
@@ -169,16 +180,28 @@ function ReportIssuePage() {
                                     Garbage / Waste
                                 </option>
 
-                                <option value="WATER_SUPPLY">
-                                    Water Supply
+                                <option value="WATER_LEAKAGE">
+                                    Water Leakage
                                 </option>
 
-                                <option value="STREET_LIGHT">
+                                <option value="SEWER">
+                                    Sewer
+                                </option>
+
+                                <option value="STREETLIGHT">
                                     Street Light
                                 </option>
 
                                 <option value="DRAINAGE">
                                     Drainage
+                                </option>
+
+                                <option value="FALLEN_TREE">
+                                    Fallen Tree
+                                </option>
+
+                                <option value="TRAFFIC_SIGNAL">
+                                    Traffic Signal
                                 </option>
 
                                 <option value="OTHER">
@@ -273,7 +296,6 @@ function ReportIssuePage() {
                             <input
                                 type="file"
                                 accept="image/*"
-                                multiple
                                 onChange={handleImageChange}
                                 hidden
                             />
@@ -315,6 +337,26 @@ function ReportIssuePage() {
                         </div>
                     )}
 
+                    {success && (
+                        <div className="report-success">
+                            <div className="report-success-icon">
+                                ✓
+                            </div>
+
+                            <div>
+                                <strong>Issue Reported Successfully!</strong>
+
+                                <p>
+                                    Your civic issue has been submitted. Redirecting to your dashboard...
+                                </p>
+                            </div>
+                        </div>
+                    )}
+                    {success && (
+                        <div className="report-success">
+                            {success}
+                        </div>
+                    )}
                     <div className="report-form-actions">
 
                         <button

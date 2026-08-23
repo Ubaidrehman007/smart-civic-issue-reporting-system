@@ -1,17 +1,7 @@
 import { Link } from 'react-router-dom'
-import {
-    ArrowRight,
-    CheckCircle2,
-    Clock3,
-    FileWarning,
-    MapPin,
-    Menu,
-    ShieldCheck,
-    Smartphone,
-    Users,
-    X,
-} from 'lucide-react'
+import {ArrowRight, CheckCircle2, Clock3, FileWarning, MapPin, Menu, ShieldCheck, Smartphone, Users, X,} from 'lucide-react'
 import { useState } from 'react'
+import '../styles/home.css'
 
 function HomePage() {
     const [menuOpen, setMenuOpen] = useState(false)

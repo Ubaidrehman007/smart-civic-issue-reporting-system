@@ -283,13 +283,7 @@
    LOCATION
 ========================= */
 
-.location-grid {
-    display: grid;
 
-    grid-template-columns: repeat(2, 1fr);
-
-    gap: 20px;
-}
 
 
 /* =========================
@@ -492,11 +486,7 @@
         border-radius: 16px;
     }
 
-    .location-grid {
-        grid-template-columns: 1fr;
 
-        gap: 0;
-    }
 
 }
 

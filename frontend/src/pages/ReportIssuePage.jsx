@@ -508,44 +508,7 @@ function ReportIssuePage() {
 
                         </div>
 
-                        <div className="location-grid">
-
-                            <div className="form-group">
-                                <label htmlFor="latitude">
-                                    Latitude
-                                </label>
-
-                                <input
-                                    id="latitude"
-                                    name="latitude"
-                                    type="number"
-                                    step="any"
-                                    placeholder="e.g. 26.8467"
-                                    value={formData.latitude}
-                                    onChange={handleChange}
-                                    required
-                                />
-                            </div>
-
-                            <div className="form-group">
-                                <label htmlFor="longitude">
-                                    Longitude
-                                </label>
-
-                                <input
-                                    id="longitude"
-                                    name="longitude"
-                                    type="number"
-                                    step="any"
-                                    placeholder="e.g. 80.9462"
-                                    value={formData.longitude}
-                                    onChange={handleChange}
-                                    required
-                                />
-                            </div>
-
                         </div>
-                    </div>
 
                     <div className="form-section">
                         <h2>Add Photos</h2>
@@ -626,11 +589,7 @@ function ReportIssuePage() {
                             </div>
                         </div>
                     )}
-                    {success && (
-                        <div className="report-success">
-                            {success}
-                        </div>
-                    )}
+
                     <div className="report-form-actions">
 
                         <button

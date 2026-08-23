@@ -464,7 +464,12 @@ public class IssueServiceImpl implements IssueService {
             );
         }
 
-        // Delete issue
+        // Delete uploaded image if present
+        if (issue.getImageUrl() != null && !issue.getImageUrl().isBlank()) {
+            imageStorageService.deleteImage(issue.getImageUrl());
+        }
+
+// Delete issue
         issueRepository.delete(issue);
     }
 

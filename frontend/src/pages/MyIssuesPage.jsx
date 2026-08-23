@@ -2,13 +2,15 @@ import {useEffect, useState} from 'react'
 import '../styles/citizenCSS/myIssues.css'
 
 import { useNavigate } from 'react-router-dom'
-import {getMyIssues} from '../api/issueApi'
+import {getMyIssues, deleteIssue} from '../api/issueApi'
 
 function MyIssuesPage() {
     const [issues, setIssues] = useState([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
     const navigate = useNavigate()
+    const [deletingIssueId, setDeletingIssueId] = useState(null)
+    const [deleteError, setDeleteError] = useState('')
 
     useEffect(() => {
 
@@ -36,7 +38,54 @@ function MyIssuesPage() {
 
     }, [])
 
+    const handleDeleteIssue = async (event, issueId) => {
+
+        event.stopPropagation()
+
+        const confirmed = window.confirm(
+            'Are you sure you want to delete this issue? This action cannot be undone.'
+        )
+
+        if (!confirmed) {
+            return
+        }
+
+        try {
+
+            setDeletingIssueId(issueId)
+            setDeleteError('')
+
+            await deleteIssue(issueId)
+
+            setIssues((previousIssues) =>
+                previousIssues.filter(
+                    (issue) => issue.id !== issueId
+                )
+            )
+
+        } catch (err) {
+
+            console.error(
+                'Failed to delete issue:',
+                err
+            )
+
+            setDeleteError(
+                err.response?.data?.message ||
+                'Failed to delete the issue.'
+            )
+
+        } finally {
+
+            setDeletingIssueId(null)
+
+        }
+    }
+
     return (
+
+
+
         <>
             <header className="dashboard-header">
                 <div>
@@ -73,6 +122,11 @@ function MyIssuesPage() {
                 {error && (
                     <div className="issues-state issues-error">
                         {error}
+                    </div>
+                )}
+                {deleteError && (
+                    <div className="issues-state issues-error">
+                        {deleteError}
                     </div>
                 )}
 
@@ -127,7 +181,29 @@ function MyIssuesPage() {
                                     </p>
 
                                 </div>
+                                <div className="my-issue-card-actions">
 
+                                    {issue.status === 'REPORTED' && (
+                                        <button
+                                            type="button"
+                                            className="delete-issue-button"
+                                            onClick={(event) =>
+                                                handleDeleteIssue(
+                                                    event,
+                                                    issue.id
+                                                )
+                                            }
+                                            disabled={
+                                                deletingIssueId === issue.id
+                                            }
+                                        >
+                                            {deletingIssueId === issue.id
+                                                ? 'Deleting...'
+                                                : 'Delete'}
+                                        </button>
+                                    )}
+
+                                </div>
                                 <div className="my-issue-date">
                                     Reported on{' '}
                                     {issue.createdAt

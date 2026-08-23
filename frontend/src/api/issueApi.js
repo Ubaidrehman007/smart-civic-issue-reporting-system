@@ -40,3 +40,10 @@ export const getIssueStatusHistory = async (issueId) => {
 
     return response.data
 }
+export const deleteIssue = async (issueId) => {
+    const response = await apiClient.delete(
+        `/issues/${issueId}`
+    )
+
+    return response.data
+}

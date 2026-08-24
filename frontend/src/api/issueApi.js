@@ -11,6 +11,8 @@ export const getMyIssues = async () => {
 
     return response.data
 }
+
+
 export const createIssue = async (formData) => {
     const response = await apiClient.post(
         '/issues',
@@ -25,6 +27,7 @@ export const createIssue = async (formData) => {
     return response.data
 }
 
+
 export const getIssueById = async (issueId) => {
     const response = await apiClient.get(
         `/issues/${issueId}`
@@ -32,6 +35,8 @@ export const getIssueById = async (issueId) => {
 
     return response.data
 }
+
+
 export const getIssueStatusHistory = async (issueId) => {
 
     const response = await apiClient.get(
@@ -40,6 +45,24 @@ export const getIssueStatusHistory = async (issueId) => {
 
     return response.data
 }
+
+
+export const updateIssueStatus = async ({
+                                            issueId,
+                                            status,
+                                        }) => {
+
+    const response = await apiClient.patch(
+        `/issues/${issueId}/status`,
+        {
+            status,
+        }
+    )
+
+    return response.data
+}
+
+
 export const deleteIssue = async (issueId) => {
     const response = await apiClient.delete(
         `/issues/${issueId}`
@@ -47,6 +70,7 @@ export const deleteIssue = async (issueId) => {
 
     return response.data
 }
+
 
 export const getPossibleDuplicates = async ({
                                                 latitude,
@@ -72,6 +96,7 @@ export const getPossibleDuplicates = async ({
     return response.data
 }
 
+
 export const getAllIssues = async ({
                                        page = 0,
                                        size = 10,
@@ -91,6 +116,7 @@ export const getAllIssues = async ({
 
     return response.data
 }
+
 
 export const searchIssues = async ({
                                        keyword,
@@ -112,6 +138,7 @@ export const searchIssues = async ({
 
     return response.data
 }
+
 
 export const getIssuesByStatus = async ({
                                             status,
@@ -172,6 +199,21 @@ export const getIssuesByPriority = async ({
                 size,
                 sort,
             },
+        }
+    )
+
+    return response.data
+}
+
+export const assignIssue = async ({
+                                      issueId,
+                                      fieldWorkerId,
+                                  }) => {
+
+    const response = await apiClient.patch(
+        `/issues/${issueId}/assign`,
+        {
+            fieldWorkerId,
         }
     )
 

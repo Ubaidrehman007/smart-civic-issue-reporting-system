@@ -517,3 +517,209 @@
         padding: 22px;
     }
 }
+
+/* =========================
+   ISSUE ASSIGNMENT
+========================= */
+
+.admin-status-management {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 40px;
+    padding: 28px 36px;
+}
+
+
+/* Current assignment / status */
+
+.admin-status-current {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 220px;
+}
+
+.admin-status-current > span {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    color: #7b879d;
+    text-transform: uppercase;
+}
+
+.admin-status-current > strong {
+    font-size: 16px;
+    color: #182238;
+}
+
+
+/* Status / assignment controls */
+
+.admin-status-update-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+    justify-content: flex-end;
+}
+
+.admin-status-update-controls label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #5f6d84;
+    white-space: nowrap;
+}
+
+.admin-status-update-controls select {
+    min-width: 260px;
+    height: 46px;
+    padding: 0 42px 0 14px;
+
+    border: 1px solid #d5dce8;
+    border-radius: 8px;
+
+    background: #ffffff;
+    color: #26344d;
+
+    font-size: 14px;
+    font-family: inherit;
+
+    outline: none;
+    cursor: pointer;
+
+    transition:
+            border-color 0.2s ease,
+            box-shadow 0.2s ease;
+}
+
+.admin-status-update-controls select:hover {
+    border-color: #aeb9ca;
+}
+
+.admin-status-update-controls select:focus {
+    border-color: #2f67df;
+
+    box-shadow:
+            0 0 0 3px rgba(47, 103, 223, 0.10);
+}
+
+
+/* =========================
+   UPDATE / ASSIGN BUTTON
+========================= */
+
+.admin-status-update-button {
+    height: 46px;
+
+    padding: 0 20px;
+
+    border: none;
+    border-radius: 8px;
+
+    background: #2563eb;
+    color: #ffffff;
+
+    font-size: 14px;
+    font-weight: 600;
+    font-family: inherit;
+
+    cursor: pointer;
+
+    white-space: nowrap;
+
+    transition:
+            background 0.2s ease,
+            transform 0.15s ease,
+            box-shadow 0.2s ease;
+}
+
+.admin-status-update-button:hover:not(:disabled) {
+    background: #1d4ed8;
+
+    box-shadow:
+            0 5px 14px rgba(37, 99, 235, 0.20);
+}
+
+.admin-status-update-button:active:not(:disabled) {
+    transform: translateY(1px);
+}
+
+.admin-status-update-button:disabled {
+    background: #e2e6ec;
+    color: #a3aab5;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+
+/* =========================
+   SUCCESS / ERROR
+========================= */
+
+.admin-status-message {
+    margin: 0 36px 24px;
+
+    padding: 12px 16px;
+
+    border-radius: 8px;
+
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.admin-status-success {
+    background: #ecfdf3;
+    border: 1px solid #b7ebc6;
+    color: #16733b;
+}
+
+.admin-status-error {
+    background: #fff4f4;
+    border: 1px solid #f1b7b7;
+    color: #b42318;
+}
+
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 900px) {
+
+    .admin-status-management {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 24px;
+    }
+
+    .admin-status-update-controls {
+        justify-content: flex-start;
+        flex-wrap: wrap;
+    }
+
+}
+
+
+@media (max-width: 600px) {
+
+    .admin-status-management {
+        padding: 22px;
+    }
+
+    .admin-status-update-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .admin-status-update-controls select,
+    .admin-status-update-button {
+        width: 100%;
+    }
+
+    .admin-status-message {
+        margin-left: 22px;
+        margin-right: 22px;
+    }
+
+}

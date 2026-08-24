@@ -435,6 +435,25 @@ public class IssueServiceImpl implements IssueService {
                 .longitude(issue.getLongitude())
                 .address(issue.getAddress())
                 .reportedBy(issue.getReportedBy().getFullName())
+
+                .assignedToId(
+                        issue.getAssignedTo() != null
+                                ? issue.getAssignedTo().getId()
+                                : null
+                )
+
+                .assignedToName(
+                        issue.getAssignedTo() != null
+                                ? issue.getAssignedTo().getFullName()
+                                : null
+                )
+
+                .assignedToEmail(
+                        issue.getAssignedTo() != null
+                                ? issue.getAssignedTo().getEmail()
+                                : null
+                )
+
                 .createdAt(issue.getCreatedAt())
                 .updatedAt(issue.getUpdatedAt())
                 .build();

@@ -70,9 +70,6 @@ function AdminIssueDetailsPage() {
     const [assignmentSuccess, setAssignmentSuccess] =
         useState('')
 
-    const [assignedWorkerName, setAssignedWorkerName] =
-        useState('')
-
 
     /* =========================
        FETCH ISSUE DETAILS
@@ -110,12 +107,34 @@ function AdminIssueDetailsPage() {
 
             setIssue(issueResponse)
 
+
             setSelectedStatus(
                 issueResponse?.status || ''
             )
 
+
             setStatusHistory(
                 historyResponse || []
+            )
+
+
+            /*
+             * =========================
+             * ASSIGNMENT DATA
+             * =========================
+             *
+             * Backend now returns:
+             *
+             * assignedToId
+             * assignedToName
+             * assignedToEmail
+             *
+             * Therefore we use the backend
+             * response as the source of truth.
+             */
+
+            setSelectedWorkerId(
+                issueResponse?.assignedToId || ''
             )
 
         } catch (err) {
@@ -329,6 +348,16 @@ function AdminIssueDetailsPage() {
                 updatedHistory || []
             )
 
+
+            /*
+             * Keep assignment selection
+             * synchronized with backend.
+             */
+
+            setSelectedWorkerId(
+                updatedIssue?.assignedToId || ''
+            )
+
         } catch (err) {
 
             console.error(
@@ -372,6 +401,27 @@ function AdminIssueDetailsPage() {
         }
 
 
+        /*
+         * Prevent unnecessary re-assignment.
+         */
+
+        if (
+            issue.assignedToId &&
+            issue.assignedToId === selectedWorkerId
+        ) {
+
+            setAssignmentError('')
+
+            setAssignmentSuccess(
+                `Issue is already assigned to ${
+                    issue.assignedToName || 'this field worker'
+                }.`
+            )
+
+            return
+        }
+
+
         try {
 
             setAssigningIssue(true)
@@ -380,50 +430,51 @@ function AdminIssueDetailsPage() {
             setAssignmentSuccess('')
 
 
-            const selectedWorker =
-                fieldWorkers.find(
-                    (worker) =>
-                        worker.id === selectedWorkerId
-                )
-
-
             await assignIssue({
                 issueId,
                 fieldWorkerId: selectedWorkerId,
             })
 
 
-            setAssignedWorkerName(
-                selectedWorker?.fullName ||
-                selectedWorker?.email ||
-                'Field worker'
-            )
-
-
-            setAssignmentSuccess(
-                'Issue assigned successfully.'
-            )
-
-
             /*
-             * Clear selection after successful assignment.
-             */
-
-            setSelectedWorkerId('')
-
-
-            /*
-             * Refresh issue details.
+             * Fetch fresh issue details from backend.
              *
-             * Currently IssueResponse does not contain
-             * assignedTo, so this is mainly useful for
-             * keeping the page data fresh.
+             * This is important because the backend
+             * now returns:
+             *
+             * assignedToId
+             * assignedToName
+             * assignedToEmail
              */
 
             const updatedIssue =
                 await getIssueById(issueId)
 
+
+            console.log(
+                'Updated issue after assignment:',
+                updatedIssue
+            )
+
+
             setIssue(updatedIssue)
+
+
+            /*
+             * Keep dropdown synchronized
+             * with actual backend assignment.
+             */
+
+            setSelectedWorkerId(
+                updatedIssue?.assignedToId || ''
+            )
+
+
+            setAssignmentSuccess(
+                updatedIssue?.assignedToName
+                    ? `Issue assigned successfully to ${updatedIssue.assignedToName}.`
+                    : 'Issue assigned successfully.'
+            )
 
         } catch (err) {
 
@@ -872,20 +923,56 @@ function AdminIssueDetailsPage() {
 
                 <div className="admin-status-management">
 
+                    {/* =========================
+                        CURRENT ASSIGNMENT
+                    ========================= */}
+
                     <div className="admin-status-current">
 
                         <span>
                             Assignment
                         </span>
 
-                        <strong>
-                            {assignedWorkerName ||
-                                'Not assigned in this session'
-                            }
-                        </strong>
+
+                        {issue.assignedToName ? (
+
+                            <>
+
+                                <strong>
+                                    {issue.assignedToName}
+                                </strong>
+
+
+                                {issue.assignedToEmail && (
+
+                                    <small
+                                        style={{
+                                            display: 'block',
+                                            marginTop: '6px',
+                                            opacity: 0.7,
+                                        }}
+                                    >
+                                        {issue.assignedToEmail}
+                                    </small>
+
+                                )}
+
+                            </>
+
+                        ) : (
+
+                            <strong>
+                                Not assigned
+                            </strong>
+
+                        )}
 
                     </div>
 
+
+                    {/* =========================
+                        ASSIGNMENT CONTROLS
+                    ========================= */}
 
                     <div className="admin-status-update-controls">
 
@@ -990,18 +1077,6 @@ function AdminIssueDetailsPage() {
                     <div className="admin-status-message admin-status-success">
 
                         {assignmentSuccess}
-
-                        {assignedWorkerName && (
-                            <>
-                                {' '}
-                                Assigned to{' '}
-
-                                <strong>
-                                    {assignedWorkerName}
-                                </strong>
-                                .
-                            </>
-                        )}
 
                     </div>
 

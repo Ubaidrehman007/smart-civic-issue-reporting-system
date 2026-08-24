@@ -35,6 +35,12 @@ public class IssueResponse {
 
     private String reportedBy;
 
+    private UUID assignedToId;
+
+    private String assignedToName;
+
+    private String assignedToEmail;
+
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;

@@ -163,4 +163,15 @@ public interface IssueRepository extends JpaRepository<Issue, UUID> {
 
     long countByStatus(IssueStatus status);
 
+    @Query("""
+        SELECT i
+        FROM Issue i
+        WHERE LOWER(i.title) LIKE LOWER(CONCAT('%', :keyword, '%'))
+           OR LOWER(i.address) LIKE LOWER(CONCAT('%', :keyword, '%'))
+        """)
+    Page<Issue> searchIssues(
+            @Param("keyword") String keyword,
+            Pageable pageable
+    );
+
 }

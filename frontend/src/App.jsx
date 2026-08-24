@@ -11,7 +11,13 @@ import ProfilePage from './pages/ProfilePage'
 import IssueDetailsPage from './pages/IssueDetailsPage'
 import ProtectedRoute from './components/ProtectedRoute'
 import UnauthorizedPage from './pages/UnauthorizedPage'
+
+//Admin Imports
 import AdminLayout from './components/AdminLayout'
+import AdminDashboardPage from './pages/AdminPage/AdminDashboardPage'
+import AdminIssuesPage from './pages/AdminPage/AdminIssuesPage'
+import AdminIssueDetailsPage from './pages/AdminPage/AdminIssueDetailsPage'
+
 
 function App() {
     return (
@@ -77,7 +83,17 @@ function App() {
 
                     <Route
                         path="/admin/dashboard"
-                        element={<div>Admin Dashboard</div>}
+                        element={<AdminDashboardPage />}
+                    />
+
+                    <Route
+                        path="/admin/issues"
+                        element={<AdminIssuesPage />}
+                    />
+
+                    <Route
+                        path="/admin/issues/:issueId"
+                        element={<AdminIssueDetailsPage />}
                     />
 
                 </Route>

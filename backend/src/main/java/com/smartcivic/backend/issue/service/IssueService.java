@@ -18,6 +18,10 @@ public interface IssueService {
     IssueResponse createIssue(CreateIssueRequest request, String userEmail);
 
     Page<IssueSummaryResponse> getAllIssues(Pageable pageable);
+    Page<IssueSummaryResponse> searchIssues(
+            String keyword,
+            Pageable pageable
+    );
 
     IssueResponse getIssueById(
             UUID id,

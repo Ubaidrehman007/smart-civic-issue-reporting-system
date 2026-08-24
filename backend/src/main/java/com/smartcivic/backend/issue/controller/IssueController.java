@@ -56,6 +56,28 @@ public class IssueController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<Page<IssueSummaryResponse>> searchIssues(
+
+            @RequestParam String keyword,
+
+            @PageableDefault(
+                    page = 0,
+                    size = 10,
+                    sort = "createdAt",
+                    direction = Sort.Direction.DESC
+            )
+            Pageable pageable
+    ) {
+
+        return ResponseEntity.ok(
+                issueService.searchIssues(
+                        keyword,
+                        pageable
+                )
+        );
+    }
+
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<IssueResponse> createIssue(
             @Valid @ModelAttribute CreateIssueRequest request,

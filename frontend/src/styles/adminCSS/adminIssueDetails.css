@@ -1,0 +1,519 @@
+.admin-issue-details-page {
+    padding: 48px 56px 80px;
+    max-width: 1250px;
+    margin: 0 auto;
+    color: #172033;
+}
+
+
+/* =========================
+   HEADER
+========================= */
+
+.admin-issue-details-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 30px;
+    margin-bottom: 36px;
+}
+
+.admin-issue-details-eyebrow {
+    margin: 0 0 10px;
+
+    color: #2563eb;
+
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 3px;
+}
+
+.admin-issue-details-header h1 {
+    margin: 0 0 8px;
+
+    font-size: 42px;
+    line-height: 1.1;
+}
+
+.admin-issue-details-header p {
+    margin: 0;
+
+    color: #718096;
+
+    font-size: 16px;
+}
+
+
+/* =========================
+   BACK BUTTON
+========================= */
+
+.admin-issue-back-button {
+    height: 44px;
+
+    padding: 0 18px;
+
+    border: 1px solid #d7dfeb;
+    border-radius: 9px;
+
+    background: #ffffff;
+
+    color: #334155;
+
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+            background-color 0.2s ease,
+            border-color 0.2s ease;
+}
+
+.admin-issue-back-button:hover {
+    background: #f8fafc;
+    border-color: #b8c3d3;
+}
+
+
+/* =========================
+   MAIN ISSUE CARD
+========================= */
+
+.admin-issue-main-card {
+    background: #ffffff;
+
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+
+    padding: 30px;
+
+    box-shadow:
+            0 8px 24px rgba(15, 23, 42, 0.05);
+
+    margin-bottom: 24px;
+}
+
+.admin-issue-main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+
+    gap: 30px;
+
+    padding-bottom: 26px;
+
+    border-bottom: 1px solid #edf1f6;
+}
+
+.admin-issue-main-header h2 {
+    margin: 0 0 8px;
+
+    font-size: 28px;
+}
+
+.admin-issue-id {
+    margin: 0;
+
+    color: #94a3b8;
+
+    font-size: 13px;
+
+    word-break: break-all;
+}
+
+.admin-issue-badges {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+
+/* =========================
+   BADGES
+========================= */
+
+.admin-detail-status,
+.admin-detail-priority {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 32px;
+
+    padding: 0 13px;
+
+    border-radius: 999px;
+
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.admin-detail-status {
+    background: #eff6ff;
+    color: #2563eb;
+}
+
+.admin-detail-status.under_review {
+    background: #f5f3ff;
+    color: #7c3aed;
+}
+
+.admin-detail-status.in_progress {
+    background: #fff7ed;
+    color: #ea580c;
+}
+
+.admin-detail-status.resolved {
+    background: #ecfdf5;
+    color: #16a34a;
+}
+
+.admin-detail-priority {
+    background: #fff7e6;
+    color: #c2410c;
+}
+
+.admin-detail-priority.low {
+    background: #ecfdf5;
+    color: #15803d;
+}
+
+.admin-detail-priority.high {
+    background: #fef2f2;
+    color: #dc2626;
+}
+
+
+/* =========================
+   INFORMATION GRID
+========================= */
+
+.admin-issue-information-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+    gap: 24px;
+
+    padding-top: 26px;
+}
+
+.admin-detail-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.admin-detail-field span {
+    color: #94a3b8;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+}
+
+.admin-detail-field strong {
+    color: #263449;
+
+    font-size: 15px;
+}
+
+
+/* =========================
+   SECTIONS
+========================= */
+
+.admin-detail-section {
+    background: #ffffff;
+
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+
+    margin-bottom: 24px;
+
+    overflow: hidden;
+
+    box-shadow:
+            0 8px 24px rgba(15, 23, 42, 0.04);
+}
+
+.admin-detail-section-header {
+    padding: 24px 28px;
+
+    border-bottom: 1px solid #edf1f6;
+}
+
+.admin-detail-section-header h2 {
+    margin: 0 0 6px;
+
+    font-size: 21px;
+}
+
+.admin-detail-section-header p {
+    margin: 0;
+
+    color: #94a3b8;
+
+    font-size: 14px;
+}
+
+.admin-detail-content {
+    padding: 26px 28px;
+}
+
+.admin-detail-content p {
+    margin: 0;
+
+    color: #526176;
+
+    font-size: 15px;
+    line-height: 1.8;
+
+    white-space: pre-wrap;
+}
+
+
+/* =========================
+   LOCATION
+========================= */
+
+.admin-detail-location {
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 2fr)
+        minmax(160px, 1fr)
+        minmax(160px, 1fr);
+
+    gap: 24px;
+}
+
+.admin-detail-location > div {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.admin-detail-location span {
+    color: #94a3b8;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+}
+
+.admin-detail-location strong {
+    color: #334155;
+
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+
+/* =========================
+   IMAGE
+========================= */
+
+.admin-issue-image-container {
+    padding: 28px;
+}
+
+.admin-issue-image {
+    display: block;
+
+    max-width: 100%;
+    max-height: 500px;
+
+    border-radius: 12px;
+
+    object-fit: contain;
+
+    border: 1px solid #e2e8f0;
+}
+
+
+/* =========================
+   STATUS TIMELINE
+========================= */
+
+.admin-status-timeline {
+    padding: 28px;
+}
+
+.admin-status-history-item {
+    position: relative;
+
+    display: flex;
+
+    gap: 18px;
+
+    padding-bottom: 28px;
+}
+
+.admin-status-history-item:last-child {
+    padding-bottom: 0;
+}
+
+.admin-status-timeline-dot {
+    position: relative;
+
+    flex-shrink: 0;
+
+    width: 12px;
+    height: 12px;
+
+    margin-top: 5px;
+
+    border-radius: 50%;
+
+    background: #2563eb;
+}
+
+.admin-status-history-item:not(:last-child)
+.admin-status-timeline-dot::after {
+    content: '';
+
+    position: absolute;
+
+    top: 12px;
+    left: 5px;
+
+    width: 2px;
+    height: calc(100% + 28px);
+
+    background: #dbe5f2;
+}
+
+.admin-status-history-content {
+    flex: 1;
+
+    min-width: 0;
+}
+
+.admin-status-history-header {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+
+    margin-bottom: 8px;
+}
+
+.admin-status-history-header strong {
+    font-size: 14px;
+}
+
+.admin-status-history-header span {
+    color: #94a3b8;
+}
+
+.admin-status-history-content p {
+    margin: 0 0 6px;
+
+    color: #64748b;
+
+    font-size: 13px;
+}
+
+.admin-status-history-date {
+    color: #94a3b8;
+
+    font-size: 12px;
+}
+
+.admin-status-history-remark {
+    margin-top: 12px !important;
+
+    padding: 10px 12px;
+
+    background: #f8fafc;
+
+    border-radius: 8px;
+}
+
+
+/* =========================
+   EMPTY / STATE
+========================= */
+
+.admin-detail-empty,
+.admin-issue-details-state,
+.admin-issue-details-error {
+    padding: 40px;
+
+    background: #ffffff;
+
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+
+    color: #64748b;
+
+    text-align: center;
+}
+
+.admin-issue-details-error h2 {
+    margin: 0 0 10px;
+
+    color: #172033;
+}
+
+.admin-issue-details-error p {
+    margin: 0 0 20px;
+}
+
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 1000px) {
+
+    .admin-issue-details-page {
+        padding: 32px 24px 60px;
+    }
+
+    .admin-issue-information-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+    .admin-detail-location {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+@media (max-width: 700px) {
+
+    .admin-issue-details-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .admin-issue-main-header {
+        flex-direction: column;
+    }
+
+    .admin-issue-information-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-issue-main-card {
+        padding: 22px;
+    }
+
+    .admin-detail-content {
+        padding: 22px;
+    }
+
+    .admin-status-timeline {
+        padding: 22px;
+    }
+}

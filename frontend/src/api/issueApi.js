@@ -71,3 +71,109 @@ export const getPossibleDuplicates = async ({
 
     return response.data
 }
+
+export const getAllIssues = async ({
+                                       page = 0,
+                                       size = 10,
+                                       sort = 'createdAt,desc',
+                                   } = {}) => {
+
+    const response = await apiClient.get(
+        '/issues',
+        {
+            params: {
+                page,
+                size,
+                sort,
+            },
+        }
+    )
+
+    return response.data
+}
+
+export const searchIssues = async ({
+                                       keyword,
+                                       page = 0,
+                                       size = 10,
+                                   }) => {
+
+    const response = await apiClient.get(
+        '/issues/search',
+        {
+            params: {
+                keyword,
+                page,
+                size,
+                sort: 'createdAt,desc',
+            },
+        }
+    )
+
+    return response.data
+}
+
+export const getIssuesByStatus = async ({
+                                            status,
+                                            page = 0,
+                                            size = 10,
+                                            sort = 'createdAt,desc',
+                                        }) => {
+
+    const response = await apiClient.get(
+        `/issues/status/${status}`,
+        {
+            params: {
+                page,
+                size,
+                sort,
+            },
+        }
+    )
+
+    return response.data
+}
+
+
+export const getIssuesByCategory = async ({
+                                              category,
+                                              page = 0,
+                                              size = 10,
+                                              sort = 'createdAt,desc',
+                                          }) => {
+
+    const response = await apiClient.get(
+        `/issues/category/${category}`,
+        {
+            params: {
+                page,
+                size,
+                sort,
+            },
+        }
+    )
+
+    return response.data
+}
+
+
+export const getIssuesByPriority = async ({
+                                              priority,
+                                              page = 0,
+                                              size = 10,
+                                              sort = 'createdAt,desc',
+                                          }) => {
+
+    const response = await apiClient.get(
+        `/issues/priority/${priority}`,
+        {
+            params: {
+                page,
+                size,
+                sort,
+            },
+        }
+    )
+
+    return response.data
+}

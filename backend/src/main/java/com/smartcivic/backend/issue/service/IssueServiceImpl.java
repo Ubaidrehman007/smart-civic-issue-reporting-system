@@ -116,6 +116,19 @@ public class IssueServiceImpl implements IssueService {
                         .build()
         );
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<IssueSummaryResponse> searchIssues(
+            String keyword,
+            Pageable pageable
+    ) {
+
+        return issueRepository
+                .searchIssues(keyword.trim(), pageable)
+                .map(this::mapToIssueSummaryResponse);
+    }
+
     @Transactional(readOnly = true)
     @Override
     public IssueResponse getIssueById(

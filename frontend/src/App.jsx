@@ -19,7 +19,7 @@ import AdminIssuesPage from './pages/AdminPage/AdminIssuesPage'
 import AdminIssueDetailsPage from './pages/AdminPage/AdminIssueDetailsPage'
 import AdminUsersPage from './pages/AdminPage/AdminUsersPage'
 import AdminWorkersPage from './pages/AdminPage/AdminWorkersPage'
-
+import AdminAssignmentsPage from './pages/AdminPage/AdminAssignmentsPage'
 
 function App() {
     return (
@@ -107,6 +107,10 @@ function App() {
                     <Route
                         path="/admin/workers"
                         element={<AdminWorkersPage />}
+                    />
+                    <Route
+                        path="/admin/assignments"
+                        element={<AdminAssignmentsPage />}
                     />
 
                 </Route>

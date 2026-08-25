@@ -100,21 +100,12 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<IssueSummaryResponse> getAllIssues(Pageable pageable) {
 
         Page<Issue> issues = issueRepository.findAll(pageable);
 
-        return issues.map(issue ->
-                IssueSummaryResponse.builder()
-                        .id(issue.getId())
-                        .title(issue.getTitle())
-                        .category(issue.getCategory())
-                        .priority(issue.getPriority())
-                        .status(issue.getStatus())
-                        .address(issue.getAddress())
-                        .createdAt(issue.getCreatedAt())
-                        .build()
-        );
+        return issues.map(this::mapToIssueSummaryResponse);
     }
 
     @Override
@@ -525,6 +516,24 @@ public class IssueServiceImpl implements IssueService {
                 .status(issue.getStatus())
                 .address(issue.getAddress())
                 .createdAt(issue.getCreatedAt())
+
+        .assignedToId(
+                issue.getAssignedTo() != null
+                        ? issue.getAssignedTo().getId()
+                        : null
+        )
+
+                .assignedToName(
+                        issue.getAssignedTo() != null
+                                ? issue.getAssignedTo().getFullName()
+                                : null
+                )
+
+                .assignedToEmail(
+                        issue.getAssignedTo() != null
+                                ? issue.getAssignedTo().getEmail()
+                                : null
+                )
                 .build();
     }
 

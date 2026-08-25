@@ -28,4 +28,10 @@ public class IssueSummaryResponse {
     private LocalDateTime createdAt;
 
     private Double distance;
+
+    private UUID assignedToId;
+
+    private String assignedToName;
+
+    private String assignedToEmail;
 }

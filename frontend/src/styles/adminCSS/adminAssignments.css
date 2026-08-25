@@ -1,0 +1,533 @@
+/* =========================================
+   ADMIN ASSIGNMENTS PAGE
+========================================= */
+
+.admin-assignments-page {
+    width: 100%;
+    padding: 32px;
+    box-sizing: border-box;
+}
+
+
+/* =========================================
+   HEADER
+========================================= */
+
+.admin-assignments-header {
+    margin-bottom: 28px;
+}
+
+.admin-assignments-header h1 {
+    margin: 0 0 8px;
+    font-size: 32px;
+    font-weight: 700;
+}
+
+.admin-assignments-header p {
+    margin: 0;
+    font-size: 15px;
+    color: #7d8ba6;
+}
+
+
+/* =========================================
+   FILTER CARD
+========================================= */
+
+.admin-assignments-filter-card {
+    display: grid;
+    grid-template-columns:
+        minmax(220px, 2fr)
+        repeat(3, minmax(150px, 1fr))
+        auto;
+
+    gap: 16px;
+
+    align-items: end;
+
+    padding: 24px;
+
+    margin-bottom: 24px;
+
+    background: #ffffff;
+
+    border: 1px solid #e4e9f2;
+
+    border-radius: 18px;
+
+    box-shadow:
+            0 8px 24px rgba(24, 39, 75, 0.05);
+}
+
+
+/* =========================================
+   SEARCH / FILTER GROUP
+========================================= */
+
+.admin-assignment-search,
+.admin-assignment-filter {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.admin-assignment-search label,
+.admin-assignment-filter label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #65738b;
+}
+
+
+/* =========================================
+   INPUTS
+========================================= */
+
+.admin-assignment-search input,
+.admin-assignment-filter select {
+    width: 100%;
+
+    height: 46px;
+
+    padding: 0 14px;
+
+    box-sizing: border-box;
+
+    border: 1px solid #d6deeb;
+
+    border-radius: 10px;
+
+    background: #ffffff;
+
+    color: #25324a;
+
+    font-size: 14px;
+
+    outline: none;
+
+    transition:
+            border-color 0.2s ease,
+            box-shadow 0.2s ease;
+}
+
+.admin-assignment-search input:focus,
+.admin-assignment-filter select:focus {
+    border-color: #2864e8;
+
+    box-shadow:
+            0 0 0 3px rgba(40, 100, 232, 0.1);
+}
+
+
+/* =========================================
+   CLEAR BUTTON
+========================================= */
+
+.admin-assignment-clear-button {
+    height: 46px;
+
+    padding: 0 20px;
+
+    border: none;
+
+    border-radius: 10px;
+
+    background: #eef2f8;
+
+    color: #52617a;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+            background 0.2s ease,
+            transform 0.2s ease;
+}
+
+.admin-assignment-clear-button:hover {
+    background: #e1e7f0;
+}
+
+.admin-assignment-clear-button:active {
+    transform: scale(0.98);
+}
+
+
+/* =========================================
+   TABLE CARD
+========================================= */
+
+.admin-assignments-table-card {
+    width: 100%;
+
+    background: #ffffff;
+
+    border: 1px solid #e4e9f2;
+
+    border-radius: 18px;
+
+    overflow: hidden;
+
+    box-shadow:
+            0 8px 24px rgba(24, 39, 75, 0.05);
+}
+
+
+/* =========================================
+   TABLE WRAPPER
+========================================= */
+
+.admin-assignments-table-wrapper {
+    width: 100%;
+
+    overflow-x: auto;
+}
+
+
+/* =========================================
+   TABLE
+========================================= */
+
+.admin-assignments-table {
+    width: 100%;
+
+    min-width: 900px;
+
+    border-collapse: collapse;
+}
+
+
+/* =========================================
+   TABLE HEADER
+========================================= */
+
+.admin-assignments-table thead {
+    background: #f7f9fc;
+}
+
+.admin-assignments-table th {
+    padding: 18px 20px;
+
+    text-align: left;
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+    letter-spacing: 0.05em;
+
+    text-transform: uppercase;
+
+    color: #71809a;
+
+    border-bottom: 1px solid #e4e9f2;
+
+    white-space: nowrap;
+}
+
+
+/* =========================================
+   TABLE BODY
+========================================= */
+
+.admin-assignments-table td {
+    padding: 18px 20px;
+
+    border-bottom: 1px solid #edf1f6;
+
+    font-size: 14px;
+
+    color: #34415a;
+
+    vertical-align: middle;
+}
+
+.admin-assignments-table tbody tr {
+    transition: background 0.2s ease;
+}
+
+.admin-assignments-table tbody tr:hover {
+    background: #fafbfd;
+}
+
+.admin-assignments-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+
+/* =========================================
+   ISSUE
+========================================= */
+
+.admin-assignment-issue {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 5px;
+}
+
+.admin-assignment-issue strong {
+    font-size: 15px;
+
+    color: #26334d;
+}
+
+.admin-assignment-issue span {
+    font-size: 12px;
+
+    color: #98a5ba;
+}
+
+
+/* =========================================
+   WORKER
+========================================= */
+
+.admin-assignment-worker {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 4px;
+}
+
+.admin-assignment-worker strong {
+    font-size: 14px;
+
+    color: #293650;
+}
+
+.admin-assignment-worker span {
+    font-size: 12px;
+
+    color: #8b98ad;
+}
+
+.assignment-unassigned {
+    font-size: 13px;
+
+    font-weight: 600;
+
+    color: #9aa6b8;
+}
+
+
+/* =========================================
+   STATUS BADGE
+========================================= */
+
+.assignment-status {
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    min-width: 105px;
+
+    padding: 7px 12px;
+
+    border-radius: 999px;
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+    letter-spacing: 0.02em;
+}
+
+.assignment-status-reported {
+    background: #edf4ff;
+
+    color: #2864e8;
+}
+
+.assignment-status-under_review {
+    background: #fff7e6;
+
+    color: #c47a00;
+}
+
+.assignment-status-in_progress {
+    background: #eeeaff;
+
+    color: #6952d8;
+}
+
+.assignment-status-resolved {
+    background: #e9f9f0;
+
+    color: #209052;
+}
+
+.assignment-status-rejected {
+    background: #fff0f0;
+
+    color: #d43d3d;
+}
+
+
+/* =========================================
+   PRIORITY BADGE
+========================================= */
+
+.assignment-priority {
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 6px 11px;
+
+    border-radius: 999px;
+
+    font-size: 11px;
+
+    font-weight: 700;
+}
+
+.assignment-priority-low {
+    background: #edf8f1;
+
+    color: #328457;
+}
+
+.assignment-priority-medium {
+    background: #fff5e5;
+
+    color: #bd7410;
+}
+
+.assignment-priority-high {
+    background: #fff0e9;
+
+    color: #d35a26;
+}
+
+.assignment-priority-critical {
+    background: #ffe9e9;
+
+    color: #d72d2d;
+}
+
+
+/* =========================================
+   ACTION BUTTON
+========================================= */
+
+.admin-assignment-action-button {
+    min-width: 92px;
+
+    height: 38px;
+
+    padding: 0 14px;
+
+    border: none;
+
+    border-radius: 8px;
+
+    background: #2864e8;
+
+    color: #ffffff;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+            background 0.2s ease,
+            transform 0.2s ease;
+}
+
+.admin-assignment-action-button:hover {
+    background: #1f56d2;
+}
+
+.admin-assignment-action-button:active {
+    transform: scale(0.97);
+}
+
+
+/* =========================================
+   EMPTY / LOADING / ERROR
+========================================= */
+
+.admin-assignment-state {
+    min-height: 220px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 32px;
+
+    box-sizing: border-box;
+
+    color: #7c899f;
+
+    font-size: 15px;
+
+    text-align: center;
+}
+
+.admin-assignment-state.error {
+    color: #d43d3d;
+}
+
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+
+@media (max-width: 1100px) {
+
+    .admin-assignments-filter-card {
+        grid-template-columns:
+            repeat(2, minmax(200px, 1fr));
+    }
+
+    .admin-assignment-search {
+        grid-column: span 2;
+    }
+
+}
+
+
+@media (max-width: 700px) {
+
+    .admin-assignments-page {
+        padding: 20px 16px;
+    }
+
+    .admin-assignments-header h1 {
+        font-size: 26px;
+    }
+
+    .admin-assignments-filter-card {
+        grid-template-columns: 1fr;
+
+        padding: 18px;
+    }
+
+    .admin-assignment-search {
+        grid-column: auto;
+    }
+
+    .admin-assignment-clear-button {
+        width: 100%;
+    }
+
+    .admin-assignments-table-card {
+        border-radius: 14px;
+    }
+
+}

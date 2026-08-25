@@ -48,6 +48,7 @@ public class IssueServiceImpl implements IssueService {
     private final GeometryFactory geometryFactory;
     private final IssueStatusHistoryRepository issueStatusHistoryRepository;
     private final SlaService slaService;
+    private final PriorityEvaluationService priorityEvaluationService;
 
     @Override
     public IssueResponse createIssue(CreateIssueRequest request, String userEmail) {
@@ -71,7 +72,10 @@ public class IssueServiceImpl implements IssueService {
                 request.getLongitude()
         );
 
-        IssuePriority priority = IssuePriority.MEDIUM;
+        IssuePriority priority =
+                priorityEvaluationService.calculatePriority(
+                        request.getCategory()
+                );
 
         LocalDateTime slaDueAt = slaService.calculateSlaDueAt(
                 request.getCategory(),

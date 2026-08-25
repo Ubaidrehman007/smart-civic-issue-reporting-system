@@ -20,6 +20,7 @@ import AdminIssueDetailsPage from './pages/AdminPage/AdminIssueDetailsPage'
 import AdminUsersPage from './pages/AdminPage/AdminUsersPage'
 import AdminWorkersPage from './pages/AdminPage/AdminWorkersPage'
 import AdminAssignmentsPage from './pages/AdminPage/AdminAssignmentsPage'
+import AdminSlaPage from './pages/AdminPage/AdminSlaPage'
 
 function App() {
     return (
@@ -111,6 +112,11 @@ function App() {
                     <Route
                         path="/admin/assignments"
                         element={<AdminAssignmentsPage />}
+                    />
+
+                    <Route
+                        path="/admin/sla"
+                        element={<AdminSlaPage />}
                     />
 
                 </Route>

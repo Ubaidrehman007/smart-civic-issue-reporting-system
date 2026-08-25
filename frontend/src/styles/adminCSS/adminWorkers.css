@@ -1,0 +1,405 @@
+.admin-workers-page {
+    padding: 42px 46px 60px;
+    max-width: 1500px;
+    margin: 0 auto;
+}
+
+
+/* =========================
+   HEADER
+========================= */
+
+.admin-workers-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 30px;
+    margin-bottom: 32px;
+}
+
+.admin-workers-eyebrow {
+    color: #2864e6;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    margin-bottom: 10px;
+}
+
+.admin-workers-header h1 {
+    margin: 0;
+    color: #17233d;
+    font-size: 42px;
+    font-family: Georgia, serif;
+}
+
+.admin-workers-header p {
+    margin: 10px 0 0;
+    color: #7c8aa3;
+    font-size: 17px;
+}
+
+
+/* =========================
+   CREATE BUTTON
+========================= */
+
+.admin-workers-create-button {
+    border: none;
+    border-radius: 10px;
+    background: #2864e6;
+    color: white;
+    padding: 14px 22px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.admin-workers-create-button:hover {
+    background: #1f56ce;
+}
+
+
+/* =========================
+   CREATE CARD
+========================= */
+
+.admin-workers-create-card,
+.admin-workers-filter-card,
+.admin-workers-table-card {
+    background: white;
+    border: 1px solid #e0e6ef;
+    border-radius: 18px;
+    box-shadow: 0 8px 30px rgba(35, 55, 90, 0.06);
+}
+
+.admin-workers-create-card {
+    margin-bottom: 24px;
+}
+
+.admin-workers-section-heading {
+    padding: 26px 30px;
+    border-bottom: 1px solid #e8edf4;
+}
+
+.admin-workers-section-heading h2 {
+    margin: 0;
+    color: #17233d;
+    font-family: Georgia, serif;
+    font-size: 25px;
+}
+
+.admin-workers-section-heading p {
+    margin: 7px 0 0;
+    color: #8290a7;
+}
+
+
+/* =========================
+   FORM
+========================= */
+
+.admin-workers-form {
+    padding: 28px 30px;
+}
+
+.admin-workers-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px;
+}
+
+.admin-workers-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.admin-workers-field label {
+    color: #66748d;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.admin-workers-field input {
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid #d6deea;
+    border-radius: 10px;
+    padding: 13px 15px;
+    font-size: 15px;
+    color: #26344d;
+    outline: none;
+    background: white;
+}
+
+.admin-workers-field input:focus {
+    border-color: #2864e6;
+    box-shadow: 0 0 0 3px rgba(40, 100, 230, 0.08);
+}
+
+.admin-workers-form-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 24px;
+}
+
+.admin-workers-submit-button {
+    border: none;
+    border-radius: 10px;
+    background: #2864e6;
+    color: white;
+    padding: 13px 22px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.admin-workers-submit-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.admin-workers-form-error,
+.admin-workers-form-success {
+    margin-top: 20px;
+    padding: 12px 15px;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.admin-workers-form-error {
+    background: #fff0f0;
+    color: #c0392b;
+}
+
+.admin-workers-form-success {
+    background: #edfaf2;
+    color: #18864b;
+}
+
+
+/* =========================
+   FILTERS
+========================= */
+
+.admin-workers-filter-card {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 22px 24px;
+    margin-bottom: 20px;
+}
+
+.admin-workers-search {
+    flex: 1;
+}
+
+.admin-workers-search input,
+.admin-workers-status-filter select {
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid #d6deea;
+    border-radius: 10px;
+    background: white;
+    color: #35435c;
+    font-size: 15px;
+    padding: 13px 15px;
+    outline: none;
+}
+
+.admin-workers-search input:focus,
+.admin-workers-status-filter select:focus {
+    border-color: #2864e6;
+}
+
+.admin-workers-status-filter {
+    width: 220px;
+}
+
+
+/* =========================
+   SUMMARY
+========================= */
+
+.admin-workers-summary {
+    color: #7a88a0;
+    margin: 18px 0;
+    font-size: 15px;
+}
+
+.admin-workers-summary strong {
+    color: #26344d;
+}
+
+
+/* =========================
+   TABLE
+========================= */
+
+.admin-workers-table-card {
+    overflow: hidden;
+}
+
+.admin-workers-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.admin-workers-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 950px;
+}
+
+.admin-workers-table th {
+    text-align: left;
+    background: #f8fafc;
+    color: #6d7b94;
+    font-size: 13px;
+    letter-spacing: 1px;
+    font-weight: 700;
+    padding: 19px 18px;
+    border-bottom: 1px solid #e4e9f1;
+}
+
+.admin-workers-table td {
+    padding: 20px 18px;
+    color: #64728b;
+    border-bottom: 1px solid #e9edf3;
+    font-size: 15px;
+}
+
+.admin-workers-table tbody tr:hover {
+    background: #fbfcfe;
+}
+
+.admin-worker-name {
+    color: #1e2b43;
+    font-weight: 700;
+    font-size: 16px;
+}
+
+.admin-worker-id {
+    color: #9aa7bb;
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+
+/* =========================
+   STATUS
+========================= */
+
+.admin-worker-status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 90px;
+    padding: 8px 13px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.admin-worker-status.active {
+    background: #eaf9f0;
+    color: #16834a;
+}
+
+.admin-worker-status.suspended {
+    background: #fff0f0;
+    color: #d33d3d;
+}
+
+
+/* =========================
+   ACTION
+========================= */
+
+.admin-worker-action {
+    border: none;
+    border-radius: 9px;
+    padding: 10px 17px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.admin-worker-action.suspend {
+    background: #fff4e8;
+    color: #c75513;
+}
+
+.admin-worker-action.suspend:hover {
+    background: #ffe8d2;
+}
+
+.admin-worker-action.activate {
+    background: #e9f9ef;
+    color: #16834a;
+}
+
+.admin-worker-action.activate:hover {
+    background: #d8f4e3;
+}
+
+
+/* =========================
+   STATES
+========================= */
+
+.admin-workers-loading,
+.admin-workers-empty {
+    text-align: center;
+    padding: 70px 20px;
+    color: #7d8ba3;
+}
+
+.admin-workers-empty h3 {
+    margin: 0;
+    color: #34425b;
+    font-family: Georgia, serif;
+}
+
+.admin-workers-empty p {
+    margin-top: 8px;
+}
+
+.admin-workers-error {
+    margin: 20px 0;
+    padding: 14px 18px;
+    background: #fff0f0;
+    color: #c0392b;
+    border-radius: 10px;
+}
+
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 850px) {
+
+    .admin-workers-page {
+        padding: 30px 20px 50px;
+    }
+
+    .admin-workers-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .admin-workers-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-workers-filter-card {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .admin-workers-status-filter {
+        width: 100%;
+    }
+
+}

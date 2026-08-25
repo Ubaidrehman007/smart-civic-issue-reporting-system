@@ -1,0 +1,547 @@
+/* =========================
+   ADMIN USERS PAGE
+========================= */
+
+.admin-users-page {
+    padding: 48px 48px 60px;
+    min-height: 100%;
+}
+
+
+/* =========================
+   HEADER
+========================= */
+
+.admin-users-header {
+    margin-bottom: 32px;
+}
+
+.admin-users-eyebrow {
+    margin: 0 0 12px;
+    color: #2563eb;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 3px;
+}
+
+.admin-users-header h1 {
+    margin: 0;
+    color: #172033;
+    font-size: 42px;
+    line-height: 1.15;
+}
+
+.admin-users-header p:last-child {
+    margin: 10px 0 0;
+    color: #718096;
+    font-size: 17px;
+}
+
+
+/* =========================
+   CONTROLS
+========================= */
+
+.admin-users-controls {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 22px;
+    margin-bottom: 22px;
+
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 18px;
+
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+}
+
+
+/* =========================
+   SEARCH
+========================= */
+
+.admin-users-search {
+    position: relative;
+    flex: 1;
+}
+
+.admin-users-search input {
+    width: 100%;
+    height: 48px;
+    padding: 0 44px 0 16px;
+
+    box-sizing: border-box;
+
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+
+    background: #ffffff;
+
+    color: #172033;
+    font-size: 15px;
+
+    outline: none;
+
+    transition: border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.admin-users-search input:focus {
+    border-color: #2563eb;
+
+    box-shadow:
+            0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.admin-users-search input::placeholder {
+    color: #94a3b8;
+}
+
+.admin-users-search-clear {
+    position: absolute;
+
+    top: 50%;
+    right: 12px;
+
+    width: 28px;
+    height: 28px;
+
+    transform: translateY(-50%);
+
+    border: none;
+    border-radius: 50%;
+
+    background: #eef2f7;
+
+    color: #64748b;
+
+    font-size: 20px;
+    line-height: 1;
+
+    cursor: pointer;
+}
+
+.admin-users-search-clear:hover {
+    background: #e2e8f0;
+}
+
+
+/* =========================
+   FILTERS
+========================= */
+
+.admin-users-controls select {
+    height: 48px;
+    min-width: 170px;
+
+    padding: 0 38px 0 14px;
+
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+
+    background: #ffffff;
+
+    color: #334155;
+
+    font-size: 15px;
+
+    outline: none;
+
+    cursor: pointer;
+}
+
+.admin-users-controls select:focus {
+    border-color: #2563eb;
+
+    box-shadow:
+            0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+
+/* =========================
+   MESSAGES
+========================= */
+
+.admin-users-message {
+    padding: 14px 18px;
+    margin-bottom: 18px;
+
+    border-radius: 10px;
+
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.admin-users-message.error {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #b91c1c;
+}
+
+.admin-users-message.success {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    color: #15803d;
+}
+
+
+/* =========================
+   TABLE
+========================= */
+
+.admin-users-table-wrapper {
+    width: 100%;
+
+    overflow-x: auto;
+
+    background: #ffffff;
+
+    border: 1px solid #e2e8f0;
+    border-radius: 18px;
+
+    box-shadow:
+            0 8px 24px rgba(15, 23, 42, 0.05);
+}
+
+.admin-users-table {
+    width: 100%;
+
+    border-collapse: collapse;
+
+    min-width: 1050px;
+}
+
+.admin-users-table thead {
+    background: #f8fafc;
+}
+
+.admin-users-table th {
+    padding: 18px 20px;
+
+    text-align: left;
+
+    color: #64748b;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    letter-spacing: 0.7px;
+    text-transform: uppercase;
+
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.admin-users-table td {
+    padding: 20px;
+
+    color: #475569;
+
+    font-size: 14px;
+
+    border-bottom: 1px solid #edf2f7;
+
+    vertical-align: middle;
+}
+
+.admin-users-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.admin-users-table tbody tr {
+    transition: background 0.2s ease;
+}
+
+.admin-users-table tbody tr:hover {
+    background: #f8fafc;
+}
+
+
+/* =========================
+   USER NAME
+========================= */
+
+.admin-user-name {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.admin-user-name strong {
+    color: #172033;
+    font-size: 15px;
+}
+
+.admin-user-name span {
+    color: #94a3b8;
+    font-size: 12px;
+}
+
+
+/* =========================
+   EMAIL
+========================= */
+
+.admin-user-email {
+    color: #475569;
+}
+
+
+/* =========================
+   ROLE
+========================= */
+
+.admin-user-role {
+    display: inline-flex;
+
+    padding: 7px 11px;
+
+    border-radius: 8px;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    white-space: nowrap;
+}
+
+.admin-user-role.citizen {
+    background: #eff6ff;
+    color: #2563eb;
+}
+
+.admin-user-role.field_worker {
+    background: #f5f3ff;
+    color: #7c3aed;
+}
+
+.admin-user-role.admin {
+    background: #fef3c7;
+    color: #b45309;
+}
+
+
+/* =========================
+   ACCOUNT STATUS
+========================= */
+
+.admin-user-status {
+    display: inline-flex;
+
+    padding: 7px 12px;
+
+    border-radius: 999px;
+
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.admin-user-status.active {
+    background: #ecfdf3;
+    color: #15803d;
+}
+
+.admin-user-status.suspended {
+    background: #fef2f2;
+    color: #dc2626;
+}
+
+
+/* =========================
+   ACTION BUTTON
+========================= */
+
+.admin-user-status-button {
+    min-width: 92px;
+
+    padding: 9px 14px;
+
+    border: none;
+    border-radius: 9px;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+            background 0.2s ease,
+            transform 0.15s ease,
+            opacity 0.2s ease;
+}
+
+.admin-user-status-button:hover {
+    transform: translateY(-1px);
+}
+
+.admin-user-status-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.admin-user-status-button.suspend {
+    background: #fff7ed;
+    color: #c2410c;
+}
+
+.admin-user-status-button.suspend:hover {
+    background: #ffedd5;
+}
+
+.admin-user-status-button.activate {
+    background: #ecfdf3;
+    color: #15803d;
+}
+
+.admin-user-status-button.activate:hover {
+    background: #dcfce7;
+}
+
+
+/* =========================
+   PROTECTED ADMIN
+========================= */
+
+.admin-user-protected {
+    color: #94a3b8;
+
+    font-size: 12px;
+    font-weight: 700;
+}
+
+
+/* =========================
+   EMPTY STATE
+========================= */
+
+.admin-users-empty {
+    padding: 60px 20px !important;
+
+    text-align: center;
+
+    color: #94a3b8 !important;
+
+    font-size: 15px;
+}
+
+
+/* =========================
+   LOADING
+========================= */
+
+.admin-users-state {
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    min-height: 300px;
+
+    color: #64748b;
+
+    font-size: 16px;
+}
+
+
+/* =========================
+   PAGINATION
+========================= */
+
+.admin-users-pagination {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    margin-top: 18px;
+
+    color: #64748b;
+
+    font-size: 14px;
+}
+
+.admin-users-pagination > div {
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+}
+
+.admin-users-pagination button {
+    padding: 9px 15px;
+
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+
+    background: #ffffff;
+
+    color: #334155;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.admin-users-pagination button:hover:not(:disabled) {
+    background: #f8fafc;
+    border-color: #94a3b8;
+}
+
+.admin-users-pagination button:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 900px) {
+
+    .admin-users-page {
+        padding: 32px 24px 48px;
+    }
+
+    .admin-users-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .admin-users-search {
+        width: 100%;
+    }
+
+    .admin-users-controls select {
+        width: 100%;
+    }
+
+    .admin-users-pagination {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 14px;
+    }
+}
+
+
+@media (max-width: 600px) {
+
+    .admin-users-page {
+        padding: 24px 16px 40px;
+    }
+
+    .admin-users-header h1 {
+        font-size: 34px;
+    }
+
+    .admin-users-header p:last-child {
+        font-size: 15px;
+    }
+
+    .admin-users-pagination > div {
+        width: 100%;
+        justify-content: space-between;
+    }
+}

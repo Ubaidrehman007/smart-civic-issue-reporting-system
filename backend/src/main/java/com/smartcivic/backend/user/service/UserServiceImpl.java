@@ -118,6 +118,7 @@ public class UserServiceImpl implements UserService {
         }
 
         return users.stream()
+                .filter(user -> user.getRole() != Role.ADMIN)
                 .map(this::mapToUserResponse)
                 .toList();
     }
@@ -131,6 +132,7 @@ public class UserServiceImpl implements UserService {
                         keyword
                 )
                 .stream()
+                .filter(user -> user.getRole() != Role.ADMIN)
                 .map(this::mapToUserResponse)
                 .toList();
     }

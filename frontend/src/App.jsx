@@ -17,6 +17,8 @@ import AdminLayout from './components/AdminLayout'
 import AdminDashboardPage from './pages/AdminPage/AdminDashboardPage'
 import AdminIssuesPage from './pages/AdminPage/AdminIssuesPage'
 import AdminIssueDetailsPage from './pages/AdminPage/AdminIssueDetailsPage'
+import AdminUsersPage from './pages/AdminPage/AdminUsersPage'
+import AdminWorkersPage from './pages/AdminPage/AdminWorkersPage'
 
 
 function App() {
@@ -71,6 +73,7 @@ function App() {
 
             </Route>
 
+//Admin routes
 
             <Route
                 element={
@@ -94,6 +97,16 @@ function App() {
                     <Route
                         path="/admin/issues/:issueId"
                         element={<AdminIssueDetailsPage />}
+                    />
+
+                    <Route
+                        path="/admin/users"
+                        element={<AdminUsersPage />}
+                    />
+
+                    <Route
+                        path="/admin/workers"
+                        element={<AdminWorkersPage />}
                     />
 
                 </Route>

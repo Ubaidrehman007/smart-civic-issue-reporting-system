@@ -1,31 +1,71 @@
 import apiClient from './apiClient'
 
+
+/* =========================
+   CURRENT USER
+========================= */
+
 export const getCurrentUser = async () => {
 
-    const response = await apiClient.get(
-        '/users/me'
-    )
-
-    return response.data
-}
-
-
-export const updateProfile = async (
-    userId,
-    profileData
-) => {
-
-    const response = await apiClient.put(
-        `/users/${userId}/profile`,
-        profileData
-    )
+    const response =
+        await apiClient.get('/users/me')
 
     return response.data
 }
 
 
 /* =========================
-   ACTIVE FIELD WORKERS
+   UPDATE PROFILE
+========================= */
+
+export const updateProfile = async (
+    userId,
+    profileData
+) => {
+
+    const response =
+        await apiClient.put(
+            `/users/${userId}/profile`,
+            profileData
+        )
+
+    return response.data
+}
+
+
+/* =========================
+   GET ALL USERS
+========================= */
+
+export const getAllUsers = async ({
+                                      role,
+                                      status,
+                                  } = {}) => {
+
+    const params = {}
+
+    if (role) {
+        params.role = role
+    }
+
+    if (status) {
+        params.status = status
+    }
+
+    const response =
+        await apiClient.get(
+            '/users',
+            {
+                params,
+            }
+        )
+
+    return response.data
+}
+
+
+/* =========================
+   GET ACTIVE FIELD WORKERS
 ========================= */
 
 export const getActiveFieldWorkers = async () => {
@@ -39,6 +79,84 @@ export const getActiveFieldWorkers = async () => {
             },
         }
     )
+
+    return response.data
+}
+
+
+/* =========================
+   CREATE FIELD WORKER
+========================= */
+
+export const createFieldWorker = async (
+    workerData
+) => {
+
+    const response =
+        await apiClient.post(
+            '/users/field-workers',
+            workerData
+        )
+
+    return response.data
+}
+
+
+/* =========================
+   SEARCH USERS
+========================= */
+
+export const searchUsers = async (
+    keyword
+) => {
+
+    const response =
+        await apiClient.get(
+            '/users/search',
+            {
+                params: {
+                    keyword,
+                },
+            }
+        )
+
+    return response.data
+}
+
+
+/* =========================
+   UPDATE ACCOUNT STATUS
+========================= */
+
+export const updateAccountStatus = async (
+    userId,
+    accountStatus
+) => {
+
+    const response =
+        await apiClient.patch(
+            `/users/${userId}/account-status`,
+            {
+                accountStatus,
+            }
+        )
+
+    return response
+}
+
+
+/* =========================
+   GET USER BY ID
+========================= */
+
+export const getUserById = async (
+    userId
+) => {
+
+    const response =
+        await apiClient.get(
+            `/users/${userId}`
+        )
 
     return response.data
 }

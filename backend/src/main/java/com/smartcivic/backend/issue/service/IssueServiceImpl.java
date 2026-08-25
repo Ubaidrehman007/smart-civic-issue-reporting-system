@@ -323,11 +323,31 @@ public class IssueServiceImpl implements IssueService {
             );
         }
 
+
         // Update editable fields
         issue.setTitle(request.getTitle());
         issue.setDescription(request.getDescription());
+
         issue.setCategory(request.getCategory());
-        issue.setPriority(request.getPriority());
+
+// Recalculate priority automatically from category
+        IssuePriority recalculatedPriority =
+                priorityEvaluationService.calculatePriority(
+                        request.getCategory()
+                );
+
+        issue.setPriority(recalculatedPriority);
+
+// Recalculate SLA based on original issue creation time
+        LocalDateTime recalculatedSlaDueAt =
+                slaService.calculateSlaDueAt(
+                        request.getCategory(),
+                        recalculatedPriority,
+                        issue.getCreatedAt()
+                );
+
+        issue.setSlaDueAt(recalculatedSlaDueAt);
+
         issue.setImageUrl(request.getImageUrl());
         issue.setLatitude(request.getLatitude());
         issue.setLongitude(request.getLongitude());
@@ -451,6 +471,9 @@ public class IssueServiceImpl implements IssueService {
 
                 .createdAt(issue.getCreatedAt())
                 .updatedAt(issue.getUpdatedAt())
+                .slaDueAt(issue.getSlaDueAt())
+                .slaBreached(issue.getSlaBreached())
+                .slaBreachedAt(issue.getSlaBreachedAt())
                 .build();
     }
 
@@ -520,6 +543,9 @@ public class IssueServiceImpl implements IssueService {
                 .status(issue.getStatus())
                 .address(issue.getAddress())
                 .createdAt(issue.getCreatedAt())
+                .slaDueAt(issue.getSlaDueAt())
+                .slaBreached(issue.getSlaBreached())
+                .slaBreachedAt(issue.getSlaBreachedAt())
 
         .assignedToId(
                 issue.getAssignedTo() != null

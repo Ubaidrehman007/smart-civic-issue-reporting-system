@@ -30,6 +30,11 @@ public class IssueSummaryResponse {
     private Double distance;
 
     private UUID assignedToId;
+    private LocalDateTime slaDueAt;
+
+    private Boolean slaBreached;
+
+    private LocalDateTime slaBreachedAt;
 
     private String assignedToName;
 

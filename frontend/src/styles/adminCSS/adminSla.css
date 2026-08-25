@@ -378,3 +378,55 @@
     }
 
 }
+/* =========================
+   SLA DUE DATE
+========================= */
+
+.admin-sla-due-date {
+    display: block;
+    color: #4f5d75;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+
+/* =========================
+   SLA STATUS BADGE
+========================= */
+
+.admin-sla-status-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.admin-sla-status-badge.breached {
+    background: #fff0f0;
+    color: #d43d3d;
+}
+
+
+/* =========================
+   BREACHED SINCE
+========================= */
+
+.admin-sla-breached-at {
+    display: block;
+    margin-top: 5px;
+    color: #9aa6b8;
+    font-size: 10px;
+    white-space: nowrap;
+}
+
+/* =========================
+   ACTION BUTTON
+========================= */
+
+.admin-sla-view-button {
+    white-space: nowrap;
+}

@@ -16,6 +16,31 @@ function AdminSlaPage() {
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState('')
 
+
+    /* =========================
+       FORMAT DATE & TIME
+    ========================= */
+
+    const formatDateTime = (dateTime) => {
+
+        if (!dateTime) {
+            return '—'
+        }
+
+        return new Date(dateTime).toLocaleString(
+            'en-IN',
+            {
+                dateStyle: 'medium',
+                timeStyle: 'short',
+            }
+        )
+    }
+
+
+    /* =========================
+       LOAD SLA DATA
+    ========================= */
+
     const loadSlaData = async () => {
 
         try {
@@ -28,12 +53,14 @@ function AdminSlaPage() {
                 breachedResponse,
             ] = await Promise.all([
                 getSlaStatistics(),
+
                 getSlaBreachedIssues({
                     page: 0,
                     size: 50,
                     sort: 'createdAt,desc',
                 }),
             ])
+
 
             console.log(
                 'SLA statistics:',
@@ -45,11 +72,21 @@ function AdminSlaPage() {
                 breachedResponse
             )
 
+
+            /* =========================
+               STATISTICS
+            ========================= */
+
             setStatistics(
                 statisticsResponse?.data ||
                 statisticsResponse ||
                 null
             )
+
+
+            /* =========================
+               BREACHED ISSUES
+            ========================= */
 
             setBreachedIssues(
                 breachedResponse?.data?.content ||
@@ -75,10 +112,20 @@ function AdminSlaPage() {
     }
 
 
+    /* =========================
+       INITIAL LOAD
+    ========================= */
+
     useEffect(() => {
+
         loadSlaData()
+
     }, [])
 
+
+    /* =========================
+       VIEW ISSUE
+    ========================= */
 
     const handleViewIssue = (issueId) => {
 
@@ -88,13 +135,19 @@ function AdminSlaPage() {
     }
 
 
+    /* =========================
+       LOADING STATE
+    ========================= */
+
     if (loading) {
 
         return (
             <div className="admin-sla-page">
 
                 <div className="admin-sla-state">
+
                     Loading SLA information...
+
                 </div>
 
             </div>
@@ -102,13 +155,19 @@ function AdminSlaPage() {
     }
 
 
+    /* =========================
+       ERROR STATE
+    ========================= */
+
     if (error) {
 
         return (
             <div className="admin-sla-page">
 
                 <div className="admin-sla-state error">
+
                     {error}
+
                 </div>
 
             </div>
@@ -119,6 +178,7 @@ function AdminSlaPage() {
     return (
         <div className="admin-sla-page">
 
+
             {/* =========================
                 HEADER
             ========================= */}
@@ -126,13 +186,18 @@ function AdminSlaPage() {
             <div className="admin-sla-header">
 
                 <div>
-                    <h1>SLA Management</h1>
+
+                    <h1>
+                        SLA Management
+                    </h1>
 
                     <p>
                         Monitor service-level deadlines
                         and breached issues.
                     </p>
+
                 </div>
+
 
                 <button
                     type="button"
@@ -151,6 +216,9 @@ function AdminSlaPage() {
 
             <div className="admin-sla-statistics">
 
+
+                {/* TOTAL ISSUES */}
+
                 <div className="admin-sla-stat-card">
 
                     <span className="admin-sla-stat-label">
@@ -163,6 +231,8 @@ function AdminSlaPage() {
 
                 </div>
 
+
+                {/* SLA BREACHED */}
 
                 <div className="admin-sla-stat-card breached">
 
@@ -177,6 +247,8 @@ function AdminSlaPage() {
                 </div>
 
 
+                {/* WITHIN SLA */}
+
                 <div className="admin-sla-stat-card within">
 
                     <span className="admin-sla-stat-label">
@@ -189,6 +261,8 @@ function AdminSlaPage() {
 
                 </div>
 
+
+                {/* RESOLVED */}
 
                 <div className="admin-sla-stat-card resolved">
 
@@ -206,14 +280,18 @@ function AdminSlaPage() {
 
 
             {/* =========================
-                BREACHED ISSUES
+                SLA BREACHED ISSUES
             ========================= */}
 
             <section className="admin-sla-table-card">
 
+
+                {/* TABLE HEADER */}
+
                 <div className="admin-sla-table-header">
 
                     <div>
+
                         <h2>
                             SLA Breached Issues
                         </h2>
@@ -222,14 +300,22 @@ function AdminSlaPage() {
                             Issues that have exceeded
                             their SLA deadline.
                         </p>
+
                     </div>
 
+
                     <span className="admin-sla-count">
+
                         {breachedIssues.length}
+
                     </span>
 
                 </div>
 
+
+                {/* =========================
+                    EMPTY STATE
+                ========================= */}
 
                 {breachedIssues.length === 0 ? (
 
@@ -243,7 +329,13 @@ function AdminSlaPage() {
 
                     <div className="admin-sla-table-wrapper">
 
+
                         <table className="admin-sla-table">
+
+
+                            {/* =========================
+                                TABLE HEAD
+                            ========================= */}
 
                             <thead>
 
@@ -266,6 +358,14 @@ function AdminSlaPage() {
                                 </th>
 
                                 <th>
+                                    SLA Due At
+                                </th>
+
+                                <th>
+                                    SLA Status
+                                </th>
+
+                                <th>
                                     Assigned Worker
                                 </th>
 
@@ -278,6 +378,10 @@ function AdminSlaPage() {
                             </thead>
 
 
+                            {/* =========================
+                                TABLE BODY
+                            ========================= */}
+
                             <tbody>
 
                             {breachedIssues.map(
@@ -286,6 +390,11 @@ function AdminSlaPage() {
                                     <tr
                                         key={issue.id}
                                     >
+
+
+                                        {/* =========================
+                                            ISSUE
+                                        ========================= */}
 
                                         <td>
 
@@ -296,51 +405,122 @@ function AdminSlaPage() {
                                                 </strong>
 
                                                 <span>
-                                                        {issue.address}
-                                                    </span>
+                                                    {issue.address}
+                                                </span>
 
                                             </div>
 
                                         </td>
 
 
-                                        <td>
-                                                <span className="admin-sla-category">
-                                                    {issue.category}
-                                                </span>
-                                        </td>
-
+                                        {/* =========================
+                                            CATEGORY
+                                        ========================= */}
 
                                         <td>
 
-                                                <span
-                                                    className={`admin-sla-priority priority-${String(
-                                                        issue.priority
-                                                    ).toLowerCase()}`}
-                                                >
-                                                    {issue.priority}
-                                                </span>
+                                            <span className="admin-sla-category">
+
+                                                {issue.category}
+
+                                            </span>
 
                                         </td>
 
 
+                                        {/* =========================
+                                            PRIORITY
+                                        ========================= */}
+
                                         <td>
 
-                                                <span
-                                                    className={`admin-sla-status status-${String(
-                                                        issue.status
-                                                    ).toLowerCase()}`}
-                                                >
-                                                    {String(
-                                                        issue.status
-                                                    ).replaceAll(
-                                                        '_',
-                                                        ' '
+                                            <span
+                                                className={`admin-sla-priority priority-${String(
+                                                    issue.priority
+                                                ).toLowerCase()}`}
+                                            >
+
+                                                {issue.priority}
+
+                                            </span>
+
+                                        </td>
+
+
+                                        {/* =========================
+                                            ISSUE STATUS
+                                        ========================= */}
+
+                                        <td>
+
+                                            <span
+                                                className={`admin-sla-status status-${String(
+                                                    issue.status
+                                                ).toLowerCase()}`}
+                                            >
+
+                                                {String(
+                                                    issue.status
+                                                ).replaceAll(
+                                                    '_',
+                                                    ' '
+                                                )}
+
+                                            </span>
+
+                                        </td>
+
+
+                                        {/* =========================
+                                            SLA DUE AT
+                                        ========================= */}
+
+                                        <td>
+
+                                            <span className="admin-sla-due-date">
+
+                                                {formatDateTime(
+                                                    issue.slaDueAt
+                                                )}
+
+                                            </span>
+
+                                        </td>
+
+
+                                        {/* =========================
+                                            SLA STATUS
+                                        ========================= */}
+
+                                        <td>
+
+                                            <span className="admin-sla-status-badge breached">
+
+                                                BREACHED
+
+                                            </span>
+
+
+                                            {issue.slaBreachedAt && (
+
+                                                <span className="admin-sla-breached-at">
+
+                                                    Since{' '}
+
+                                                    {formatDateTime(
+                                                        issue.slaBreachedAt
                                                     )}
+
                                                 </span>
+
+                                            )}
 
                                         </td>
 
+
+                                        {/* =========================
+                                            ASSIGNED WORKER
+                                        ========================= */}
 
                                         <td>
 
@@ -352,10 +532,13 @@ function AdminSlaPage() {
                                                         {issue.assignedToName}
                                                     </strong>
 
+
                                                     {issue.assignedToEmail && (
+
                                                         <span>
-                                                                {issue.assignedToEmail}
-                                                            </span>
+                                                            {issue.assignedToEmail}
+                                                        </span>
+
                                                     )}
 
                                                 </div>
@@ -363,13 +546,19 @@ function AdminSlaPage() {
                                             ) : (
 
                                                 <span className="admin-sla-unassigned">
-                                                        Not Assigned
-                                                    </span>
+
+                                                    Not Assigned
+
+                                                </span>
 
                                             )}
 
                                         </td>
 
+
+                                        {/* =========================
+                                            ACTION
+                                        ========================= */}
 
                                         <td>
 
@@ -382,7 +571,9 @@ function AdminSlaPage() {
                                                     )
                                                 }
                                             >
+
                                                 View Issue
+
                                             </button>
 
                                         </td>

@@ -44,4 +44,10 @@ public class IssueResponse {
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
+
+    private LocalDateTime slaDueAt;
+
+    private Boolean slaBreached;
+
+    private LocalDateTime slaBreachedAt;
 }

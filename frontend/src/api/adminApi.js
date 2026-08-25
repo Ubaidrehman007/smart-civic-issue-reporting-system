@@ -7,6 +7,15 @@ export const getAdminDashboardStatistics = async () => {
 
     return response.data
 }
+
+export const getAdminAnalytics = async () => {
+
+    const response = await apiClient.get(
+        '/admin/analytics'
+    )
+
+    return response.data
+}
 /* =========================
    SLA STATISTICS
 ========================= */

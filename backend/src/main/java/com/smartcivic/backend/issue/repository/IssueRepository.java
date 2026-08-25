@@ -18,14 +18,37 @@ import java.util.UUID;
 
 public interface IssueRepository extends JpaRepository<Issue, UUID> {
 
-    Page<Issue> findByReportedBy(User user, Pageable pageable);
+    /* =========================
+       BASIC ISSUE QUERIES
+    ========================= */
 
-    Page<Issue> findByStatus(IssueStatus status, Pageable pageable);
+    Page<Issue> findByReportedBy(
+            User user,
+            Pageable pageable
+    );
 
-    Page<Issue> findByCategory(IssueCategory category, Pageable pageable);
 
-    Page<Issue> findByPriority(IssuePriority priority, Pageable pageable);
+    Page<Issue> findByStatus(
+            IssueStatus status,
+            Pageable pageable
+    );
 
+
+    Page<Issue> findByCategory(
+            IssueCategory category,
+            Pageable pageable
+    );
+
+
+    Page<Issue> findByPriority(
+            IssuePriority priority,
+            Pageable pageable
+    );
+
+
+    /* =========================
+       NEARBY ISSUES
+    ========================= */
 
     @Query(
             value = """
@@ -83,56 +106,61 @@ public interface IssueRepository extends JpaRepository<Issue, UUID> {
             Pageable pageable
     );
 
+
+    /* =========================
+       NEARBY ISSUES BY CATEGORY
+    ========================= */
+
     @Query(
             value = """
-        SELECT
-            id,
-            title,
-            category,
-            priority,
-            status,
-            address,
-            created_at AS createdAt,
+            SELECT
+                id,
+                title,
+                category,
+                priority,
+                status,
+                address,
+                created_at AS createdAt,
 
-            ST_Distance(
+                ST_Distance(
+                    location::geography,
+                    ST_SetSRID(
+                        ST_MakePoint(:longitude, :latitude),
+                        4326
+                    )::geography
+                ) AS distance
+
+            FROM issues
+
+            WHERE category = :category
+
+            AND ST_DWithin(
                 location::geography,
                 ST_SetSRID(
                     ST_MakePoint(:longitude, :latitude),
                     4326
-                )::geography
-            ) AS distance
+                )::geography,
+                :radius
+            )
 
-        FROM issues
-
-        WHERE category = :category
-
-        AND ST_DWithin(
-            location::geography,
-            ST_SetSRID(
-                ST_MakePoint(:longitude, :latitude),
-                4326
-            )::geography,
-            :radius
-        )
-
-        ORDER BY distance ASC
-        """,
+            ORDER BY distance ASC
+            """,
 
             countQuery = """
-        SELECT COUNT(*)
-        FROM issues
+            SELECT COUNT(*)
+            FROM issues
 
-        WHERE category = :category
+            WHERE category = :category
 
-        AND ST_DWithin(
-            location::geography,
-            ST_SetSRID(
-                ST_MakePoint(:longitude, :latitude),
-                4326
-            )::geography,
-            :radius
-        )
-        """,
+            AND ST_DWithin(
+                location::geography,
+                ST_SetSRID(
+                    ST_MakePoint(:longitude, :latitude),
+                    4326
+                )::geography,
+                :radius
+            )
+            """,
 
             nativeQuery = true
     )
@@ -144,10 +172,20 @@ public interface IssueRepository extends JpaRepository<Issue, UUID> {
             Pageable pageable
     );
 
+
+    /* =========================
+       ASSIGNMENT
+    ========================= */
+
     Page<Issue> findByAssignedTo_Id(
             UUID fieldWorkerId,
             Pageable pageable
     );
+
+
+    /* =========================
+       SLA
+    ========================= */
 
     List<Issue> findBySlaDueAtBeforeAndSlaBreachedFalseAndStatusNot(
             LocalDateTime currentTime,
@@ -155,20 +193,84 @@ public interface IssueRepository extends JpaRepository<Issue, UUID> {
     );
 
 
-    Page<Issue> findBySlaBreachedTrue(Pageable pageable);
+    Page<Issue> findBySlaBreachedTrue(
+            Pageable pageable
+    );
+
 
     long countBySlaBreachedTrue();
 
+
     long countBySlaBreachedFalse();
 
-    long countByStatus(IssueStatus status);
+
+    /* =========================
+       STATUS COUNTS
+    ========================= */
+
+    long countByStatus(
+            IssueStatus status
+    );
+
+
+    /* =========================
+       ANALYTICS
+       ISSUES BY STATUS
+    ========================= */
 
     @Query("""
-        SELECT i
-        FROM Issue i
-        WHERE LOWER(i.title) LIKE LOWER(CONCAT('%', :keyword, '%'))
-           OR LOWER(i.address) LIKE LOWER(CONCAT('%', :keyword, '%'))
-        """)
+            SELECT
+                i.status,
+                COUNT(i)
+            FROM Issue i
+            GROUP BY i.status
+            """)
+    List<Object[]> countIssuesByStatus();
+
+
+    /* =========================
+       ANALYTICS
+       ISSUES BY CATEGORY
+    ========================= */
+
+    @Query("""
+            SELECT
+                i.category,
+                COUNT(i)
+            FROM Issue i
+            GROUP BY i.category
+            """)
+    List<Object[]> countIssuesByCategory();
+
+
+    /* =========================
+       ANALYTICS
+       ISSUES BY PRIORITY
+    ========================= */
+
+    @Query("""
+            SELECT
+                i.priority,
+                COUNT(i)
+            FROM Issue i
+            GROUP BY i.priority
+            """)
+    List<Object[]> countIssuesByPriority();
+
+
+    /* =========================
+       SEARCH ISSUES
+    ========================= */
+
+    @Query("""
+            SELECT i
+            FROM Issue i
+            WHERE LOWER(i.title) LIKE
+                  LOWER(CONCAT('%', :keyword, '%'))
+
+               OR LOWER(i.address) LIKE
+                  LOWER(CONCAT('%', :keyword, '%'))
+            """)
     Page<Issue> searchIssues(
             @Param("keyword") String keyword,
             Pageable pageable

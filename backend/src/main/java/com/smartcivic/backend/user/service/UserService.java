@@ -44,5 +44,10 @@ public interface UserService {
             UUID userId,
             UpdateProfileRequest request
     );
+
+    void changePassword(
+            String email,
+            ChangePasswordRequest request
+    );
 }
 

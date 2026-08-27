@@ -184,4 +184,23 @@ public class UserController {
         );
     }
 
+
+    @PutMapping("/me/password")
+    public ResponseEntity<ApiResponse<Void>> changePassword(
+            Authentication authentication,
+            @Valid @RequestBody ChangePasswordRequest request
+    ) {
+
+        String email = authentication.getName();
+
+        userService.changePassword(email, request);
+
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        "Password changed successfully",
+                        null
+                )
+        );
+    }
+
 }

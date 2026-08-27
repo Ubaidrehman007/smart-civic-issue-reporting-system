@@ -160,3 +160,11 @@ export const getUserById = async (
 
     return response.data
 }
+
+
+export const changePassword = (passwordData) => {
+    return apiClient.put(
+        '/users/me/password',
+        passwordData
+    )
+}

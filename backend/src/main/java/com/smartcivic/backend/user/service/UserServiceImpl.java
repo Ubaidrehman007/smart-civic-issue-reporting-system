@@ -1,6 +1,7 @@
 package com.smartcivic.backend.user.service;
 
 import com.smartcivic.backend.auth.entity.OtpPurpose;
+import com.smartcivic.backend.auth.exception.InvalidCredentialsException;
 import com.smartcivic.backend.auth.service.OtpService;
 import com.smartcivic.backend.user.dto.*;
 import com.smartcivic.backend.user.entity.AccountStatus;
@@ -270,4 +271,49 @@ public class UserServiceImpl implements UserService {
                 user.getCreatedAt()
         );
     }
+
+    @Override
+    public void changePassword(
+            String email,
+            ChangePasswordRequest request
+    ) {
+
+        User user = userRepository.findByEmail(
+                email.trim().toLowerCase()
+        ).orElseThrow(() ->
+                new UserNotFoundException("User not found")
+        );
+
+        boolean currentPasswordMatches =
+                passwordEncoder.matches(
+                        request.currentPassword(),
+                        user.getPasswordHash()
+                );
+
+        if (!currentPasswordMatches) {
+
+            throw new InvalidCredentialsException(
+                    "Please enter a valid current password"
+            );
+        }
+
+        if (passwordEncoder.matches(
+                request.newPassword(),
+                user.getPasswordHash()
+        )) {
+
+            throw new IllegalArgumentException(
+                    "New password must be different from your current password"
+            );
+        }
+
+        user.setPasswordHash(
+                passwordEncoder.encode(
+                        request.newPassword()
+                )
+        );
+
+        userRepository.save(user);
+    }
+
 }

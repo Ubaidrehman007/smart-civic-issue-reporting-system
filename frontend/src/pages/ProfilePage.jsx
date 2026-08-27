@@ -1,8 +1,30 @@
 import { useEffect, useState } from 'react'
-import {getCurrentUser, updateProfile} from '../api/userApi'
+import { Eye, EyeOff, LockKeyhole } from 'lucide-react'
+import {
+    getCurrentUser,
+    updateProfile,
+    changePassword
+} from '../api/userApi'
+import { useNavigate } from 'react-router-dom'
 import '../styles/citizenCSS/profile.css'
 
 function ProfilePage() {
+
+    const navigate = useNavigate()
+
+    const [passwordData, setPasswordData] = useState({
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: ''
+    })
+
+    const [showCurrentPassword, setShowCurrentPassword] = useState(false)
+    const [showNewPassword, setShowNewPassword] = useState(false)
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+
+    const [changingPassword, setChangingPassword] = useState(false)
+    const [passwordError, setPasswordError] = useState('')
+    const [passwordSuccess, setPasswordSuccess] = useState('')
 
     const [user, setUser] = useState(null)
     const [loading, setLoading] = useState(true)
@@ -90,11 +112,7 @@ function ProfilePage() {
                 phoneNumber: formData.phoneNumber
             })
 
-            setUser({
-                ...user,
-                fullName: formData.fullName,
-                phoneNumber: formData.phoneNumber
-            })
+
 
             setUpdateSuccess(
                 'Profile updated successfully.'
@@ -120,6 +138,109 @@ function ProfilePage() {
 
         }
     }
+
+    const handleChangePassword = async (e) => {
+
+        e.preventDefault()
+
+        setPasswordError('')
+        setPasswordSuccess('')
+
+        if (!passwordData.currentPassword) {
+            setPasswordError(
+                'Please enter your current password.'
+            )
+            return
+        }
+
+        if (!passwordData.newPassword) {
+            setPasswordError(
+                'Please enter a new password.'
+            )
+            return
+        }
+
+        if (passwordData.newPassword.length < 8) {
+            setPasswordError(
+                'New password must be at least 8 characters.'
+            )
+            return
+        }
+
+        if (
+            passwordData.newPassword !==
+            passwordData.confirmPassword
+        ) {
+            setPasswordError(
+                'New passwords do not match.'
+            )
+            return
+        }
+
+        if (
+            passwordData.currentPassword ===
+            passwordData.newPassword
+        ) {
+            setPasswordError(
+                'New password must be different from your current password.'
+            )
+            return
+        }
+
+        try {
+
+            setChangingPassword(true)
+
+            await changePassword({
+                currentPassword:
+                passwordData.currentPassword,
+
+                newPassword:
+                passwordData.newPassword
+            })
+
+            setPasswordSuccess(
+                'Password changed successfully. Redirecting to login...'
+            )
+
+            setPasswordData({
+                currentPassword: '',
+                newPassword: '',
+                confirmPassword: ''
+            })
+
+            /*
+             * Give the user a moment to see
+             * the success message.
+             */
+            setTimeout(() => {
+
+                localStorage.removeItem('token')
+                localStorage.removeItem('user')
+                localStorage.removeItem('userRole')
+
+                navigate('/login')
+
+            }, 1500)
+
+        } catch (err) {
+
+            console.error(
+                'Failed to change password:',
+                err
+            )
+
+            setPasswordError(
+                err.response?.data?.message ||
+                'Unable to change password. Please try again.'
+            )
+
+        } finally {
+
+            setChangingPassword(false)
+        }
+    }
+
 
     if (loading) {
         return (
@@ -390,6 +511,248 @@ function ProfilePage() {
                     </div>
 
                 </div>
+
+
+
+                <div className="security-card">
+
+                    <div className="security-card-header">
+
+                        <div className="security-icon">
+                            <LockKeyhole size={22} />
+                        </div>
+
+                        <div>
+                            <p className="section-label">
+                                SECURITY
+                            </p>
+
+                            <h2>Change Password</h2>
+
+                            <p>
+                                Update your password to keep your account secure.
+                            </p>
+                        </div>
+
+                    </div>
+
+
+                    <form
+                        className="change-password-form"
+                        onSubmit={handleChangePassword}
+                    >
+
+                        {/* CURRENT PASSWORD */}
+
+                        <div className="profile-form-group">
+
+                            <label htmlFor="currentPassword">
+                                Current Password
+                            </label>
+
+                            <div className="password-input-wrapper">
+
+                                <LockKeyhole size={18} />
+
+                                <input
+                                    id="currentPassword"
+                                    type={
+                                        showCurrentPassword
+                                            ? 'text'
+                                            : 'password'
+                                    }
+                                    placeholder="Enter your current password"
+                                    value={passwordData.currentPassword}
+                                    onChange={(e) =>
+                                        setPasswordData({
+                                            ...passwordData,
+                                            currentPassword: e.target.value
+                                        })
+                                    }
+                                    autoComplete="current-password"
+                                />
+
+                                <button
+                                    type="button"
+                                    className="password-visibility-button"
+                                    onClick={() =>
+                                        setShowCurrentPassword(
+                                            !showCurrentPassword
+                                        )
+                                    }
+                                    aria-label="Toggle current password visibility"
+                                >
+                                    {showCurrentPassword
+                                        ? <EyeOff size={18} />
+                                        : <Eye size={18} />
+                                    }
+                                </button>
+
+                            </div>
+
+                        </div>
+
+
+                        {/* NEW PASSWORD */}
+
+                        <div className="profile-form-group">
+
+                            <label htmlFor="newPassword">
+                                New Password
+                            </label>
+
+                            <div className="password-input-wrapper">
+
+                                <LockKeyhole size={18} />
+
+                                <input
+                                    id="newPassword"
+                                    type={
+                                        showNewPassword
+                                            ? 'text'
+                                            : 'password'
+                                    }
+                                    placeholder="Enter your new password"
+                                    value={passwordData.newPassword}
+                                    onChange={(e) =>
+                                        setPasswordData({
+                                            ...passwordData,
+                                            newPassword: e.target.value
+                                        })
+                                    }
+                                    autoComplete="new-password"
+                                />
+
+                                <button
+                                    type="button"
+                                    className="password-visibility-button"
+                                    onClick={() =>
+                                        setShowNewPassword(
+                                            !showNewPassword
+                                        )
+                                    }
+                                    aria-label="Toggle new password visibility"
+                                >
+                                    {showNewPassword
+                                        ? <EyeOff size={18} />
+                                        : <Eye size={18} />
+                                    }
+                                </button>
+
+                            </div>
+
+                            <small>
+                                Password must be between 8 and 72 characters.
+                            </small>
+
+                        </div>
+
+
+                        {/* CONFIRM PASSWORD */}
+
+                        <div className="profile-form-group">
+
+                            <label htmlFor="confirmPassword">
+                                Confirm New Password
+                            </label>
+
+                            <div className="password-input-wrapper">
+
+                                <LockKeyhole size={18} />
+
+                                <input
+                                    id="confirmPassword"
+                                    type={
+                                        showConfirmPassword
+                                            ? 'text'
+                                            : 'password'
+                                    }
+                                    placeholder="Confirm your new password"
+                                    value={passwordData.confirmPassword}
+                                    onChange={(e) =>
+                                        setPasswordData({
+                                            ...passwordData,
+                                            confirmPassword: e.target.value
+                                        })
+                                    }
+                                    autoComplete="new-password"
+                                />
+
+                                <button
+                                    type="button"
+                                    className="password-visibility-button"
+                                    onClick={() =>
+                                        setShowConfirmPassword(
+                                            !showConfirmPassword
+                                        )
+                                    }
+                                    aria-label="Toggle confirm password visibility"
+                                >
+                                    {showConfirmPassword
+                                        ? <EyeOff size={18} />
+                                        : <Eye size={18} />
+                                    }
+                                </button>
+
+                            </div>
+
+                        </div>
+
+
+                        {passwordError && (
+                            <div className="password-change-error">
+                                {passwordError}
+                            </div>
+                        )}
+
+
+                        {passwordSuccess && (
+                            <div className="password-change-success">
+                                {passwordSuccess}
+                            </div>
+                        )}
+
+
+                        <div className="password-change-actions">
+
+                            <button
+                                type="button"
+                                className="cancel-password-button"
+                                onClick={() => {
+
+                                    setPasswordData({
+                                        currentPassword: '',
+                                        newPassword: '',
+                                        confirmPassword: ''
+                                    })
+
+                                    setPasswordError('')
+                                    setPasswordSuccess('')
+
+                                }}
+                                disabled={changingPassword}
+                            >
+                                Clear
+                            </button>
+
+
+                            <button
+                                type="submit"
+                                className="change-password-button"
+                                disabled={changingPassword}
+                            >
+                                {changingPassword
+                                    ? 'Changing Password...'
+                                    : 'Change Password'
+                                }
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
 
             </section>
         </>

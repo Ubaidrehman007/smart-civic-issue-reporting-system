@@ -108,6 +108,12 @@ public class SecurityConfig {
                                 "/api/v1/users/*"
                         ).hasAuthority("ADMIN")
 
+
+                        .requestMatchers(
+                                HttpMethod.PUT,
+                                "/api/v1/users/me/password"
+                        ).authenticated()
+
                         .anyRequest().authenticated()
                 )
 

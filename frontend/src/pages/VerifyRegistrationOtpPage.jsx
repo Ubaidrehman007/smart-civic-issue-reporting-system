@@ -1,7 +1,10 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { Mail, ShieldCheck } from 'lucide-react'
-import { verifyRegistrationOtp } from '../api/authApi'
+import {
+    verifyRegistrationOtp,
+    resendRegistrationOtp,
+} from '../api/authApi'
 import '../styles/auth.css'
 
 function VerifyRegistrationOtpPage() {
@@ -21,6 +24,12 @@ function VerifyRegistrationOtpPage() {
     const [loading, setLoading] =
         useState(false)
 
+    const [resendLoading, setResendLoading] =
+        useState(false)
+
+    const [resendCooldown, setResendCooldown] =
+        useState(60)
+
     const [error, setError] =
         useState('')
 
@@ -28,6 +37,35 @@ function VerifyRegistrationOtpPage() {
         useState('')
 
 
+    /*
+     * Countdown timer
+     */
+    useEffect(() => {
+
+        if (resendCooldown <= 0) {
+            return
+        }
+
+        const timer =
+            setInterval(() => {
+
+                setResendCooldown(
+                    (previous) =>
+                        previous > 0
+                            ? previous - 1
+                            : 0
+                )
+
+            }, 1000)
+
+        return () => clearInterval(timer)
+
+    }, [resendCooldown])
+
+
+    /*
+     * Verify registration OTP
+     */
     const handleSubmit = async (event) => {
 
         event.preventDefault()
@@ -71,6 +109,9 @@ function VerifyRegistrationOtpPage() {
     }
 
 
+    /*
+     * Only allow numeric OTP
+     */
     const handleOtpChange = (event) => {
 
         const value =
@@ -79,6 +120,95 @@ function VerifyRegistrationOtpPage() {
                 .slice(0, 6)
 
         setOtp(value)
+    }
+
+
+    /*
+     * Resend registration OTP
+     */
+    const handleResendOtp = async () => {
+
+        if (resendCooldown > 0 || resendLoading) {
+            return
+        }
+
+        if (!email.trim()) {
+
+            setError(
+                'Please enter your email address.'
+            )
+
+            return
+        }
+
+
+        setResendLoading(true)
+        setError('')
+        setSuccess('')
+
+
+        try {
+
+            const response =
+                await resendRegistrationOtp(
+                    email.trim()
+                )
+
+
+            setSuccess(
+                response.data.message ||
+                'A new OTP has been sent to your email.'
+            )
+
+            /*
+             * Restart 60-second cooldown
+             */
+            setResendCooldown(60)
+
+            /*
+             * Clear old OTP
+             */
+            setOtp('')
+
+
+        } catch (error) {
+
+            const message =
+                error.response?.data?.message ||
+                'Unable to resend OTP. Please try again.'
+
+            setError(message)
+
+
+            /*
+             * If backend tells us how many seconds
+             * remain, synchronize frontend countdown.
+             */
+            const match =
+                message.match(/(\d+)\s*seconds?/i)
+
+            if (match) {
+
+                const remainingSeconds =
+                    Number(match[1])
+
+                if (
+                    Number.isFinite(
+                        remainingSeconds
+                    ) &&
+                    remainingSeconds > 0
+                ) {
+
+                    setResendCooldown(
+                        remainingSeconds
+                    )
+                }
+            }
+
+        } finally {
+
+            setResendLoading(false)
+        }
     }
 
 
@@ -134,7 +264,9 @@ function VerifyRegistrationOtpPage() {
                                 placeholder="Enter your email"
                                 value={email}
                                 onChange={(event) =>
-                                    setEmail(event.target.value)
+                                    setEmail(
+                                        event.target.value
+                                    )
                                 }
                                 required
                             />
@@ -171,6 +303,34 @@ function VerifyRegistrationOtpPage() {
                     </div>
 
 
+                    <div className="otp-resend-section">
+
+                        <span>
+                            Didn't receive the code?
+                        </span>
+
+                        <button
+                            type="button"
+                            className="otp-resend-button"
+                            onClick={handleResendOtp}
+                            disabled={
+                                resendCooldown > 0 ||
+                                resendLoading
+                            }
+                        >
+
+                            {resendLoading
+                                ? 'Sending...'
+                                : resendCooldown > 0
+                                    ? `Resend code in ${resendCooldown}s`
+                                    : 'Resend code'
+                            }
+
+                        </button>
+
+                    </div>
+
+
                     {error && (
                         <div className="auth-error">
                             {error}
@@ -193,20 +353,25 @@ function VerifyRegistrationOtpPage() {
                             otp.length !== 6
                         }
                     >
+
                         {loading
                             ? 'Verifying...'
                             : 'Verify email'
                         }
+
                     </button>
 
                 </form>
 
 
                 <p className="auth-footer">
+
                     Already verified?{' '}
+
                     <Link to="/login">
                         Sign in
                     </Link>
+
                 </p>
 
             </section>

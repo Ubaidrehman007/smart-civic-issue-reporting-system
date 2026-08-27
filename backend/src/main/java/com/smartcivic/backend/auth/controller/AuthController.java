@@ -117,4 +117,20 @@ public class AuthController {
                 )
         );
     }
+
+    @PostMapping("/resend-registration-otp")
+    public ResponseEntity<ApiResponse<Void>> resendRegistrationOtp(
+            @RequestParam String email
+    ) {
+
+        authenticationService.resendRegistrationOtp(email);
+
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        "A new registration OTP has been sent to your email.",
+                        null
+                )
+        );
+    }
+
 }

@@ -15,6 +15,18 @@ export const verifyRegistrationOtp = (data) => {
     )
 }
 
+export const resendRegistrationOtp = (email) => {
+    return apiClient.post(
+        '/auth/resend-registration-otp',
+        null,
+        {
+            params: {
+                email,
+            },
+        }
+    )
+}
+
 export const forgotPassword = (data) => {
     return apiClient.post(
         '/auth/forgot-password',

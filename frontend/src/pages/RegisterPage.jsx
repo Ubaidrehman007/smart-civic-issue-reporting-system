@@ -190,9 +190,18 @@ function RegisterPage() {
                                 id="phoneNumber"
                                 name="phoneNumber"
                                 type="tel"
+                                inputMode="numeric"
+                                maxLength={10}
                                 placeholder="Enter 10-digit mobile number"
                                 value={formData.phoneNumber}
-                                onChange={handleChange}
+                                onChange={(event) =>
+                                    setFormData((previousData) => ({
+                                        ...previousData,
+                                        phoneNumber: event.target.value
+                                            .replace(/\D/g, '')
+                                            .slice(0, 10),
+                                    }))
+                                }
                                 required
                             />
 

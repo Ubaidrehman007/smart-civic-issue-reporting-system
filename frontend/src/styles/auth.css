@@ -310,3 +310,36 @@
 .forgot-password-link a:hover {
     text-decoration: underline;
 }
+
+.otp-resend-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: -6px;
+    margin-bottom: 18px;
+    font-size: 13px;
+}
+
+.otp-resend-section span {
+    color: #64748b;
+}
+
+.otp-resend-button {
+    border: none;
+    background: transparent;
+    color: #2563eb;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0;
+}
+
+.otp-resend-button:hover:not(:disabled) {
+    text-decoration: underline;
+}
+
+.otp-resend-button:disabled {
+    color: #94a3b8;
+    cursor: not-allowed;
+}

@@ -5,8 +5,10 @@ import com.smartcivic.backend.auth.dto.LoginRequest;
 import com.smartcivic.backend.auth.dto.LoginResponse;
 import com.smartcivic.backend.auth.dto.ResetPasswordRequest;
 import com.smartcivic.backend.auth.dto.VerifyRegistrationOtpRequest;
+import com.smartcivic.backend.auth.entity.EmailOtp;
 import com.smartcivic.backend.auth.entity.OtpPurpose;
 import com.smartcivic.backend.auth.exception.InvalidCredentialsException;
+import com.smartcivic.backend.auth.repository.EmailOtpRepository;
 import com.smartcivic.backend.auth.security.JwtService;
 import com.smartcivic.backend.user.entity.AccountStatus;
 import com.smartcivic.backend.user.entity.Role;
@@ -16,6 +18,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
+import java.time.Instant;
+
+
 @Service
 public class AuthenticationService {
 
@@ -23,18 +29,21 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final OtpService otpService;
+    private final EmailOtpRepository emailOtpRepository;
 
     public AuthenticationService(
             UserRepository userRepository,
             PasswordEncoder passwordEncoder,
             JwtService jwtService,
-            OtpService otpService
+            OtpService otpService,
+            EmailOtpRepository emailOtpRepository
     ) {
 
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
         this.otpService = otpService;
+        this.emailOtpRepository = emailOtpRepository;
     }
 
 
@@ -246,4 +255,71 @@ public class AuthenticationService {
 
         userRepository.save(user);
     }
+
+    @Transactional
+    public void resendRegistrationOtp(String email) {
+
+        String normalizedEmail =
+                email.trim().toLowerCase();
+
+        User user =
+                userRepository.findByEmail(normalizedEmail)
+                        .orElseThrow(() ->
+                                new InvalidCredentialsException(
+                                        "Invalid email"
+                                )
+                        );
+
+        if (user.getRole() != Role.CITIZEN) {
+
+            throw new InvalidCredentialsException(
+                    "Registration verification is only available for citizens"
+            );
+        }
+
+        if (user.getAccountStatus() != AccountStatus.PENDING) {
+
+            throw new InvalidCredentialsException(
+                    "This account does not require registration verification"
+            );
+        }
+
+        EmailOtp latestOtp =
+                emailOtpRepository
+                        .findTopByUserAndPurposeOrderByCreatedAtDesc(
+                                user,
+                                OtpPurpose.REGISTRATION
+                        )
+                        .orElse(null);
+
+        if (latestOtp != null) {
+
+            Instant now = Instant.now();
+
+            Instant nextAllowedTime =
+                    latestOtp.getCreatedAt()
+                            .plusSeconds(60);
+
+            if (now.isBefore(nextAllowedTime)) {
+
+                long remainingSeconds =
+                        Duration.between(
+                                now,
+                                nextAllowedTime
+                        ).getSeconds();
+
+                throw new InvalidCredentialsException(
+                        "Please wait "
+                                + remainingSeconds
+                                + " seconds before requesting another OTP."
+                );
+            }
+        }
+
+        otpService.generateAndSendOtp(
+                user,
+                OtpPurpose.REGISTRATION
+        );
+    }
+
 }

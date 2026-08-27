@@ -293,3 +293,20 @@
 .auth-home-button:hover {
     color: #2563eb;
 }
+.forgot-password-link {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: -8px;
+    margin-bottom: 18px;
+}
+
+.forgot-password-link a {
+    color: #2563eb;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.forgot-password-link a:hover {
+    text-decoration: underline;
+}

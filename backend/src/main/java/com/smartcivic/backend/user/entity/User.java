@@ -85,6 +85,7 @@ public class User {
 
     @PrePersist
     protected void onCreate() {
+
         if (id == null) {
             id = UUID.randomUUID();
         }
@@ -95,7 +96,7 @@ public class User {
         updatedAt = now;
 
         if (accountStatus == null) {
-            accountStatus = AccountStatus.ACTIVE;
+            accountStatus = AccountStatus.PENDING;
         }
     }
 

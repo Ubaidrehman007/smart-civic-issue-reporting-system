@@ -125,6 +125,12 @@ function LoginPage() {
                         </div>
                     </div>
 
+                    <div className="forgot-password-link">
+                        <Link to="/forgot-password">
+                            Forgot password?
+                        </Link>
+                    </div>
+
                     {error && (
                         <div className="auth-error">
                             {error}

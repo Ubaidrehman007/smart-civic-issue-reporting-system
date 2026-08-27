@@ -11,6 +11,10 @@ import ProfilePage from './pages/ProfilePage'
 import IssueDetailsPage from './pages/IssueDetailsPage'
 import ProtectedRoute from './components/ProtectedRoute'
 import UnauthorizedPage from './pages/UnauthorizedPage'
+import VerifyRegistrationOtpPage
+    from './pages/VerifyRegistrationOtpPage'
+import ResetPasswordPage
+    from './pages/ResetPasswordPage'
 
 //Admin Imports
 import AdminLayout from './components/AdminLayout'
@@ -23,6 +27,8 @@ import AdminAssignmentsPage from './pages/AdminPage/AdminAssignmentsPage'
 import AdminSlaPage from './pages/AdminPage/AdminSlaPage'
 import AdminAnalyticsPage
     from './pages/AdminPage/AdminAnalyticsPage'
+import ForgotPasswordPage
+    from './pages/ForgotPasswordPage'
 
 function App() {
     return (
@@ -31,6 +37,20 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
+            <Route
+                path="/forgot-password"
+                element={<ForgotPasswordPage />}
+
+            />
+            <Route
+                path="/reset-password"
+                element={<ResetPasswordPage />}
+            />
+
+            <Route
+                path="/verify-registration"
+                element={<VerifyRegistrationOtpPage />}
+            />
             <Route
                 path="/unauthorized"
                 element={<UnauthorizedPage />}

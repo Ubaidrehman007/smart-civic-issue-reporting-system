@@ -1,5 +1,7 @@
 package com.smartcivic.backend.user.service;
 
+import com.smartcivic.backend.auth.entity.OtpPurpose;
+import com.smartcivic.backend.auth.service.OtpService;
 import com.smartcivic.backend.user.dto.*;
 import com.smartcivic.backend.user.entity.AccountStatus;
 import com.smartcivic.backend.user.entity.Role;
@@ -10,6 +12,7 @@ import com.smartcivic.backend.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -20,30 +23,56 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final OtpService otpService;
 
     @Override
+    @Transactional
     public void registerUser(RegisterUserRequest request) {
 
-        if (userRepository.existsByEmail(request.email())) {
-            throw new UserAlreadyExistsException("Email already exists");
+        String email =
+                request.email()
+                        .trim()
+                        .toLowerCase();
+
+        if (userRepository.existsByEmail(email)) {
+            throw new UserAlreadyExistsException(
+                    "Email already exists"
+            );
         }
 
-        if (userRepository.existsByPhoneNumber(request.phoneNumber())) {
-            throw new UserAlreadyExistsException("Phone number already exists");
+        if (userRepository.existsByPhoneNumber(
+                request.phoneNumber()
+        )) {
+            throw new UserAlreadyExistsException(
+                    "Phone number already exists"
+            );
         }
 
         String passwordHash =
-                passwordEncoder.encode(request.password());
+                passwordEncoder.encode(
+                        request.password()
+                );
 
         User user = new User(
                 request.fullName(),
-                request.email().trim().toLowerCase(),
+                email,
                 request.phoneNumber(),
                 passwordHash,
                 Role.CITIZEN
         );
 
+        user.setAccountStatus(
+                AccountStatus.PENDING
+        );
+
+        user.setEmailVerified(false);
+
         userRepository.save(user);
+
+        otpService.generateAndSendOtp(
+                user,
+                OtpPurpose.REGISTRATION
+        );
     }
 
     @Override

@@ -1,26 +1,31 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import {
     Eye,
     EyeOff,
     LockKeyhole,
     Mail,
-    Phone,
-    User,
+    ShieldCheck,
 } from 'lucide-react'
-import { registerUser } from '../api/authApi'
+import { resetPassword } from '../api/authApi'
 import '../styles/auth.css'
 
-function RegisterPage() {
+function ResetPasswordPage() {
 
     const navigate = useNavigate()
+    const location = useLocation()
 
-    const [formData, setFormData] = useState({
-        fullName: '',
-        email: '',
-        phoneNumber: '',
-        password: '',
-    })
+    const emailFromState =
+        location.state?.email || ''
+
+    const [email, setEmail] =
+        useState(emailFromState)
+
+    const [otp, setOtp] =
+        useState('')
+
+    const [newPassword, setNewPassword] =
+        useState('')
 
     const [showPassword, setShowPassword] =
         useState(false)
@@ -31,16 +36,18 @@ function RegisterPage() {
     const [error, setError] =
         useState('')
 
+    const [success, setSuccess] =
+        useState('')
 
-    const handleChange = (event) => {
 
-        const { name, value } =
-            event.target
+    const handleOtpChange = (event) => {
 
-        setFormData((previousData) => ({
-            ...previousData,
-            [name]: value,
-        }))
+        const value =
+            event.target.value
+                .replace(/\D/g, '')
+                .slice(0, 6)
+
+        setOtp(value)
     }
 
 
@@ -50,37 +57,35 @@ function RegisterPage() {
 
         setLoading(true)
         setError('')
+        setSuccess('')
 
 
         try {
 
-            await registerUser(formData)
+            const response =
+                await resetPassword({
+                    email,
+                    otp,
+                    newPassword,
+                })
 
 
-            /*
-             * Registration succeeded.
-             *
-             * Backend has created the user as PENDING
-             * and sent the registration OTP.
-             *
-             * Pass the email to the verification page.
-             */
-
-            navigate(
-                '/verify-registration',
-                {
-                    state: {
-                        email: formData.email,
-                    },
-                }
+            setSuccess(
+                response.data.message ||
+                'Password reset successfully.'
             )
+
+
+            setTimeout(() => {
+                navigate('/login')
+            }, 1500)
 
 
         } catch (error) {
 
             setError(
                 error.response?.data?.message ||
-                'Registration failed. Please try again.'
+                'Unable to reset password. Please try again.'
             )
 
         } finally {
@@ -96,10 +101,10 @@ function RegisterPage() {
             <section className="auth-card">
 
                 <Link
-                    to="/"
+                    to="/login"
                     className="auth-home-button"
                 >
-                    ← Back to Home
+                    ← Back to Sign in
                 </Link>
 
 
@@ -110,12 +115,12 @@ function RegisterPage() {
                     </div>
 
                     <h1>
-                        Create account
+                        Reset your password
                     </h1>
 
                     <p>
-                        Join Smart Civic and help improve
-                        your city.
+                        Enter the verification code sent to
+                        your email and create a new password.
                     </p>
 
                 </div>
@@ -125,31 +130,6 @@ function RegisterPage() {
                     onSubmit={handleSubmit}
                     className="auth-form"
                 >
-
-                    <div className="form-group">
-
-                        <label htmlFor="fullName">
-                            Full name
-                        </label>
-
-                        <div className="input-wrapper">
-
-                            <User size={19} />
-
-                            <input
-                                id="fullName"
-                                name="fullName"
-                                type="text"
-                                placeholder="Enter your full name"
-                                value={formData.fullName}
-                                onChange={handleChange}
-                                required
-                            />
-
-                        </div>
-
-                    </div>
-
 
                     <div className="form-group">
 
@@ -163,11 +143,12 @@ function RegisterPage() {
 
                             <input
                                 id="email"
-                                name="email"
                                 type="email"
                                 placeholder="Enter your email"
-                                value={formData.email}
-                                onChange={handleChange}
+                                value={email}
+                                onChange={(event) =>
+                                    setEmail(event.target.value)
+                                }
                                 required
                             />
 
@@ -178,21 +159,23 @@ function RegisterPage() {
 
                     <div className="form-group">
 
-                        <label htmlFor="phoneNumber">
-                            Phone number
+                        <label htmlFor="otp">
+                            Verification code
                         </label>
 
                         <div className="input-wrapper">
 
-                            <Phone size={19} />
+                            <ShieldCheck size={19} />
 
                             <input
-                                id="phoneNumber"
-                                name="phoneNumber"
-                                type="tel"
-                                placeholder="Enter 10-digit mobile number"
-                                value={formData.phoneNumber}
-                                onChange={handleChange}
+                                id="otp"
+                                type="text"
+                                inputMode="numeric"
+                                autoComplete="one-time-code"
+                                placeholder="Enter 6-digit OTP"
+                                value={otp}
+                                onChange={handleOtpChange}
+                                maxLength={6}
                                 required
                             />
 
@@ -203,8 +186,8 @@ function RegisterPage() {
 
                     <div className="form-group">
 
-                        <label htmlFor="password">
-                            Password
+                        <label htmlFor="newPassword">
+                            New password
                         </label>
 
                         <div className="input-wrapper">
@@ -212,16 +195,21 @@ function RegisterPage() {
                             <LockKeyhole size={19} />
 
                             <input
-                                id="password"
-                                name="password"
+                                id="newPassword"
                                 type={
                                     showPassword
                                         ? 'text'
                                         : 'password'
                                 }
-                                placeholder="Create a password"
-                                value={formData.password}
-                                onChange={handleChange}
+                                placeholder="Enter your new password"
+                                value={newPassword}
+                                onChange={(event) =>
+                                    setNewPassword(
+                                        event.target.value
+                                    )
+                                }
+                                minLength={8}
+                                maxLength={72}
                                 required
                             />
 
@@ -256,14 +244,24 @@ function RegisterPage() {
                     )}
 
 
+                    {success && (
+                        <div className="auth-success">
+                            {success}
+                        </div>
+                    )}
+
+
                     <button
                         type="submit"
                         className="auth-submit"
-                        disabled={loading}
+                        disabled={
+                            loading ||
+                            otp.length !== 6
+                        }
                     >
                         {loading
-                            ? 'Creating account...'
-                            : 'Create account'
+                            ? 'Resetting password...'
+                            : 'Reset password'
                         }
                     </button>
 
@@ -272,7 +270,7 @@ function RegisterPage() {
 
                 <p className="auth-footer">
 
-                    Already have an account?{' '}
+                    Remember your password?{' '}
 
                     <Link to="/login">
                         Sign in
@@ -286,4 +284,4 @@ function RegisterPage() {
     )
 }
 
-export default RegisterPage
+export default ResetPasswordPage

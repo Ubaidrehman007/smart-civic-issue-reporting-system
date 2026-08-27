@@ -35,7 +35,7 @@ public class UserController {
                 .status(HttpStatus.CREATED)
                 .body(
                         ApiResponse.success(
-                                "User registered successfully",
+                                "Registration initiated. Please check your email for the verification OTP.",
                                 null
                         )
                 );

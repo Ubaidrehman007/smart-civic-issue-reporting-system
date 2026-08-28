@@ -432,6 +432,63 @@ public class IssueServiceImpl implements IssueService {
         // Save status history
         issueStatusHistoryRepository.save(statusHistory);
 
+
+        // =====================================================
+        // STATUS CHANGE NOTIFICATION
+        // =====================================================
+
+        String statusChangeMessage =
+                "The status of your issue \""
+                        + updatedIssue.getTitle()
+                        + "\" has been changed from "
+                        + currentStatus
+                        + " to "
+                        + newStatus
+                        + ".";
+
+
+        // =====================================================
+        // CITIZEN NOTIFICATION
+        // =====================================================
+
+        User citizen = updatedIssue.getReportedBy();
+
+        if (citizen != null) {
+
+            notificationService.createNotification(
+                    citizen,
+                    NotificationType.ISSUE_STATUS_CHANGED,
+                    "Issue Status Updated",
+                    statusChangeMessage,
+                    updatedIssue.getId()
+            );
+        }
+
+
+        // =====================================================
+        // FIELD WORKER NOTIFICATION
+        // =====================================================
+
+        User fieldWorker = updatedIssue.getAssignedTo();
+
+        if (fieldWorker != null) {
+
+            notificationService.createNotification(
+                    fieldWorker,
+                    NotificationType.ISSUE_STATUS_CHANGED,
+                    "Issue Status Updated",
+                    "The status of issue \""
+                            + updatedIssue.getTitle()
+                            + "\" has been changed from "
+                            + currentStatus
+                            + " to "
+                            + newStatus
+                            + ".",
+                    updatedIssue.getId()
+            );
+        }
+
+
         return mapToIssueResponse(updatedIssue);
     }
 

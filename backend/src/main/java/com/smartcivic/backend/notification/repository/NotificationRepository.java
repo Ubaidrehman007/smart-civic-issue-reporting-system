@@ -1,6 +1,7 @@
 package com.smartcivic.backend.notification.repository;
 
 import com.smartcivic.backend.notification.entity.Notification;
+import com.smartcivic.backend.notification.entity.NotificationType;
 import com.smartcivic.backend.user.entity.User;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -70,4 +71,11 @@ public interface NotificationRepository
     int markAllAsRead(
             @Param("user") User user
     );
+
+    boolean existsByUserAndTypeAndReferenceId(
+            User user,
+            NotificationType type,
+            UUID referenceId
+    );
+
 }

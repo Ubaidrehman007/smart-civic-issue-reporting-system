@@ -276,4 +276,10 @@ public interface IssueRepository extends JpaRepository<Issue, UUID> {
             Pageable pageable
     );
 
+    List<Issue> findBySlaDueAtBetweenAndSlaBreachedFalseAndStatusNot(
+            LocalDateTime start,
+            LocalDateTime end,
+            IssueStatus status
+    );
+
 }

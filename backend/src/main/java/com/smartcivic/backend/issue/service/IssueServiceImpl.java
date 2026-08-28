@@ -434,32 +434,66 @@ public class IssueServiceImpl implements IssueService {
 
 
         // =====================================================
-        // STATUS CHANGE NOTIFICATION
+        // NOTIFICATION TYPE AND TITLE
         // =====================================================
 
-        String statusChangeMessage =
-                "The status of your issue \""
-                        + updatedIssue.getTitle()
-                        + "\" has been changed from "
-                        + currentStatus
-                        + " to "
-                        + newStatus
-                        + ".";
+        NotificationType notificationType;
+
+        String notificationTitle;
+
+        if (newStatus == IssueStatus.RESOLVED) {
+
+            notificationType =
+                    NotificationType.ISSUE_RESOLVED;
+
+            notificationTitle =
+                    "Issue Resolved";
+
+        } else {
+
+            notificationType =
+                    NotificationType.ISSUE_STATUS_CHANGED;
+
+            notificationTitle =
+                    "Issue Status Updated";
+        }
 
 
         // =====================================================
         // CITIZEN NOTIFICATION
         // =====================================================
 
-        User citizen = updatedIssue.getReportedBy();
+        User citizen =
+                updatedIssue.getReportedBy();
 
         if (citizen != null) {
 
+            String citizenMessage;
+
+            if (newStatus == IssueStatus.RESOLVED) {
+
+                citizenMessage =
+                        "Your issue \""
+                                + updatedIssue.getTitle()
+                                + "\" has been resolved.";
+
+            } else {
+
+                citizenMessage =
+                        "The status of your issue \""
+                                + updatedIssue.getTitle()
+                                + "\" has been changed from "
+                                + currentStatus
+                                + " to "
+                                + newStatus
+                                + ".";
+            }
+
             notificationService.createNotification(
                     citizen,
-                    NotificationType.ISSUE_STATUS_CHANGED,
-                    "Issue Status Updated",
-                    statusChangeMessage,
+                    notificationType,
+                    notificationTitle,
+                    citizenMessage,
                     updatedIssue.getId()
             );
         }
@@ -469,26 +503,43 @@ public class IssueServiceImpl implements IssueService {
         // FIELD WORKER NOTIFICATION
         // =====================================================
 
-        User fieldWorker = updatedIssue.getAssignedTo();
+        User fieldWorker =
+                updatedIssue.getAssignedTo();
 
         if (fieldWorker != null) {
 
+            String workerMessage;
+
+            if (newStatus == IssueStatus.RESOLVED) {
+
+                workerMessage =
+                        "The issue \""
+                                + updatedIssue.getTitle()
+                                + "\" has been marked as resolved.";
+
+            } else {
+
+                workerMessage =
+                        "The status of issue \""
+                                + updatedIssue.getTitle()
+                                + "\" has been changed from "
+                                + currentStatus
+                                + " to "
+                                + newStatus
+                                + ".";
+            }
+
             notificationService.createNotification(
                     fieldWorker,
-                    NotificationType.ISSUE_STATUS_CHANGED,
-                    "Issue Status Updated",
-                    "The status of issue \""
-                            + updatedIssue.getTitle()
-                            + "\" has been changed from "
-                            + currentStatus
-                            + " to "
-                            + newStatus
-                            + ".",
+                    notificationType,
+                    notificationTitle,
+                    workerMessage,
                     updatedIssue.getId()
             );
         }
 
 
+        // Return updated issue response
         return mapToIssueResponse(updatedIssue);
     }
 

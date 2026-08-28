@@ -16,6 +16,8 @@ import com.smartcivic.backend.issue.exception.IssueDeletionNotAllowedException;
 import com.smartcivic.backend.issue.exception.IssueNotFoundException;
 import com.smartcivic.backend.issue.repository.IssueRepository;
 import com.smartcivic.backend.issue.repository.IssueStatusHistoryRepository;
+import com.smartcivic.backend.notification.entity.NotificationType;
+import com.smartcivic.backend.notification.service.NotificationService;
 import com.smartcivic.backend.storage.service.ImageStorageService;
 import com.smartcivic.backend.user.entity.AccountStatus;
 import com.smartcivic.backend.user.entity.Role;
@@ -49,6 +51,7 @@ public class IssueServiceImpl implements IssueService {
     private final IssueStatusHistoryRepository issueStatusHistoryRepository;
     private final SlaService slaService;
     private final PriorityEvaluationService priorityEvaluationService;
+    private final NotificationService notificationService;
 
     @Override
     public IssueResponse createIssue(CreateIssueRequest request, String userEmail) {
@@ -609,8 +612,8 @@ public class IssueServiceImpl implements IssueService {
                 .toList();
     }
 
-    @Transactional
     @Override
+    @Transactional
     public void assignIssue(
             UUID issueId,
             AssignIssueRequest request
@@ -628,20 +631,57 @@ public class IssueServiceImpl implements IssueService {
                 );
 
         if (fieldWorker.getRole() != Role.FIELD_WORKER) {
+
             throw new IllegalArgumentException(
                     "Issue can only be assigned to a field worker"
             );
         }
 
         if (fieldWorker.getAccountStatus() != AccountStatus.ACTIVE) {
+
             throw new IllegalArgumentException(
                     "Issue can only be assigned to an active field worker"
             );
         }
 
+
+        // Assign issue to field worker
         issue.setAssignedTo(fieldWorker);
 
         issueRepository.save(issue);
+
+
+        // =====================================================
+        // WORKER NOTIFICATION
+        // =====================================================
+
+        notificationService.createNotification(
+                fieldWorker,
+                NotificationType.ISSUE_ASSIGNED,
+                "New Issue Assigned",
+                "You have been assigned a new civic issue: "
+                        + issue.getTitle(),
+                issue.getId()
+        );
+
+
+        // =====================================================
+        // CITIZEN NOTIFICATION
+        // =====================================================
+
+        User citizen = issue.getReportedBy();
+
+        if (citizen != null) {
+
+            notificationService.createNotification(
+                    citizen,
+                    NotificationType.ISSUE_ASSIGNED,
+                    "Field Worker Assigned",
+                    "A field worker has been assigned to your reported issue: "
+                            + issue.getTitle(),
+                    issue.getId()
+            );
+        }
     }
 
     @Override

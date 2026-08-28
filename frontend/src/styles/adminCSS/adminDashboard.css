@@ -1,53 +1,564 @@
-/* =========================================
-   ADMIN DASHBOARD
-========================================= */
+/* =========================================================
+   SMART CIVIC — ADMIN DASHBOARD
+========================================================= */
 
 .admin-dashboard-page {
     width: 100%;
-    max-width: 1400px;
+    max-width: 1500px;
     margin: 0 auto;
-    padding: 42px 48px 60px;
+    padding: 40px 48px 70px;
     box-sizing: border-box;
+
+    font-family:
+            Inter,
+            -apple-system,
+            BlinkMacSystemFont,
+            "Segoe UI",
+            sans-serif;
+
+    color: #172033;
 }
 
 
-/* =========================================
+/* =========================================================
    HEADER
-========================================= */
+========================================================= */
 
 .admin-dashboard-header {
+    width: 100%;
     margin-bottom: 42px;
+}
+
+.admin-dashboard-header-content {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 30px;
 }
 
 .admin-dashboard-eyebrow {
     margin: 0 0 10px;
+
     font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 2px;
+    line-height: 1;
+
+    font-weight: 800;
+    letter-spacing: 2.5px;
+
     color: #2563eb;
 }
 
 .admin-dashboard-header h1 {
     margin: 0;
-    font-size: 38px;
+
+    font-size: 40px;
     line-height: 1.15;
-    font-weight: 700;
+
+    font-weight: 750;
+
+    letter-spacing: -0.8px;
+
     color: #172033;
 }
 
-.admin-dashboard-header p:last-child {
-    margin: 10px 0 0;
+.admin-dashboard-header-content > div:first-child > p:last-child {
+    margin: 11px 0 0;
+
     font-size: 16px;
-    color: #6b7280;
+    line-height: 1.5;
+
+    color: #71809a;
 }
 
 
-/* =========================================
-   SECTIONS
-========================================= */
+/* =========================================================
+   NOTIFICATION CENTER
+========================================================= */
+
+.admin-notification-wrapper {
+    position: relative;
+
+    flex-shrink: 0;
+}
+
+
+/* Bell button */
+
+.admin-notification-button {
+    position: relative;
+
+    width: 58px;
+    height: 58px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    border: 1px solid #e0e6ef;
+    border-radius: 16px;
+
+    background: #ffffff;
+
+    box-shadow:
+            0 8px 24px rgba(24, 39, 75, 0.07);
+
+    cursor: pointer;
+
+    transition:
+            transform 0.2s ease,
+            border-color 0.2s ease,
+            box-shadow 0.2s ease,
+            background 0.2s ease;
+}
+
+.admin-notification-button:hover {
+    transform: translateY(-2px);
+
+    border-color: #cfd9ea;
+
+    box-shadow:
+            0 12px 28px rgba(24, 39, 75, 0.11);
+}
+
+.admin-notification-button.active {
+    border-color: #2563eb;
+
+    background: #f7faff;
+
+    box-shadow:
+            0 0 0 4px rgba(37, 99, 235, 0.10);
+}
+
+.admin-notification-bell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 23px;
+
+    line-height: 1;
+}
+
+
+/* Notification count */
+
+.admin-notification-badge {
+    position: absolute;
+
+    top: -6px;
+    right: -6px;
+
+    min-width: 22px;
+    height: 22px;
+
+    padding: 0 5px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    box-sizing: border-box;
+
+    border: 3px solid #f5f7fb;
+    border-radius: 999px;
+
+    background: #ef4444;
+
+    color: #ffffff;
+
+    font-size: 10px;
+    font-weight: 800;
+
+    line-height: 1;
+}
+
+
+/* =========================================================
+   NOTIFICATION DROPDOWN
+========================================================= */
+
+.admin-notification-dropdown {
+    position: absolute;
+
+    top: calc(100% + 14px);
+    right: 0;
+
+    width: 410px;
+
+    z-index: 100;
+
+    overflow: hidden;
+
+    border: 1px solid #e1e7f0;
+    border-radius: 18px;
+
+    background: #ffffff;
+
+    box-shadow:
+            0 20px 55px rgba(15, 23, 42, 0.15);
+
+    animation:
+            notificationDropdownIn 0.18s ease-out;
+}
+
+@keyframes notificationDropdownIn {
+
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* Dropdown header */
+
+.admin-notification-dropdown-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 18px;
+
+    padding: 19px 20px;
+
+    border-bottom: 1px solid #edf1f6;
+}
+
+.admin-notification-dropdown-header h3 {
+    margin: 0 0 4px;
+
+    font-size: 17px;
+    font-weight: 700;
+
+    color: #172033;
+}
+
+.admin-notification-dropdown-header span {
+    font-size: 12px;
+
+    color: #8a97aa;
+}
+
+.admin-notification-mark-all {
+    flex-shrink: 0;
+
+    padding: 7px 9px;
+
+    border: none;
+    border-radius: 7px;
+
+    background: transparent;
+
+    color: #2563eb;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+            background 0.2s ease,
+            color 0.2s ease;
+}
+
+.admin-notification-mark-all:hover {
+    background: #eff6ff;
+
+    color: #1d4ed8;
+}
+
+
+/* =========================================================
+   NOTIFICATION LIST
+========================================================= */
+
+.admin-notification-list {
+    max-height: 430px;
+
+    overflow-y: auto;
+}
+
+.admin-notification-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.admin-notification-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.admin-notification-list::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+
+    background: #d8dfeb;
+}
+
+
+/* Notification item */
+
+.admin-notification-item {
+    width: 100%;
+
+    display: flex;
+    align-items: flex-start;
+
+    gap: 13px;
+
+    padding: 16px 20px;
+
+    box-sizing: border-box;
+
+    border: none;
+    border-bottom: 1px solid #f0f3f7;
+
+    background: #ffffff;
+
+    text-align: left;
+
+    cursor: pointer;
+
+    transition:
+            background 0.2s ease;
+}
+
+.admin-notification-item:hover {
+    background: #f8faff;
+}
+
+.admin-notification-item.unread {
+    background: #f7faff;
+}
+
+.admin-notification-item.unread:hover {
+    background: #f0f6ff;
+}
+
+
+/* Notification icon */
+
+.admin-notification-icon {
+    width: 34px;
+    height: 34px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 10px;
+
+    font-size: 15px;
+    font-weight: 800;
+}
+
+
+/* Notification icon types */
+
+.admin-notification-icon.danger {
+    background: #fff0f0;
+    color: #dc2626;
+}
+
+.admin-notification-icon.success {
+    background: #eaf9f0;
+    color: #16a34a;
+}
+
+.admin-notification-icon.status {
+    background: #edf4ff;
+    color: #2563eb;
+}
+
+.admin-notification-icon.priority {
+    background: #fff6e6;
+    color: #d97706;
+}
+
+.admin-notification-icon.user {
+    background: #eef2ff;
+    color: #4f46e5;
+}
+
+.admin-notification-icon.default {
+    background: #f1f4f8;
+    color: #64748b;
+}
+
+
+/* Notification content */
+
+.admin-notification-content {
+    min-width: 0;
+
+    flex: 1;
+}
+
+.admin-notification-title-row {
+    display: flex;
+    align-items: center;
+
+    gap: 8px;
+}
+
+.admin-notification-title-row strong {
+    min-width: 0;
+
+    overflow: hidden;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    color: #25324a;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.admin-notification-content p {
+    margin: 5px 0 7px;
+
+    font-size: 12px;
+    line-height: 1.45;
+
+    color: #6f7d92;
+}
+
+.admin-notification-time {
+    display: block;
+
+    font-size: 11px;
+
+    color: #9aa6b8;
+}
+
+
+/* Unread dot */
+
+.admin-notification-unread-dot {
+    width: 7px;
+    height: 7px;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    background: #2563eb;
+}
+
+
+/* =========================================================
+   NOTIFICATION STATES
+========================================================= */
+
+.admin-notification-state {
+    padding: 35px 20px;
+
+    text-align: center;
+
+    font-size: 13px;
+
+    color: #7c899f;
+}
+
+.admin-notification-empty {
+    min-height: 180px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    gap: 6px;
+
+    padding: 25px;
+
+    text-align: center;
+}
+
+.admin-notification-empty-icon {
+    width: 42px;
+    height: 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin-bottom: 5px;
+
+    border-radius: 50%;
+
+    background: #eaf9f0;
+
+    color: #16a34a;
+
+    font-size: 18px;
+    font-weight: 800;
+}
+
+.admin-notification-empty strong {
+    font-size: 14px;
+
+    color: #34415a;
+}
+
+.admin-notification-empty span {
+    font-size: 12px;
+
+    color: #98a5b7;
+}
+
+
+/* View all */
+
+.admin-notification-view-all {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 7px;
+
+    padding: 14px 18px;
+
+    border: none;
+    border-top: 1px solid #edf1f6;
+
+    background: #ffffff;
+
+    color: #2563eb;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+            background 0.2s ease;
+}
+
+.admin-notification-view-all:hover {
+    background: #f7faff;
+}
+
+.admin-notification-view-all span {
+    font-size: 15px;
+}
+
+
+/* =========================================================
+   DASHBOARD SECTIONS
+========================================================= */
 
 .admin-dashboard-section {
-    margin-bottom: 42px;
+    margin-bottom: 44px;
 }
 
 .admin-section-heading {
@@ -56,57 +567,98 @@
 
 .admin-section-heading h2 {
     margin: 0;
-    font-size: 23px;
+
+    font-size: 22px;
+    line-height: 1.3;
+
     font-weight: 700;
+
+    letter-spacing: -0.2px;
+
     color: #172033;
 }
 
 .admin-section-heading p {
     margin: 6px 0 0;
+
     font-size: 14px;
-    color: #7a8496;
+    line-height: 1.5;
+
+    color: #7b879b;
 }
 
 
-/* =========================================
-   STAT CARDS
-========================================= */
+/* =========================================================
+   STAT GRID
+========================================================= */
 
 .admin-stat-grid {
     display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
+
+    grid-template-columns:
+        repeat(5, minmax(0, 1fr));
+
     gap: 18px;
 }
 
+
+/* =========================================================
+   STAT CARD
+========================================================= */
+
 .admin-stat-card {
     position: relative;
-    min-height: 165px;
-    padding: 22px;
-    border: 1px solid #e4e8ef;
-    border-radius: 16px;
-    background: #ffffff;
-    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+
+    min-height: 170px;
+
+    padding: 23px;
+
     box-sizing: border-box;
+
     overflow: hidden;
+
+    border: 1px solid #e3e8f0;
+    border-radius: 17px;
+
+    background: #ffffff;
+
+    box-shadow:
+            0 8px 24px rgba(24, 39, 75, 0.05);
+
     transition:
             transform 0.2s ease,
-            box-shadow 0.2s ease;
+            box-shadow 0.2s ease,
+            border-color 0.2s ease;
 }
 
 .admin-stat-card:hover {
     transform: translateY(-3px);
-    box-shadow: 0 14px 30px rgba(15, 23, 42, 0.09);
+
+    border-color: #d8e0ec;
+
+    box-shadow:
+            0 14px 32px rgba(24, 39, 75, 0.09);
 }
 
+
+/* Left accent */
+
 .admin-stat-card::before {
-    content: '';
+    content: "";
+
     position: absolute;
+
     left: 0;
     top: 0;
+
     width: 4px;
     height: 100%;
+
     background: #2563eb;
 }
+
+
+/* Card variants */
 
 .admin-stat-card.reported::before {
     background: #3b82f6;
@@ -141,113 +693,164 @@
 }
 
 
-/* =========================================
-   CARD TOP
-========================================= */
+/* =========================================================
+   STAT CARD TOP
+========================================================= */
 
 .admin-stat-card-top {
     display: flex;
     align-items: center;
+
     gap: 10px;
-    margin-bottom: 18px;
+
+    margin-bottom: 20px;
 }
 
 .admin-stat-icon {
-    display: inline-flex;
+    width: 36px;
+    height: 36px;
+
+    display: flex;
     align-items: center;
     justify-content: center;
-    width: 34px;
-    height: 34px;
+
+    flex-shrink: 0;
+
     border-radius: 10px;
+
     background: #eff6ff;
+
     color: #2563eb;
+
     font-size: 12px;
     font-weight: 800;
 }
 
 .admin-stat-label {
-    font-size: 14px;
-    font-weight: 600;
-    color: #667085;
+    font-size: 13px;
+
+    font-weight: 650;
+
+    color: #66748a;
 }
 
 
-/* =========================================
-   CARD VALUE
-========================================= */
+/* =========================================================
+   STAT VALUE
+========================================================= */
 
 .admin-stat-card strong {
     display: block;
+
     margin-bottom: 8px;
+
     font-size: 36px;
     line-height: 1;
-    font-weight: 700;
+
+    font-weight: 750;
+
+    letter-spacing: -0.8px;
+
     color: #172033;
 }
 
 .admin-stat-description {
     display: block;
+
     font-size: 12px;
     line-height: 1.5;
-    color: #98a2b3;
+
+    color: #98a4b6;
 }
 
 
-/* =========================================
+/* =========================================================
    STATUS SUMMARY
-========================================= */
+========================================================= */
 
 .admin-summary-panel {
-    padding: 26px;
-    border: 1px solid #e4e8ef;
-    border-radius: 16px;
+    padding: 27px;
+
+    box-sizing: border-box;
+
+    border: 1px solid #e3e8f0;
+    border-radius: 17px;
+
     background: #ffffff;
-    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+
+    box-shadow:
+            0 8px 24px rgba(24, 39, 75, 0.05);
 }
 
 .admin-summary-row {
     display: grid;
-    grid-template-columns: 150px 1fr;
+
+    grid-template-columns:
+        170px minmax(0, 1fr);
+
     align-items: center;
-    gap: 22px;
+
+    gap: 24px;
 }
 
 .admin-summary-row + .admin-summary-row {
-    margin-top: 22px;
+    margin-top: 24px;
 }
+
+
+/* Summary info */
 
 .admin-summary-info {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 12px;
+
+    gap: 15px;
 }
 
 .admin-summary-info span {
     font-size: 14px;
+
     font-weight: 600;
-    color: #475467;
+
+    color: #526078;
 }
 
 .admin-summary-info strong {
     font-size: 14px;
+
+    font-weight: 700;
+
     color: #172033;
 }
 
+
+/* Progress track */
+
 .admin-summary-track {
     width: 100%;
-    height: 9px;
+    height: 10px;
+
     overflow: hidden;
+
     border-radius: 999px;
-    background: #eef1f5;
+
+    background: #eef2f7;
 }
 
 .admin-summary-fill {
     height: 100%;
+
     min-width: 0;
+
     border-radius: inherit;
-    transition: width 0.5s ease;
+
+    transition:
+            width 0.6s ease;
 }
+
+
+/* Progress colors */
 
 .reported-fill {
     background: #3b82f6;
@@ -266,89 +869,204 @@
 }
 
 
-/* =========================================
+/* =========================================================
    LOADING
-========================================= */
+========================================================= */
 
 .admin-dashboard-loading {
-    padding: 40px;
-    border: 1px solid #e4e8ef;
-    border-radius: 16px;
+    min-height: 220px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 35px;
+
+    box-sizing: border-box;
+
+    border: 1px solid #e3e8f0;
+    border-radius: 17px;
+
     background: #ffffff;
-    color: #667085;
-    text-align: center;
-}
 
+    box-shadow:
+            0 8px 24px rgba(24, 39, 75, 0.05);
 
-/* =========================================
-   ERROR
-========================================= */
+    color: #71809a;
 
-.admin-dashboard-error {
-    padding: 18px 20px;
-    border: 1px solid #fecaca;
-    border-radius: 12px;
-    background: #fef2f2;
-    color: #b91c1c;
     font-size: 14px;
 }
 
 
-/* =========================================
-   RESPONSIVE
-========================================= */
+/* =========================================================
+   ERROR
+========================================================= */
 
-@media (max-width: 1200px) {
+.admin-dashboard-error {
+    padding: 17px 20px;
+
+    box-sizing: border-box;
+
+    border: 1px solid #fecaca;
+    border-radius: 12px;
+
+    background: #fef2f2;
+
+    color: #b91c1c;
+
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+
+/* =========================================================
+   RESPONSIVE — LARGE TABLETS
+========================================================= */
+
+@media (max-width: 1250px) {
+
+    .admin-dashboard-page {
+        padding: 36px 32px 60px;
+    }
 
     .admin-stat-grid {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-columns:
+            repeat(3, minmax(0, 1fr));
     }
 
 }
 
 
-@media (max-width: 850px) {
+/* =========================================================
+   RESPONSIVE — TABLETS
+========================================================= */
+
+@media (max-width: 900px) {
 
     .admin-dashboard-page {
         padding: 30px 24px 50px;
     }
 
+    .admin-dashboard-header-content {
+        align-items: center;
+    }
+
     .admin-dashboard-header h1 {
-        font-size: 32px;
+        font-size: 34px;
     }
 
     .admin-stat-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+    .admin-summary-row {
+        grid-template-columns:
+            130px minmax(0, 1fr);
+
+        gap: 18px;
     }
 
 }
 
 
-@media (max-width: 560px) {
+/* =========================================================
+   RESPONSIVE — MOBILE
+========================================================= */
+
+@media (max-width: 650px) {
 
     .admin-dashboard-page {
         padding: 24px 16px 40px;
     }
 
+
+    /* Header */
+
     .admin-dashboard-header {
-        margin-bottom: 30px;
+        margin-bottom: 32px;
+    }
+
+    .admin-dashboard-header-content {
+        align-items: flex-start;
+    }
+
+    .admin-dashboard-eyebrow {
+        font-size: 10px;
+        letter-spacing: 2px;
     }
 
     .admin-dashboard-header h1 {
         font-size: 28px;
+        letter-spacing: -0.5px;
     }
 
-    .admin-dashboard-section {
-        margin-bottom: 32px;
+    .admin-dashboard-header-content > div:first-child > p:last-child {
+        font-size: 14px;
     }
+
+
+    /* Notification */
+
+    .admin-notification-button {
+        width: 50px;
+        height: 50px;
+
+        border-radius: 14px;
+    }
+
+    .admin-notification-bell {
+        font-size: 20px;
+    }
+
+    .admin-notification-dropdown {
+        position: fixed;
+
+        top: 78px;
+        left: 12px;
+        right: 12px;
+
+        width: auto;
+
+        max-width: none;
+    }
+
+
+    /* Sections */
+
+    .admin-dashboard-section {
+        margin-bottom: 34px;
+    }
+
+    .admin-section-heading h2 {
+        font-size: 20px;
+    }
+
+    .admin-section-heading p {
+        font-size: 13px;
+    }
+
+
+    /* Cards */
 
     .admin-stat-grid {
         grid-template-columns: 1fr;
+
+        gap: 14px;
     }
 
     .admin-stat-card {
         min-height: 145px;
+
+        padding: 20px;
     }
+
+    .admin-stat-card strong {
+        font-size: 32px;
+    }
+
+
+    /* Summary */
 
     .admin-summary-panel {
         padding: 20px;
@@ -356,11 +1074,59 @@
 
     .admin-summary-row {
         grid-template-columns: 1fr;
+
         gap: 10px;
     }
 
-    .admin-summary-info {
-        justify-content: space-between;
+    .admin-summary-row + .admin-summary-row {
+        margin-top: 20px;
+    }
+
+}
+
+
+/* =========================================================
+   VERY SMALL MOBILE
+========================================================= */
+
+@media (max-width: 420px) {
+
+    .admin-dashboard-page {
+        padding-left: 13px;
+        padding-right: 13px;
+    }
+
+    .admin-dashboard-header-content {
+        gap: 15px;
+    }
+
+    .admin-dashboard-header h1 {
+        font-size: 25px;
+    }
+
+    .admin-dashboard-eyebrow {
+        font-size: 9px;
+    }
+
+    .admin-notification-button {
+        width: 46px;
+        height: 46px;
+    }
+
+    .admin-notification-dropdown {
+        top: 70px;
+        left: 8px;
+        right: 8px;
+
+        border-radius: 15px;
+    }
+
+    .admin-notification-dropdown-header {
+        padding: 16px;
+    }
+
+    .admin-notification-item {
+        padding: 14px 16px;
     }
 
 }

@@ -10,6 +10,8 @@ import com.smartcivic.backend.auth.entity.OtpPurpose;
 import com.smartcivic.backend.auth.exception.InvalidCredentialsException;
 import com.smartcivic.backend.auth.repository.EmailOtpRepository;
 import com.smartcivic.backend.auth.security.JwtService;
+import com.smartcivic.backend.notification.service.NotificationService;
+import com.smartcivic.backend.notification.entity.NotificationType;
 import com.smartcivic.backend.user.entity.AccountStatus;
 import com.smartcivic.backend.user.entity.Role;
 import com.smartcivic.backend.user.entity.User;
@@ -20,6 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.List;
+
 
 
 @Service
@@ -30,13 +34,15 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final OtpService otpService;
     private final EmailOtpRepository emailOtpRepository;
+    private final NotificationService notificationService;
 
     public AuthenticationService(
             UserRepository userRepository,
             PasswordEncoder passwordEncoder,
             JwtService jwtService,
             OtpService otpService,
-            EmailOtpRepository emailOtpRepository
+            EmailOtpRepository emailOtpRepository,
+            NotificationService notificationService
     ) {
 
         this.userRepository = userRepository;
@@ -44,6 +50,7 @@ public class AuthenticationService {
         this.jwtService = jwtService;
         this.otpService = otpService;
         this.emailOtpRepository = emailOtpRepository;
+        this.notificationService = notificationService;
     }
 
 
@@ -152,7 +159,27 @@ public class AuthenticationService {
         user.setAccountStatus(AccountStatus.ACTIVE);
 
         userRepository.save(user);
+
+        // =====================================================
+// ADMIN NOTIFICATION — NEW CITIZEN REGISTERED
+// =====================================================
+
+        List<User> admins =
+                userRepository.findByRole(Role.ADMIN);
+
+        for (User admin : admins) {
+
+            notificationService.createNotification(
+                    admin,
+                    NotificationType.NEW_CITIZEN_REGISTERED,
+                    "New Citizen Registered",
+                    "A new citizen has joined Smart Civic.",
+                    user.getId()
+            );
+        }
+
     }
+
 
 
     // =====================================================

@@ -14,5 +14,6 @@ public enum NotificationType {
 
     SLA_BREACHED,
 
-    ACCOUNT_STATUS_CHANGED
+    ACCOUNT_STATUS_CHANGED,
+    NEW_CITIZEN_REGISTERED
 }

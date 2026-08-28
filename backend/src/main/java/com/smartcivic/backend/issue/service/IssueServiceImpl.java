@@ -381,7 +381,10 @@ public class IssueServiceImpl implements IssueService {
             String email
     ) {
 
-        // Find logged-in user
+        // =====================================================
+        // FIND LOGGED-IN USER
+        // =====================================================
+
         User currentUser = userRepository.findByEmail(email)
                 .orElseThrow(() ->
                         new UsernameNotFoundException(
@@ -389,7 +392,11 @@ public class IssueServiceImpl implements IssueService {
                         )
                 );
 
-        // Find issue
+
+        // =====================================================
+        // FIND ISSUE
+        // =====================================================
+
         Issue issue = issueRepository.findById(issueId)
                 .orElseThrow(() ->
                         new IssueNotFoundException(
@@ -397,14 +404,23 @@ public class IssueServiceImpl implements IssueService {
                         )
                 );
 
-        // Get current status
+
+        // =====================================================
+        // GET CURRENT STATUS
+        // =====================================================
+
         IssueStatus currentStatus = issue.getStatus();
 
-        // Validate status transition
+
+        // =====================================================
+        // VALIDATE STATUS TRANSITION
+        // =====================================================
+
         if (!IssueStatusTransition.isValidTransition(
                 currentStatus,
                 newStatus
         )) {
+
             throw new InvalidIssueStatusTransitionException(
                     "Invalid status transition from "
                             + currentStatus
@@ -413,13 +429,21 @@ public class IssueServiceImpl implements IssueService {
             );
         }
 
-        // Update issue status
+
+        // =====================================================
+        // UPDATE ISSUE STATUS
+        // =====================================================
+
         issue.setStatus(newStatus);
 
-        // Save updated issue
-        Issue updatedIssue = issueRepository.save(issue);
+        Issue updatedIssue =
+                issueRepository.save(issue);
 
-        // Create status history
+
+        // =====================================================
+        // CREATE STATUS HISTORY
+        // =====================================================
+
         IssueStatusHistory statusHistory =
                 IssueStatusHistory.builder()
                         .issue(updatedIssue)
@@ -429,7 +453,6 @@ public class IssueServiceImpl implements IssueService {
                         .changedAt(Instant.now())
                         .build();
 
-        // Save status history
         issueStatusHistoryRepository.save(statusHistory);
 
 
@@ -499,14 +522,18 @@ public class IssueServiceImpl implements IssueService {
         }
 
 
-        // =====================================================
+
         // FIELD WORKER NOTIFICATION
-        // =====================================================
+
+        // Do NOT notify the worker if the worker himself
+        // performed the status change.
+
 
         User fieldWorker =
                 updatedIssue.getAssignedTo();
 
-        if (fieldWorker != null) {
+        if (fieldWorker != null
+                && !fieldWorker.getId().equals(currentUser.getId())) {
 
             String workerMessage;
 
@@ -539,7 +566,53 @@ public class IssueServiceImpl implements IssueService {
         }
 
 
-        // Return updated issue response
+        // =====================================================
+// ADMIN NOTIFICATION
+// =====================================================
+
+        List<User> admins =
+                userRepository.findByRole(Role.ADMIN);
+
+        for (User admin : admins) {
+
+            String adminMessage;
+
+            if (newStatus == IssueStatus.RESOLVED) {
+
+                adminMessage =
+                        "Issue \""
+                                + updatedIssue.getTitle()
+                                + "\" has been marked as resolved by "
+                                + currentUser.getFullName()
+                                + ".";
+
+            } else {
+
+                adminMessage =
+                        "Issue \""
+                                + updatedIssue.getTitle()
+                                + "\" status has been changed from "
+                                + currentStatus
+                                + " to "
+                                + newStatus
+                                + " by "
+                                + currentUser.getFullName()
+                                + ".";
+            }
+
+            notificationService.createNotification(
+                    admin,
+                    notificationType,
+                    notificationTitle,
+                    adminMessage,
+                    updatedIssue.getId()
+            );
+        }
+
+        // =====================================================
+        // RETURN UPDATED ISSUE RESPONSE
+        // =====================================================
+
         return mapToIssueResponse(updatedIssue);
     }
 

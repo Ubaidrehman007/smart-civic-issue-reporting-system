@@ -155,6 +155,23 @@ function CitizenLayout() {
                         Profile
                     </NavLink>
 
+
+                    {/* =========================
+                        NOTIFICATIONS
+                    ========================= */}
+
+                    <NavLink
+                        to="/notifications"
+                        onClick={handleNavigation}
+                        className={({ isActive }) =>
+                            `dashboard-nav-item ${
+                                isActive ? 'active' : ''
+                            }`
+                        }
+                    >
+                        Notifications
+                    </NavLink>
+
                 </nav>
 
 

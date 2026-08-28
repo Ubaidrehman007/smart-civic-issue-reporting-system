@@ -15,6 +15,8 @@ import VerifyRegistrationOtpPage
     from './pages/VerifyRegistrationOtpPage'
 import ResetPasswordPage
     from './pages/ResetPasswordPage'
+import NotificationsPage
+    from './pages/NotificationsPage'
 
 //Admin Imports
 import AdminLayout from './components/AdminLayout'
@@ -29,6 +31,8 @@ import AdminAnalyticsPage
     from './pages/AdminPage/AdminAnalyticsPage'
 import ForgotPasswordPage
     from './pages/ForgotPasswordPage'
+import AdminNotificationsPage
+    from './pages/AdminPage/AdminNotificationsPage'
 
 function App() {
     return (
@@ -91,6 +95,10 @@ function App() {
                         path="/report-issue"
                         element={<ReportIssuePage />}
                     />
+                    <Route
+                        path="/notifications"
+                        element={<NotificationsPage />}
+                    />
 
                 </Route>
 
@@ -143,6 +151,10 @@ function App() {
                     <Route
                         path="/admin/analytics"
                         element={<AdminAnalyticsPage />}
+                    />
+                    <Route
+                        path="/admin/notifications"
+                        element={<AdminNotificationsPage />}
                     />
 
                 </Route>

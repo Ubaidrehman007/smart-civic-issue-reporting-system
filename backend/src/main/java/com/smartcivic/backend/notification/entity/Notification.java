@@ -109,4 +109,25 @@ public class Notification {
         }
 
     }
+
+
+    public static Notification create(
+            User user,
+            NotificationType type,
+            String title,
+            String message,
+            UUID referenceId
+    ) {
+
+        Notification notification = new Notification();
+
+        notification.setUser(user);
+        notification.setType(type);
+        notification.setTitle(title);
+        notification.setMessage(message);
+        notification.setReferenceId(referenceId);
+
+        return notification;
+    }
+
 }

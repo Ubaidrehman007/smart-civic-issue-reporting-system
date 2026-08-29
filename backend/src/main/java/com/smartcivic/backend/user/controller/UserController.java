@@ -45,9 +45,13 @@ public class UserController {
     @PostMapping("/field-workers")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<ApiResponse<Void>> createFieldWorker(
-            @Valid @RequestBody CreateFieldWorkerRequest request) {
+            @Valid @RequestBody CreateFieldWorkerRequest request,
+            Authentication authentication) {
 
-        userService.createFieldWorker(request);
+        userService.createFieldWorker(
+                request,
+                authentication.getName()
+        );
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)

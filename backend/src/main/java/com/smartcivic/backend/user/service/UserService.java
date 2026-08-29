@@ -17,7 +17,8 @@ public interface UserService {
     );
 
     void createFieldWorker(
-            CreateFieldWorkerRequest request
+            CreateFieldWorkerRequest request,
+            String email
     );
 
     List<UserResponse> getAllUsers(

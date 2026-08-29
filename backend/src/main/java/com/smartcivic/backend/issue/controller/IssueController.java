@@ -411,10 +411,15 @@ public class IssueController {
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<ApiResponse<Void>> assignIssue(
             @PathVariable UUID issueId,
-            @Valid @RequestBody AssignIssueRequest request
+            @Valid @RequestBody AssignIssueRequest request,
+            Authentication authentication
     ) {
 
-        issueService.assignIssue(issueId, request);
+        issueService.assignIssue(
+                issueId,
+                request,
+                authentication.getName()
+        );
 
         return ResponseEntity.ok(
                 ApiResponse.success(

@@ -85,7 +85,8 @@ public interface IssueService {
 
     void assignIssue(
             UUID issueId,
-            AssignIssueRequest request
+            AssignIssueRequest request,
+            String email
     );
 
     Page<IssueSummaryResponse> getAssignedIssues(

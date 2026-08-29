@@ -1,5 +1,7 @@
 package com.smartcivic.backend.issue.service;
 
+import com.smartcivic.backend.audit.entity.AuditEntityType;
+import com.smartcivic.backend.audit.service.AuditLogService;
 import com.smartcivic.backend.issue.dto.AssignIssueRequest;
 import com.smartcivic.backend.issue.dto.UpdateIssueRequest;
 import com.smartcivic.backend.issue.dto.request.CreateIssueRequest;
@@ -34,7 +36,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import com.smartcivic.backend.audit.entity.AuditAction;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -52,9 +54,18 @@ public class IssueServiceImpl implements IssueService {
     private final SlaService slaService;
     private final PriorityEvaluationService priorityEvaluationService;
     private final NotificationService notificationService;
+    private final AuditLogService auditLogService;
 
     @Override
-    public IssueResponse createIssue(CreateIssueRequest request, String userEmail) {
+    @Transactional
+    public IssueResponse createIssue(
+            CreateIssueRequest request,
+            String userEmail
+    ) {
+
+        // =====================================================
+        // FIND AUTHENTICATED USER
+        // =====================================================
 
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() ->
@@ -62,29 +73,59 @@ public class IssueServiceImpl implements IssueService {
                                 "User not found with email: " + userEmail
                         )
                 );
+
+
+        // =====================================================
+        // STORE IMAGE
+        // =====================================================
+
         String imageFileName = null;
 
-        if (request.getImage() != null && !request.getImage().isEmpty()) {
-            imageFileName = imageStorageService.storeImage(request.getImage());
+        if (request.getImage() != null
+                && !request.getImage().isEmpty()) {
+
+            imageFileName =
+                    imageStorageService.storeImage(
+                            request.getImage()
+                    );
         }
 
 
+        // =====================================================
+        // CREATE SPATIAL LOCATION
+        // =====================================================
 
         Point location = createLocation(
                 request.getLatitude(),
                 request.getLongitude()
         );
 
+
+        // =====================================================
+        // CALCULATE PRIORITY
+        // =====================================================
+
         IssuePriority priority =
                 priorityEvaluationService.calculatePriority(
                         request.getCategory()
                 );
 
-        LocalDateTime slaDueAt = slaService.calculateSlaDueAt(
-                request.getCategory(),
-                priority,
-                LocalDateTime.now()
-        );
+
+        // =====================================================
+        // CALCULATE SLA
+        // =====================================================
+
+        LocalDateTime slaDueAt =
+                slaService.calculateSlaDueAt(
+                        request.getCategory(),
+                        priority,
+                        LocalDateTime.now()
+                );
+
+
+        // =====================================================
+        // BUILD ISSUE
+        // =====================================================
 
         Issue issue = Issue.builder()
                 .title(request.getTitle())
@@ -101,7 +142,43 @@ public class IssueServiceImpl implements IssueService {
                 .reportedBy(user)
                 .build();
 
-        Issue savedIssue = issueRepository.save(issue);
+
+        // =====================================================
+        // SAVE ISSUE
+        // =====================================================
+
+        Issue savedIssue =
+                issueRepository.save(issue);
+
+
+        // =====================================================
+        // AUDIT LOG
+        // =====================================================
+
+        auditLogService.createAuditLog(
+
+                user,
+
+                AuditAction.ISSUE_CREATED,
+
+                AuditEntityType.ISSUE,
+
+                savedIssue.getId(),
+
+                "Issue created: "
+                        + savedIssue.getTitle(),
+
+                null,
+
+                savedIssue.getTitle(),
+
+                null
+        );
+
+
+        // =====================================================
+        // RETURN RESPONSE
+        // =====================================================
 
         return mapToIssueResponse(savedIssue);
     }
@@ -304,9 +381,13 @@ public class IssueServiceImpl implements IssueService {
     public IssueResponse updateIssue(
             UUID issueId,
             UpdateIssueRequest request,
-            String email) {
+            String email
+    ) {
 
-        // Find logged-in user
+        // =====================================================
+        // FIND LOGGED-IN USER
+        // =====================================================
+
         User currentUser = userRepository.findByEmail(email)
                 .orElseThrow(() ->
                         new UsernameNotFoundException(
@@ -314,26 +395,61 @@ public class IssueServiceImpl implements IssueService {
                         )
                 );
 
-        // Find issue
+
+        // =====================================================
+        // FIND ISSUE
+        // =====================================================
+
         Issue issue = issueRepository.findById(issueId)
                 .orElseThrow(() ->
-                        new IssueNotFoundException("Issue not found with ID: " + issueId));
+                        new IssueNotFoundException(
+                                "Issue not found with ID: " + issueId
+                        )
+                );
 
-        // Ownership check
-        if (!issue.getReportedBy().getId().equals(currentUser.getId())) {
+
+        // =====================================================
+        // OWNERSHIP CHECK
+        // =====================================================
+
+        if (!issue.getReportedBy().getId()
+                .equals(currentUser.getId())) {
+
             throw new IssueAccessDeniedException(
                     "You are not authorized to update this issue."
             );
         }
 
 
-        // Update editable fields
+        // =====================================================
+        // CAPTURE OLD VALUES
+        // =====================================================
+
+        String oldValue =
+                "title=" + issue.getTitle()
+                        + ", description=" + issue.getDescription()
+                        + ", category=" + issue.getCategory()
+                        + ", imageUrl=" + issue.getImageUrl()
+                        + ", latitude=" + issue.getLatitude()
+                        + ", longitude=" + issue.getLongitude()
+                        + ", address=" + issue.getAddress();
+
+
+        // =====================================================
+        // UPDATE EDITABLE FIELDS
+        // =====================================================
+
         issue.setTitle(request.getTitle());
+
         issue.setDescription(request.getDescription());
 
         issue.setCategory(request.getCategory());
 
-// Recalculate priority automatically from category
+
+        // =====================================================
+        // RECALCULATE PRIORITY
+        // =====================================================
+
         IssuePriority recalculatedPriority =
                 priorityEvaluationService.calculatePriority(
                         request.getCategory()
@@ -341,7 +457,11 @@ public class IssueServiceImpl implements IssueService {
 
         issue.setPriority(recalculatedPriority);
 
-// Recalculate SLA based on original issue creation time
+
+        // =====================================================
+        // RECALCULATE SLA
+        // =====================================================
+
         LocalDateTime recalculatedSlaDueAt =
                 slaService.calculateSlaDueAt(
                         request.getCategory(),
@@ -351,13 +471,23 @@ public class IssueServiceImpl implements IssueService {
 
         issue.setSlaDueAt(recalculatedSlaDueAt);
 
+
+        // =====================================================
+        // UPDATE IMAGE
+        // =====================================================
+
         issue.setImageUrl(request.getImageUrl());
+
+
+        // =====================================================
+        // UPDATE LOCATION
+        // =====================================================
+
         issue.setLatitude(request.getLatitude());
+
         issue.setLongitude(request.getLongitude());
+
         issue.setAddress(request.getAddress());
-
-
-
 
         issue.setLocation(
                 createLocation(
@@ -367,8 +497,56 @@ public class IssueServiceImpl implements IssueService {
         );
 
 
-        // Save updated issue
-        Issue updatedIssue = issueRepository.save(issue);
+        // =====================================================
+        // SAVE UPDATED ISSUE
+        // =====================================================
+
+        Issue updatedIssue =
+                issueRepository.save(issue);
+
+
+        // =====================================================
+        // CAPTURE NEW VALUES
+        // =====================================================
+
+        String newValue =
+                "title=" + updatedIssue.getTitle()
+                        + ", description=" + updatedIssue.getDescription()
+                        + ", category=" + updatedIssue.getCategory()
+                        + ", imageUrl=" + updatedIssue.getImageUrl()
+                        + ", latitude=" + updatedIssue.getLatitude()
+                        + ", longitude=" + updatedIssue.getLongitude()
+                        + ", address=" + updatedIssue.getAddress();
+
+
+        // =====================================================
+        // AUDIT LOG
+        // =====================================================
+
+        auditLogService.createAuditLog(
+
+                currentUser,
+
+                AuditAction.ISSUE_UPDATED,
+
+                AuditEntityType.ISSUE,
+
+                updatedIssue.getId(),
+
+                "Issue updated: "
+                        + updatedIssue.getTitle(),
+
+                oldValue,
+
+                newValue,
+
+                null
+        );
+
+
+        // =====================================================
+        // RETURN UPDATED ISSUE
+        // =====================================================
 
         return mapToIssueResponse(updatedIssue);
     }
@@ -455,6 +633,31 @@ public class IssueServiceImpl implements IssueService {
 
         issueStatusHistoryRepository.save(statusHistory);
 
+        // =====================================================
+// AUDIT LOG
+// =====================================================
+
+        auditLogService.createAuditLog(
+
+                currentUser,
+
+                AuditAction.ISSUE_STATUS_CHANGED,
+
+                AuditEntityType.ISSUE,
+
+                updatedIssue.getId(),
+
+                "Issue status changed from "
+                        + currentStatus
+                        + " to "
+                        + newStatus,
+
+                currentStatus.name(),
+
+                newStatus.name(),
+
+                null
+        );
 
         // =====================================================
         // NOTIFICATION TYPE AND TITLE
@@ -797,19 +1000,44 @@ public class IssueServiceImpl implements IssueService {
     @Transactional
     public void assignIssue(
             UUID issueId,
-            AssignIssueRequest request
+            AssignIssueRequest request,
+            String email
     ) {
+
+
+        User currentUser = userRepository.findByEmail(email)
+                .orElseThrow(() ->
+                        new UsernameNotFoundException(
+                                "User not found with email: " + email
+                        )
+                );
+
+        // =====================================================
+        // FIND ISSUE
+        // =====================================================
 
         Issue issue = issueRepository.findById(issueId)
                 .orElseThrow(() ->
                         new IssueNotFoundException("Issue not found")
                 );
 
+
+        // =====================================================
+        // FIND FIELD WORKER
+        // =====================================================
+
         User fieldWorker = userRepository
                 .findById(request.fieldWorkerId())
                 .orElseThrow(() ->
-                        new UserNotFoundException("Field worker not found")
+                        new UserNotFoundException(
+                                "Field worker not found"
+                        )
                 );
+
+
+        // =====================================================
+        // VALIDATE FIELD WORKER
+        // =====================================================
 
         if (fieldWorker.getRole() != Role.FIELD_WORKER) {
 
@@ -826,10 +1054,76 @@ public class IssueServiceImpl implements IssueService {
         }
 
 
-        // Assign issue to field worker
+        // =====================================================
+        // CAPTURE PREVIOUS ASSIGNMENT
+        // =====================================================
+
+        User previousWorker = issue.getAssignedTo();
+
+        String oldValue;
+
+        if (previousWorker != null) {
+
+            oldValue =
+                    "assignedToId=" + previousWorker.getId()
+                            + ", assignedToName="
+                            + previousWorker.getFullName()
+                            + ", assignedToEmail="
+                            + previousWorker.getEmail();
+
+        } else {
+
+            oldValue = "assignedTo=null";
+        }
+
+
+        // =====================================================
+        // ASSIGN ISSUE
+        // =====================================================
+
         issue.setAssignedTo(fieldWorker);
 
-        issueRepository.save(issue);
+        Issue updatedIssue =
+                issueRepository.save(issue);
+
+
+        // =====================================================
+        // NEW ASSIGNMENT VALUE
+        // =====================================================
+
+        String newValue =
+                "assignedToId=" + fieldWorker.getId()
+                        + ", assignedToName="
+                        + fieldWorker.getFullName()
+                        + ", assignedToEmail="
+                        + fieldWorker.getEmail();
+
+
+        // =====================================================
+        // AUDIT LOG
+        // =====================================================
+
+        auditLogService.createAuditLog(
+
+                currentUser,
+
+                AuditAction.ISSUE_ASSIGNED,
+
+                AuditEntityType.ISSUE,
+
+                updatedIssue.getId(),
+
+                "Issue assigned to "
+                        + fieldWorker.getFullName()
+                        + ": "
+                        + updatedIssue.getTitle(),
+
+                oldValue,
+
+                newValue,
+
+                null
+        );
 
 
         // =====================================================
@@ -837,12 +1131,17 @@ public class IssueServiceImpl implements IssueService {
         // =====================================================
 
         notificationService.createNotification(
+
                 fieldWorker,
+
                 NotificationType.ISSUE_ASSIGNED,
+
                 "New Issue Assigned",
+
                 "You have been assigned a new civic issue: "
-                        + issue.getTitle(),
-                issue.getId()
+                        + updatedIssue.getTitle(),
+
+                updatedIssue.getId()
         );
 
 
@@ -850,17 +1149,23 @@ public class IssueServiceImpl implements IssueService {
         // CITIZEN NOTIFICATION
         // =====================================================
 
-        User citizen = issue.getReportedBy();
+        User citizen =
+                updatedIssue.getReportedBy();
 
         if (citizen != null) {
 
             notificationService.createNotification(
+
                     citizen,
+
                     NotificationType.ISSUE_ASSIGNED,
+
                     "Field Worker Assigned",
+
                     "A field worker has been assigned to your reported issue: "
-                            + issue.getTitle(),
-                    issue.getId()
+                            + updatedIssue.getTitle(),
+
+                    updatedIssue.getId()
             );
         }
     }

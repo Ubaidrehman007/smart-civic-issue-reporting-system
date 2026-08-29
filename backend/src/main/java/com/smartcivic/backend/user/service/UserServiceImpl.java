@@ -9,11 +9,16 @@ import com.smartcivic.backend.user.entity.Role;
 import com.smartcivic.backend.user.entity.User;
 import com.smartcivic.backend.user.exception.UserAlreadyExistsException;
 import com.smartcivic.backend.user.exception.UserNotFoundException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import com.smartcivic.backend.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
+import com.smartcivic.backend.audit.entity.AuditAction;
+import org.springframework.security.core.context.SecurityContextHolder;
+import com.smartcivic.backend.audit.entity.AuditEntityType;
+import com.smartcivic.backend.audit.service.AuditLogService;
 
 import java.util.List;
 import java.util.UUID;
@@ -25,6 +30,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final OtpService otpService;
+    private final AuditLogService auditLogService;
 
     @Override
     @Transactional
@@ -77,36 +83,158 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void updateAccountStatus(
             UUID userId,
             UpdateAccountStatusRequest request
     ) {
 
+        // =====================================================
+        // FIND LOGGED-IN ADMIN
+        // =====================================================
+
+        User currentUser = userRepository.findByEmail(
+                SecurityContextHolder
+                        .getContext()
+                        .getAuthentication()
+                        .getName()
+        ).orElseThrow(() ->
+                new UsernameNotFoundException(
+                        "Authenticated admin not found"
+                )
+        );
+
+
+        // =====================================================
+        // FIND TARGET USER
+        // =====================================================
+
         User user = userRepository.findById(userId)
                 .orElseThrow(() ->
-                        new UserNotFoundException("User not found")
+                        new UserNotFoundException(
+                                "User not found"
+                        )
                 );
 
-        user.setAccountStatus(request.accountStatus());
 
-        userRepository.save(user);
+        // =====================================================
+        // GET OLD STATUS
+        // =====================================================
+
+        AccountStatus oldStatus =
+                user.getAccountStatus();
+
+
+        AccountStatus newStatus =
+                request.accountStatus();
+
+
+        // =====================================================
+        // NO CHANGE VALIDATION
+        // =====================================================
+
+        if (oldStatus == newStatus) {
+
+            throw new IllegalArgumentException(
+                    "User already has account status: "
+                            + newStatus
+            );
+        }
+
+
+        // =====================================================
+        // UPDATE ACCOUNT STATUS
+        // =====================================================
+
+        user.setAccountStatus(newStatus);
+
+        User updatedUser =
+                userRepository.save(user);
+
+
+        // =====================================================
+        // AUDIT LOG
+        // =====================================================
+
+        auditLogService.createAuditLog(
+
+                currentUser,
+
+                AuditAction.USER_STATUS_CHANGED,
+
+                AuditEntityType.USER,
+
+                updatedUser.getId(),
+
+                "User account status changed for: "
+                        + updatedUser.getFullName(),
+
+                oldStatus.name(),
+
+                newStatus.name(),
+
+                null
+        );
     }
 
     @Override
+    @Transactional
     public void createFieldWorker(
-            CreateFieldWorkerRequest request
+            CreateFieldWorkerRequest request,
+            String email
     ) {
 
+        // =====================================================
+        // FIND LOGGED-IN ADMIN
+        // =====================================================
+
+        User currentUser = userRepository.findByEmail(email)
+                .orElseThrow(() ->
+                        new UsernameNotFoundException(
+                                "User not found with email: " + email
+                        )
+                );
+
+
+        // =====================================================
+        // VALIDATE EMAIL
+        // =====================================================
+
         if (userRepository.existsByEmail(request.email())) {
-            throw new UserAlreadyExistsException("Email already exists");
+
+            throw new UserAlreadyExistsException(
+                    "Email already exists"
+            );
         }
 
-        if (userRepository.existsByPhoneNumber(request.phoneNumber())) {
-            throw new UserAlreadyExistsException("Phone number already exists");
+
+        // =====================================================
+        // VALIDATE PHONE
+        // =====================================================
+
+        if (userRepository.existsByPhoneNumber(
+                request.phoneNumber()
+        )) {
+
+            throw new UserAlreadyExistsException(
+                    "Phone number already exists"
+            );
         }
+
+
+        // =====================================================
+        // HASH PASSWORD
+        // =====================================================
 
         String passwordHash =
-                passwordEncoder.encode(request.password());
+                passwordEncoder.encode(
+                        request.password()
+                );
+
+
+        // =====================================================
+        // CREATE FIELD WORKER
+        // =====================================================
 
         User fieldWorker = new User(
                 request.fullName(),
@@ -116,7 +244,37 @@ public class UserServiceImpl implements UserService {
                 Role.FIELD_WORKER
         );
 
-        userRepository.save(fieldWorker);
+
+        User savedFieldWorker =
+                userRepository.save(fieldWorker);
+
+
+        // =====================================================
+        // AUDIT LOG
+        // =====================================================
+
+        auditLogService.createAuditLog(
+
+                currentUser,
+
+                AuditAction.USER_CREATED,
+
+                AuditEntityType.USER,
+
+                savedFieldWorker.getId(),
+
+                "Field worker created: "
+                        + savedFieldWorker.getFullName(),
+
+                null,
+
+                "name=" + savedFieldWorker.getFullName()
+                        + ", email=" + savedFieldWorker.getEmail()
+                        + ", phone=" + savedFieldWorker.getPhoneNumber()
+                        + ", role=" + savedFieldWorker.getRole(),
+
+                null
+        );
     }
 
     @Override
@@ -179,17 +337,38 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void updateProfile(
             UUID userId,
             UpdateProfileRequest request
     ) {
 
+        // =====================================================
+        // FIND USER
+        // =====================================================
+
         User user = userRepository.findById(userId)
                 .orElseThrow(() ->
-                        new UserNotFoundException("User not found")
+                        new UserNotFoundException(
+                                "User not found"
+                        )
                 );
 
-        user.setFullName(request.fullName());
+
+        // =====================================================
+        // CAPTURE OLD VALUES
+        // =====================================================
+
+        String oldFullName =
+                user.getFullName();
+
+        String oldPhoneNumber =
+                user.getPhoneNumber();
+
+
+        // =====================================================
+        // VALIDATE PHONE NUMBER
+        // =====================================================
 
         if (!user.getPhoneNumber().equals(request.phoneNumber())
                 && userRepository.existsByPhoneNumber(
@@ -201,9 +380,53 @@ public class UserServiceImpl implements UserService {
             );
         }
 
-        user.setPhoneNumber(request.phoneNumber());
 
-        userRepository.save(user);
+        // =====================================================
+        // UPDATE PROFILE
+        // =====================================================
+
+        user.setFullName(
+                request.fullName()
+        );
+
+        user.setPhoneNumber(
+                request.phoneNumber()
+        );
+
+
+        // =====================================================
+        // SAVE UPDATED USER
+        // =====================================================
+
+        User updatedUser =
+                userRepository.save(user);
+
+
+        // =====================================================
+        // AUDIT LOG
+        // =====================================================
+
+        auditLogService.createAuditLog(
+
+                updatedUser,
+
+                AuditAction.USER_UPDATED,
+
+                AuditEntityType.USER,
+
+                updatedUser.getId(),
+
+                "User profile updated: "
+                        + updatedUser.getFullName(),
+
+                "fullName=" + oldFullName
+                        + ", phoneNumber=" + oldPhoneNumber,
+
+                "fullName=" + updatedUser.getFullName()
+                        + ", phoneNumber=" + updatedUser.getPhoneNumber(),
+
+                null
+        );
     }
 
     @Override
@@ -249,12 +472,84 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void deleteUser(UUID userId) {
+
+        // =====================================================
+        // FIND LOGGED-IN ADMIN
+        // =====================================================
+
+        User currentUser = userRepository.findByEmail(
+                SecurityContextHolder
+                        .getContext()
+                        .getAuthentication()
+                        .getName()
+        ).orElseThrow(() ->
+                new UsernameNotFoundException(
+                        "Authenticated admin not found"
+                )
+        );
+
+
+        // =====================================================
+        // FIND TARGET USER
+        // =====================================================
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() ->
-                        new UserNotFoundException("User not found")
+                        new UserNotFoundException(
+                                "User not found"
+                        )
                 );
+
+
+        // =====================================================
+        // CAPTURE USER INFORMATION BEFORE DELETE
+        // =====================================================
+
+        UUID deletedUserId =
+                user.getId();
+
+        String deletedUserName =
+                user.getFullName();
+
+        String deletedUserEmail =
+                user.getEmail();
+
+        String deletedUserRole =
+                user.getRole().name();
+
+
+        // =====================================================
+        // CREATE AUDIT LOG BEFORE DELETE
+        // =====================================================
+
+        auditLogService.createAuditLog(
+
+                currentUser,
+
+                AuditAction.USER_DELETED,
+
+                AuditEntityType.USER,
+
+                deletedUserId,
+
+                "User deleted: "
+                        + deletedUserName,
+
+                "name=" + deletedUserName
+                        + ", email=" + deletedUserEmail
+                        + ", role=" + deletedUserRole,
+
+                null,
+
+                null
+        );
+
+
+        // =====================================================
+        // DELETE USER
+        // =====================================================
 
         userRepository.delete(user);
     }

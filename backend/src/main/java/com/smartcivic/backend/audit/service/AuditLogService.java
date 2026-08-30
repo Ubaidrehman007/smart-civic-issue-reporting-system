@@ -11,6 +11,7 @@ import java.util.UUID;
 
 public interface AuditLogService {
 
+
     // =====================================================
     // CREATE AUDIT LOG
     // =====================================================
@@ -83,6 +84,22 @@ public interface AuditLogService {
 
     Page<AuditLogResponse> searchAuditLogs(
             String keyword,
+            Pageable pageable
+    );
+
+
+    // =====================================================
+    // FILTER AUDIT LOGS
+    // =====================================================
+
+    Page<AuditLogResponse> filterAuditLogs(
+
+            String keyword,
+
+            AuditAction action,
+
+            AuditEntityType entityType,
+
             Pageable pageable
     );
 }

@@ -33,6 +33,8 @@ import ForgotPasswordPage
     from './pages/ForgotPasswordPage'
 import AdminNotificationsPage
     from './pages/AdminPage/AdminNotificationsPage'
+import AdminAuditLogsPage
+    from './pages/AdminPage/AdminAuditLogsPage'
 
 function App() {
     return (
@@ -155,6 +157,11 @@ function App() {
                     <Route
                         path="/admin/notifications"
                         element={<AdminNotificationsPage />}
+                    />
+
+                    <Route
+                        path="/admin/audit-logs"
+                        element={<AdminAuditLogsPage />}
                     />
 
                 </Route>

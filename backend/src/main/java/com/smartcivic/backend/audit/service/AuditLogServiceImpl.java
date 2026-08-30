@@ -35,14 +35,23 @@ public class AuditLogServiceImpl
     @Override
     @Transactional
     public AuditLogResponse createAuditLog(
+
             User actor,
+
             AuditAction action,
+
             AuditEntityType entityType,
+
             UUID entityId,
+
             String description,
+
             String oldValue,
+
             String newValue,
+
             String ipAddress
+
     ) {
 
         AuditLog auditLog =
@@ -57,10 +66,14 @@ public class AuditLogServiceImpl
                         .ipAddress(ipAddress)
                         .build();
 
+
         AuditLog savedAuditLog =
                 auditLogRepository.save(auditLog);
 
-        return mapToAuditLogResponse(savedAuditLog);
+
+        return mapToAuditLogResponse(
+                savedAuditLog
+        );
     }
 
 
@@ -85,8 +98,11 @@ public class AuditLogServiceImpl
 
     @Override
     public Page<AuditLogResponse> getAuditLogsByActor(
+
             UUID actorId,
+
             Pageable pageable
+
     ) {
 
         User actor =
@@ -97,8 +113,12 @@ public class AuditLogServiceImpl
                                 )
                         );
 
+
         return auditLogRepository
-                .findByActor(actor, pageable)
+                .findByActor(
+                        actor,
+                        pageable
+                )
                 .map(this::mapToAuditLogResponse);
     }
 
@@ -109,12 +129,18 @@ public class AuditLogServiceImpl
 
     @Override
     public Page<AuditLogResponse> getAuditLogsByAction(
+
             AuditAction action,
+
             Pageable pageable
+
     ) {
 
         return auditLogRepository
-                .findByAction(action, pageable)
+                .findByAction(
+                        action,
+                        pageable
+                )
                 .map(this::mapToAuditLogResponse);
     }
 
@@ -125,8 +151,11 @@ public class AuditLogServiceImpl
 
     @Override
     public Page<AuditLogResponse> getAuditLogsByEntityType(
+
             AuditEntityType entityType,
+
             Pageable pageable
+
     ) {
 
         return auditLogRepository
@@ -144,9 +173,13 @@ public class AuditLogServiceImpl
 
     @Override
     public Page<AuditLogResponse> getAuditLogsByEntity(
+
             AuditEntityType entityType,
+
             UUID entityId,
+
             Pageable pageable
+
     ) {
 
         return auditLogRepository
@@ -165,13 +198,44 @@ public class AuditLogServiceImpl
 
     @Override
     public Page<AuditLogResponse> searchAuditLogs(
+
             String keyword,
+
             Pageable pageable
+
     ) {
 
         return auditLogRepository
                 .findByDescriptionContainingIgnoreCase(
                         keyword,
+                        pageable
+                )
+                .map(this::mapToAuditLogResponse);
+    }
+
+
+    // =====================================================
+    // FILTER AUDIT LOGS
+    // =====================================================
+
+    @Override
+    public Page<AuditLogResponse> filterAuditLogs(
+
+            String keyword,
+
+            AuditAction action,
+
+            AuditEntityType entityType,
+
+            Pageable pageable
+
+    ) {
+
+        return auditLogRepository
+                .findAuditLogsWithFilters(
+                        keyword,
+                        action,
+                        entityType,
                         pageable
                 )
                 .map(this::mapToAuditLogResponse);
@@ -186,7 +250,9 @@ public class AuditLogServiceImpl
             AuditLog auditLog
     ) {
 
-        User actor = auditLog.getActor();
+        User actor =
+                auditLog.getActor();
+
 
         return new AuditLogResponse(
 
@@ -204,7 +270,8 @@ public class AuditLogServiceImpl
                         ? actor.getEmail()
                         : null,
 
-                actor != null && actor.getRole() != null
+                actor != null
+                        && actor.getRole() != null
                         ? actor.getRole().name()
                         : null,
 

@@ -188,6 +188,23 @@ public class UserController {
         );
     }
 
+    @DeleteMapping("/me")
+    @PreAuthorize("hasAuthority('CITIZEN')")
+    public ResponseEntity<ApiResponse<Void>> deleteMyAccount(
+            Authentication authentication
+    ) {
+
+        String email = authentication.getName();
+
+        userService.deleteMyAccount(email);
+
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        "Your account has been deleted successfully",
+                        null
+                )
+        );
+    }
 
     @PutMapping("/me/password")
     public ResponseEntity<ApiResponse<Void>> changePassword(
@@ -206,5 +223,7 @@ public class UserController {
                 )
         );
     }
+
+
 
 }

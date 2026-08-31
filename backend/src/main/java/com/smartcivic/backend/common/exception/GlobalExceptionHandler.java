@@ -8,6 +8,7 @@ import com.smartcivic.backend.issue.exception.IssueDeletionNotAllowedException;
 import com.smartcivic.backend.issue.exception.IssueNotFoundException;
 import com.smartcivic.backend.user.exception.UserAlreadyExistsException;
 import com.smartcivic.backend.user.exception.UserNotFoundException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authorization.AuthorizationDeniedException;
@@ -231,6 +232,34 @@ public class GlobalExceptionHandler {
 
 
 
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ApiResponse<Void>> handleDataIntegrityViolation(
+            DataIntegrityViolationException ex
+    ) {
 
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(
+                        ApiResponse.error(
+                                "This account cannot be deleted because it is still referenced by system records.",
+                                null
+                        )
+                );
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ApiResponse<Void>> handleResourceNotFound(
+            ResourceNotFoundException ex
+    ) {
+
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(
+                        ApiResponse.error(
+                                ex.getMessage(),
+                                null
+                        )
+                );
+    }
 
 }

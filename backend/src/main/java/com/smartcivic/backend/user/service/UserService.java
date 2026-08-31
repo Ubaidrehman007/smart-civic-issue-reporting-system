@@ -33,13 +33,18 @@ public interface UserService {
     UserResponse getUserById(
             UUID userId
     );
+
     UserResponse getUserByEmail(
             String email
     );
 
     DashboardStatsResponse getDashboardStats();
 
+    // Admin deletes another user
     void deleteUser(UUID userId);
+
+    // Logged-in user deletes own account
+    void deleteMyAccount(String email);
 
     void updateProfile(
             UUID userId,
@@ -51,4 +56,3 @@ public interface UserService {
             ChangePasswordRequest request
     );
 }
-

@@ -5,6 +5,7 @@ import com.smartcivic.backend.adminsettings.repository.AdminSettingsRepository;
 import com.smartcivic.backend.auth.entity.OtpPurpose;
 import com.smartcivic.backend.auth.exception.InvalidCredentialsException;
 import com.smartcivic.backend.auth.service.OtpService;
+import com.smartcivic.backend.common.exception.ResourceNotFoundException;
 import com.smartcivic.backend.user.dto.*;
 import com.smartcivic.backend.user.entity.AccountStatus;
 import com.smartcivic.backend.user.entity.Role;
@@ -606,6 +607,21 @@ public class UserServiceImpl implements UserService {
                 user.getCreatedAt()
         );
     }
+
+    @Override
+    @Transactional
+    public void deleteMyAccount(String email) {
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() ->
+                        new UserNotFoundException(
+                                "User account not found"
+                        )
+                );
+
+        userRepository.delete(user);
+    }
+
 
     @Override
     public void changePassword(

@@ -1,55 +1,104 @@
 import { Routes, Route } from 'react-router-dom'
+
 import HomePage from './pages/HomePage'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
 import NotFoundPage from './pages/NotFoundPage'
+
 import DashboardPage from './pages/DashboardPage'
 import ReportIssuePage from './pages/ReportIssuePage'
 import CitizenLayout from './components/CitizenLayout'
 import MyIssuesPage from './pages/MyIssuesPage'
 import ProfilePage from './pages/ProfilePage'
+import SettingsPage from './pages/SettingsPage'
 import IssueDetailsPage from './pages/IssueDetailsPage'
+
 import ProtectedRoute from './components/ProtectedRoute'
 import UnauthorizedPage from './pages/UnauthorizedPage'
+
 import VerifyRegistrationOtpPage
     from './pages/VerifyRegistrationOtpPage'
+
 import ResetPasswordPage
     from './pages/ResetPasswordPage'
+
 import NotificationsPage
     from './pages/NotificationsPage'
 
-//Admin Imports
+
+// =====================================================
+// ADMIN IMPORTS
+// =====================================================
+
 import AdminLayout from './components/AdminLayout'
-import AdminDashboardPage from './pages/AdminPage/AdminDashboardPage'
-import AdminIssuesPage from './pages/AdminPage/AdminIssuesPage'
-import AdminIssueDetailsPage from './pages/AdminPage/AdminIssueDetailsPage'
-import AdminUsersPage from './pages/AdminPage/AdminUsersPage'
-import AdminWorkersPage from './pages/AdminPage/AdminWorkersPage'
-import AdminAssignmentsPage from './pages/AdminPage/AdminAssignmentsPage'
-import AdminSlaPage from './pages/AdminPage/AdminSlaPage'
+
+import AdminDashboardPage
+    from './pages/AdminPage/AdminDashboardPage'
+
+import AdminIssuesPage
+    from './pages/AdminPage/AdminIssuesPage'
+
+import AdminIssueDetailsPage
+    from './pages/AdminPage/AdminIssueDetailsPage'
+
+import AdminUsersPage
+    from './pages/AdminPage/AdminUsersPage'
+
+import AdminWorkersPage
+    from './pages/AdminPage/AdminWorkersPage'
+
+import AdminAssignmentsPage
+    from './pages/AdminPage/AdminAssignmentsPage'
+
+import AdminSlaPage
+    from './pages/AdminPage/AdminSlaPage'
+
 import AdminAnalyticsPage
     from './pages/AdminPage/AdminAnalyticsPage'
+
 import ForgotPasswordPage
     from './pages/ForgotPasswordPage'
+
 import AdminNotificationsPage
     from './pages/AdminPage/AdminNotificationsPage'
+
 import AdminAuditLogsPage
     from './pages/AdminPage/AdminAuditLogsPage'
+
 import AdminSettingsPage
     from './pages/AdminPage/AdminSettingsPage'
 
+
 function App() {
+
     return (
+
         <Routes>
 
-            <Route path="/" element={<HomePage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
+            {/* =================================================
+                PUBLIC ROUTES
+            ================================================= */}
+
+            <Route
+                path="/"
+                element={<HomePage />}
+            />
+
+            <Route
+                path="/login"
+                element={<LoginPage />}
+            />
+
+            <Route
+                path="/register"
+                element={<RegisterPage />}
+            />
+
             <Route
                 path="/forgot-password"
                 element={<ForgotPasswordPage />}
-
             />
+
             <Route
                 path="/reset-password"
                 element={<ResetPasswordPage />}
@@ -59,11 +108,16 @@ function App() {
                 path="/verify-registration"
                 element={<VerifyRegistrationOtpPage />}
             />
+
             <Route
                 path="/unauthorized"
                 element={<UnauthorizedPage />}
             />
 
+
+            {/* =================================================
+                CITIZEN ROUTES
+            ================================================= */}
 
             <Route
                 element={
@@ -80,25 +134,37 @@ function App() {
                         element={<DashboardPage />}
                     />
 
+
                     <Route
                         path="/profile"
                         element={<ProfilePage />}
                     />
+
+
+                    <Route
+                        path="/settings"
+                        element={<SettingsPage />}
+                    />
+
 
                     <Route
                         path="/my-issues"
                         element={<MyIssuesPage />}
                     />
 
+
                     <Route
                         path="/my-issues/:issueId"
                         element={<IssueDetailsPage />}
                     />
 
+
                     <Route
                         path="/report-issue"
                         element={<ReportIssuePage />}
                     />
+
+
                     <Route
                         path="/notifications"
                         element={<NotificationsPage />}
@@ -108,7 +174,10 @@ function App() {
 
             </Route>
 
-//Admin routes
+
+            {/* =================================================
+                ADMIN ROUTES
+            ================================================= */}
 
             <Route
                 element={
@@ -117,6 +186,7 @@ function App() {
                     />
                 }
             >
+
                 <Route element={<AdminLayout />}>
 
                     <Route
@@ -143,6 +213,7 @@ function App() {
                         path="/admin/workers"
                         element={<AdminWorkersPage />}
                     />
+
                     <Route
                         path="/admin/assignments"
                         element={<AdminAssignmentsPage />}
@@ -152,10 +223,12 @@ function App() {
                         path="/admin/sla"
                         element={<AdminSlaPage />}
                     />
+
                     <Route
                         path="/admin/analytics"
                         element={<AdminAnalyticsPage />}
                     />
+
                     <Route
                         path="/admin/notifications"
                         element={<AdminNotificationsPage />}
@@ -172,11 +245,18 @@ function App() {
                     />
 
                 </Route>
+
             </Route>
 
-            <Route path="*" element={<NotFoundPage />} />
 
+            {/* =================================================
+                404
+            ================================================= */}
 
+            <Route
+                path="*"
+                element={<NotFoundPage />}
+            />
 
         </Routes>
     )

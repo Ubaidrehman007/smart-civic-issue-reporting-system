@@ -68,6 +68,7 @@ public class AuditLog {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "actor_id",
+            nullable = true,
             foreignKey = @ForeignKey(
                     name = "fk_audit_logs_actor"
             )

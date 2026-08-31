@@ -56,7 +56,11 @@ public class Issue {
     private String address;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "reported_by", nullable = false)
+    @JoinColumn(
+            name = "reported_by",
+            nullable = true,
+            foreignKey = @ForeignKey(name = "fk_issue_user")
+    )
     private User reportedBy;
 
     @CreationTimestamp

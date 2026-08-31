@@ -9,6 +9,7 @@ function CitizenLayout() {
     const [sidebarOpen, setSidebarOpen] = useState(false)
 
     const handleLogout = () => {
+
         localStorage.removeItem('token')
         localStorage.removeItem('user')
         localStorage.removeItem('userRole')
@@ -18,9 +19,11 @@ function CitizenLayout() {
         navigate('/login')
     }
 
+
     const handleNavigation = () => {
         setSidebarOpen(false)
     }
+
 
     return (
         <div className="dashboard-layout">
@@ -40,13 +43,16 @@ function CitizenLayout() {
                     ☰
                 </button>
 
+
                 <div className="mobile-dashboard-brand">
 
                     <div className="dashboard-brand-logo">
                         SC
                     </div>
 
-                    <span>Smart Civic</span>
+                    <span>
+                        Smart Civic
+                    </span>
 
                 </div>
 
@@ -71,7 +77,9 @@ function CitizenLayout() {
 
             <aside
                 className={`dashboard-sidebar ${
-                    sidebarOpen ? 'mobile-sidebar-open' : ''
+                    sidebarOpen
+                        ? 'mobile-sidebar-open'
+                        : ''
                 }`}
             >
 
@@ -81,9 +89,10 @@ function CitizenLayout() {
                         SC
                     </div>
 
-                    <span>Smart Civic</span>
+                    <span>
+                        Smart Civic
+                    </span>
 
-                    {/* Mobile Close Button */}
 
                     <button
                         type="button"
@@ -153,6 +162,23 @@ function CitizenLayout() {
                         }
                     >
                         Profile
+                    </NavLink>
+
+
+                    {/* =========================
+                        SETTINGS
+                    ========================= */}
+
+                    <NavLink
+                        to="/settings"
+                        onClick={handleNavigation}
+                        className={({ isActive }) =>
+                            `dashboard-nav-item ${
+                                isActive ? 'active' : ''
+                            }`
+                        }
+                    >
+                        Settings
                     </NavLink>
 
 

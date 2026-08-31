@@ -883,7 +883,11 @@ public class IssueServiceImpl implements IssueService {
                 .latitude(issue.getLatitude())
                 .longitude(issue.getLongitude())
                 .address(issue.getAddress())
-                .reportedBy(issue.getReportedBy().getFullName())
+                .reportedBy(
+                        issue.getReportedBy() != null
+                                ? issue.getReportedBy().getFullName()
+                                : "Deleted User"
+                )
 
                 .assignedToId(
                         issue.getAssignedTo() != null
@@ -934,7 +938,10 @@ public class IssueServiceImpl implements IssueService {
                 );
 
         // Ownership check
-        if (!issue.getReportedBy().getId().equals(currentUser.getId())) {
+        if (
+                issue.getReportedBy() == null ||
+                        !issue.getReportedBy().getId().equals(currentUser.getId())
+        ) {
             throw new IssueAccessDeniedException(
                     "You are not authorized to delete this issue."
             );

@@ -34,6 +34,39 @@ export const updateProfile = async (
 
 
 /* =========================
+   CHANGE PASSWORD
+========================= */
+
+export const changePassword = async (
+    passwordData
+) => {
+
+    const response =
+        await apiClient.put(
+            '/users/me/password',
+            passwordData
+        )
+
+    return response.data
+}
+
+
+/* =========================
+   DELETE MY ACCOUNT
+========================= */
+
+export const deleteMyAccount = async () => {
+
+    const response =
+        await apiClient.delete(
+            '/users/me'
+        )
+
+    return response.data
+}
+
+
+/* =========================
    GET ALL USERS
 ========================= */
 
@@ -70,15 +103,16 @@ export const getAllUsers = async ({
 
 export const getActiveFieldWorkers = async () => {
 
-    const response = await apiClient.get(
-        '/users',
-        {
-            params: {
-                role: 'FIELD_WORKER',
-                status: 'ACTIVE',
-            },
-        }
-    )
+    const response =
+        await apiClient.get(
+            '/users',
+            {
+                params: {
+                    role: 'FIELD_WORKER',
+                    status: 'ACTIVE',
+                },
+            }
+        )
 
     return response.data
 }
@@ -159,12 +193,4 @@ export const getUserById = async (
         )
 
     return response.data
-}
-
-
-export const changePassword = (passwordData) => {
-    return apiClient.put(
-        '/users/me/password',
-        passwordData
-    )
 }

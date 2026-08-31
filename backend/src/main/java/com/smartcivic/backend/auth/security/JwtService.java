@@ -20,32 +20,63 @@ public class JwtService {
     @Value("${jwt.expiration}")
     private long jwtExpiration;
 
+
+    // =====================================================
+    // SIGNING KEY
+    // =====================================================
+
     private SecretKey getSigningKey() {
 
-        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+        byte[] keyBytes =
+                Decoders.BASE64.decode(secretKey);
 
         return Keys.hmacShaKeyFor(keyBytes);
-
     }
+
+
+    // =====================================================
+    // GENERATE TOKEN
+    // =====================================================
 
     public String generateToken(String email) {
 
         return Jwts.builder()
                 .subject(email)
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + jwtExpiration))
+                .expiration(
+                        new Date(
+                                System.currentTimeMillis()
+                                        + jwtExpiration
+                        )
+                )
                 .signWith(getSigningKey())
                 .compact();
     }
 
-    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
 
-        Claims claims = extractAllClaims(token);
+    // =====================================================
+    // EXTRACT CLAIM
+    // =====================================================
+
+    public <T> T extractClaim(
+            String token,
+            Function<Claims, T> claimsResolver
+    ) {
+
+        Claims claims =
+                extractAllClaims(token);
 
         return claimsResolver.apply(claims);
     }
 
-    private Claims extractAllClaims(String token) {
+
+    // =====================================================
+    // EXTRACT ALL CLAIMS
+    // =====================================================
+
+    private Claims extractAllClaims(
+            String token
+    ) {
 
         return Jwts.parser()
                 .verifyWith(getSigningKey())
@@ -54,30 +85,63 @@ public class JwtService {
                 .getPayload();
     }
 
-    public String extractUsername(String token) {
 
-        return extractClaim(token, Claims::getSubject);
+    // =====================================================
+    // EXTRACT USERNAME
+    // =====================================================
 
+    public String extractUsername(
+            String token
+    ) {
+
+        return extractClaim(
+                token,
+                Claims::getSubject
+        );
     }
 
-    public Date extractExpiration(String token) {
 
-        return extractClaim(token, Claims::getExpiration);
+    // =====================================================
+    // EXTRACT EXPIRATION
+    // =====================================================
 
+    public Date extractExpiration(
+            String token
+    ) {
+
+        return extractClaim(
+                token,
+                Claims::getExpiration
+        );
     }
 
-    private boolean isTokenExpired(String token) {
 
-        return extractExpiration(token).before(new Date());
+    // =====================================================
+    // CHECK TOKEN EXPIRATION
+    // =====================================================
 
+    private boolean isTokenExpired(
+            String token
+    ) {
+
+        return extractExpiration(token)
+                .before(new Date());
     }
 
-    public boolean isTokenValid(String token, String email) {
 
-        String username = extractUsername(token);
+    // =====================================================
+    // VALIDATE TOKEN
+    // =====================================================
+
+    public boolean isTokenValid(
+            String token,
+            String email
+    ) {
+
+        String username =
+                extractUsername(token);
 
         return username.equals(email)
                 && !isTokenExpired(token);
-
     }
 }

@@ -35,6 +35,8 @@ import AdminNotificationsPage
     from './pages/AdminPage/AdminNotificationsPage'
 import AdminAuditLogsPage
     from './pages/AdminPage/AdminAuditLogsPage'
+import AdminSettingsPage
+    from './pages/AdminPage/AdminSettingsPage'
 
 function App() {
     return (
@@ -162,6 +164,11 @@ function App() {
                     <Route
                         path="/admin/audit-logs"
                         element={<AdminAuditLogsPage />}
+                    />
+
+                    <Route
+                        path="/admin/settings"
+                        element={<AdminSettingsPage />}
                     />
 
                 </Route>

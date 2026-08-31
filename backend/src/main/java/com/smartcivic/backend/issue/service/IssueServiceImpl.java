@@ -1,5 +1,7 @@
 package com.smartcivic.backend.issue.service;
 
+import com.smartcivic.backend.adminsettings.entity.AdminSettings;
+import com.smartcivic.backend.adminsettings.repository.AdminSettingsRepository;
 import com.smartcivic.backend.audit.entity.AuditEntityType;
 import com.smartcivic.backend.audit.service.AuditLogService;
 import com.smartcivic.backend.issue.dto.AssignIssueRequest;
@@ -55,6 +57,7 @@ public class IssueServiceImpl implements IssueService {
     private final PriorityEvaluationService priorityEvaluationService;
     private final NotificationService notificationService;
     private final AuditLogService auditLogService;
+    private final AdminSettingsRepository adminSettingsRepository;
 
     @Override
     @Transactional
@@ -73,6 +76,42 @@ public class IssueServiceImpl implements IssueService {
                                 "User not found with email: " + userEmail
                         )
                 );
+
+
+        // =====================================================
+        // LOAD ADMIN SETTINGS
+        // =====================================================
+
+        AdminSettings settings =
+                adminSettingsRepository
+                        .findTopByOrderByCreatedAtAsc()
+                        .orElseGet(() ->
+                                adminSettingsRepository.save(
+                                        AdminSettings.createDefault()
+                                )
+                        );
+
+
+        // =====================================================
+        // ADMIN SYSTEM CONTROLS
+        // =====================================================
+
+        // Maintenance Mode
+        if (settings.isMaintenanceMode()) {
+
+            throw new IllegalStateException(
+                    "System is currently under maintenance. Please try again later."
+            );
+        }
+
+
+        // Issue Reporting
+        if (!settings.isAllowIssueReporting()) {
+
+            throw new IllegalStateException(
+                    "Issue reporting is currently disabled. Please try again later."
+            );
+        }
 
 
         // =====================================================
@@ -102,13 +141,21 @@ public class IssueServiceImpl implements IssueService {
 
 
         // =====================================================
-        // CALCULATE PRIORITY
+        // CALCULATE DEFAULT PRIORITY
         // =====================================================
 
         IssuePriority priority =
-                priorityEvaluationService.calculatePriority(
-                        request.getCategory()
+                IssuePriority.valueOf(
+                        settings.getDefaultIssuePriority()
                 );
+
+
+        // =====================================================
+        // DEFAULT ISSUE STATUS
+        // =====================================================
+
+        IssueStatus status =
+                IssueStatus.REPORTED;
 
 
         // =====================================================
@@ -137,7 +184,7 @@ public class IssueServiceImpl implements IssueService {
                 .address(request.getAddress())
                 .location(location)
                 .priority(priority)
-                .status(IssueStatus.REPORTED)
+                .status(status)
                 .slaDueAt(slaDueAt)
                 .reportedBy(user)
                 .build();

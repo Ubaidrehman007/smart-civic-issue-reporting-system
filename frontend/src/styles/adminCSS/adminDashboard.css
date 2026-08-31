@@ -1130,3 +1130,61 @@
     }
 
 }
+/* =========================================
+   NOTIFICATION FOOTER
+========================================= */
+
+.admin-notification-footer {
+    width: 100%;
+    padding: 14px 20px;
+    border-top: 1px solid #e5e7eb;
+    background: #ffffff;
+    box-sizing: border-box;
+}
+
+
+/* View All Notifications Button */
+
+.admin-notification-footer button {
+    width: 100%;
+    padding: 11px 16px;
+
+    border: none;
+    border-radius: 10px;
+
+    background: transparent;
+    color: #2563eb;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+            background-color 0.2s ease,
+            color 0.2s ease,
+            transform 0.15s ease;
+}
+
+
+/* Hover */
+
+.admin-notification-footer button:hover {
+    background: #eff6ff;
+    color: #1d4ed8;
+}
+
+
+/* Click */
+
+.admin-notification-footer button:active {
+    transform: scale(0.98);
+}
+
+
+/* Keyboard focus */
+
+.admin-notification-footer button:focus-visible {
+    outline: 2px solid #2563eb;
+    outline-offset: 2px;
+}

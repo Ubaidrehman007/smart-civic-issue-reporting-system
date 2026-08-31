@@ -1,5 +1,7 @@
 package com.smartcivic.backend.user.service;
 
+import com.smartcivic.backend.adminsettings.entity.AdminSettings;
+import com.smartcivic.backend.adminsettings.repository.AdminSettingsRepository;
 import com.smartcivic.backend.auth.entity.OtpPurpose;
 import com.smartcivic.backend.auth.exception.InvalidCredentialsException;
 import com.smartcivic.backend.auth.service.OtpService;
@@ -20,6 +22,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import com.smartcivic.backend.audit.entity.AuditEntityType;
 import com.smartcivic.backend.audit.service.AuditLogService;
 
+
 import java.util.List;
 import java.util.UUID;
 
@@ -31,10 +34,45 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final OtpService otpService;
     private final AuditLogService auditLogService;
+    private final AdminSettingsRepository adminSettingsRepository;
 
     @Override
     @Transactional
     public void registerUser(RegisterUserRequest request) {
+
+        // =====================================================
+        // ADMIN SYSTEM CONTROLS
+        // =====================================================
+
+        AdminSettings settings =
+                adminSettingsRepository
+                        .findTopByOrderByCreatedAtAsc()
+                        .orElseGet(() ->
+                                adminSettingsRepository.save(
+                                        AdminSettings.createDefault()
+                                )
+                        );
+
+        // Maintenance Mode
+        if (settings.isMaintenanceMode()) {
+
+            throw new IllegalStateException(
+                    "System is currently under maintenance. Please try again later."
+            );
+        }
+
+        // New Citizen Registrations
+        if (!settings.isAllowNewRegistrations()) {
+
+            throw new IllegalStateException(
+                    "New citizen registrations are currently disabled."
+            );
+        }
+
+
+        // =====================================================
+        // EXISTING REGISTRATION LOGIC
+        // =====================================================
 
         String email =
                 request.email()
@@ -42,6 +80,7 @@ public class UserServiceImpl implements UserService {
                         .toLowerCase();
 
         if (userRepository.existsByEmail(email)) {
+
             throw new UserAlreadyExistsException(
                     "Email already exists"
             );
@@ -50,6 +89,7 @@ public class UserServiceImpl implements UserService {
         if (userRepository.existsByPhoneNumber(
                 request.phoneNumber()
         )) {
+
             throw new UserAlreadyExistsException(
                     "Phone number already exists"
             );

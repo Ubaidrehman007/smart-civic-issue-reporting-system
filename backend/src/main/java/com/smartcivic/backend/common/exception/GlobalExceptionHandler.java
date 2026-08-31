@@ -148,12 +148,32 @@ public class GlobalExceptionHandler {
                 );
     }
 
+
+
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ApiResponse<Void>> handleIllegalArgumentException(
             IllegalArgumentException ex
     ) {
         return ResponseEntity
                 .badRequest()
+                .body(
+                        ApiResponse.error(
+                                ex.getMessage(),
+                                null
+                        )
+                );
+    }
+
+
+
+
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<ApiResponse<Void>> handleIllegalStateException(
+            IllegalStateException ex
+    ) {
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
                 .body(
                         ApiResponse.error(
                                 ex.getMessage(),
@@ -187,6 +207,8 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ApiResponse.error("Something went wrong.", null));
     }
+
+
 
     @ExceptionHandler(InvalidCredentialsException.class)
     public ResponseEntity<ApiResponse<Void>> handleInvalidCredentials(

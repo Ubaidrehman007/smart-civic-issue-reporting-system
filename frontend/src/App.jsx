@@ -78,6 +78,8 @@ import FieldWorkerLayout
 
 import FieldWorkerDashboardPage
     from './pages/FieldWorkerPage/FieldWorkerDashboardPage'
+import FieldWorkerIssueDetailsPage
+    from './pages/FieldWorkerPage/FieldWorkerIssueDetailsPage'
 
 
 
@@ -278,6 +280,10 @@ function App() {
                     <Route
                         path="/worker/dashboard"
                         element={<FieldWorkerDashboardPage />}
+                    />
+                    <Route
+                        path="/worker/issues/:issueId"
+                        element={<FieldWorkerIssueDetailsPage />}
                     />
 
                 </Route>

@@ -1,9 +1,16 @@
-import { useEffect, useMemo, useState } from 'react'
+import {
+    useEffect,
+    useMemo,
+    useState,
+} from 'react'
+
+import { useNavigate } from 'react-router-dom'
 import { getAssignedIssues } from '../../api/issueApi'
 import '../../styles/workerCSS/fieldWorkerDashboard.css'
 
 function FieldWorkerDashboardPage() {
 
+    const navigate = useNavigate()
     const [issues, setIssues] = useState([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState('')
@@ -515,6 +522,17 @@ function FieldWorkerDashboardPage() {
                                     </div>
 
                                 </div>
+
+                                <button
+                                    type="button"
+                                    className="worker-view-issue-btn"
+                                    onClick={() =>
+                                        navigate(`/worker/issues/${issue.id}`)
+                                    }
+                                >
+                                    View Issue
+                                    <span>→</span>
+                                </button>
 
                             </article>
 

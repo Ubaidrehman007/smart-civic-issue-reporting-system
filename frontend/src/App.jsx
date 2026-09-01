@@ -69,6 +69,18 @@ import AdminSettingsPage
     from './pages/AdminPage/AdminSettingsPage'
 
 
+// =====================================================
+// FIELD WORKER IMPORTS
+// =====================================================
+
+import FieldWorkerLayout
+    from './components/FieldWorkerLayout'
+
+import FieldWorkerDashboardPage
+    from './pages/FieldWorkerPage/FieldWorkerDashboardPage'
+
+
+
 function App() {
 
     return (
@@ -250,8 +262,31 @@ function App() {
 
 
             {/* =================================================
+    FIELD WORKER ROUTES
+================================================= */}
+
+            <Route
+                element={
+                    <ProtectedRoute
+                        allowedRoles={['FIELD_WORKER']}
+                    />
+                }
+            >
+
+                <Route element={<FieldWorkerLayout />}>
+
+                    <Route
+                        path="/worker/dashboard"
+                        element={<FieldWorkerDashboardPage />}
+                    />
+
+                </Route>
+
+            </Route>
+
+            {/*
                 404
-            ================================================= */}
+            */}
 
             <Route
                 path="*"

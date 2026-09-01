@@ -1,0 +1,403 @@
+/* =========================================================
+   FIELD WORKER LAYOUT
+========================================================= */
+
+.worker-layout {
+    min-height: 100vh;
+    display: flex;
+    width: 100%;
+    background: #f8fafc;
+}
+
+
+/* =========================================================
+   SIDEBAR
+========================================================= */
+
+.worker-sidebar {
+    width: 260px;
+    min-height: 100vh;
+
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+
+    z-index: 1000;
+
+    display: flex;
+    flex-direction: column;
+
+    background: #0f172a;
+    color: #ffffff;
+}
+
+
+/* =========================================================
+   BRAND
+========================================================= */
+
+.worker-brand {
+    min-height: 90px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 20px;
+
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+
+.worker-brand-logo {
+    width: 42px;
+    height: 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border-radius: 10px;
+
+    background: #2563eb;
+    color: #ffffff;
+
+    font-size: 14px;
+    font-weight: 800;
+}
+
+
+.worker-brand-text {
+    display: flex;
+    flex-direction: column;
+
+    min-width: 0;
+}
+
+
+.worker-brand-text span {
+    font-size: 17px;
+    font-weight: 700;
+}
+
+
+.worker-brand-text small {
+    margin-top: 3px;
+
+    color: #94a3b8;
+
+    font-size: 10px;
+    font-weight: 600;
+
+    letter-spacing: 1px;
+}
+
+
+/* =========================================================
+   NAVIGATION
+========================================================= */
+
+.worker-nav {
+    flex: 1;
+
+    padding: 20px 12px;
+
+    overflow-y: auto;
+}
+
+
+.worker-nav-item {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+
+    margin-bottom: 5px;
+    padding: 12px 14px;
+
+    border: none;
+    border-radius: 8px;
+
+    background: transparent;
+    color: #cbd5e1;
+
+    text-decoration: none;
+
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+
+    text-align: left;
+
+    cursor: pointer;
+
+    transition:
+            background 0.2s ease,
+            color 0.2s ease,
+            transform 0.2s ease;
+}
+
+
+.worker-nav-item:hover {
+    background: rgba(255, 255, 255, 0.07);
+    color: #ffffff;
+}
+
+
+.worker-nav-item.active {
+    background: #2563eb;
+    color: #ffffff;
+}
+
+
+/* =========================================================
+   SIDEBAR BOTTOM
+========================================================= */
+
+.worker-sidebar-bottom {
+    padding: 14px 12px;
+
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+
+.worker-logout-button {
+    font-family: inherit;
+}
+
+
+/* =========================================================
+   MAIN CONTENT
+========================================================= */
+
+.worker-main {
+    width: calc(100% - 260px);
+    min-height: 100vh;
+
+    margin-left: 260px;
+
+    padding: 24px;
+
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   MOBILE ELEMENTS — DEFAULT HIDDEN
+========================================================= */
+
+.worker-mobile-header {
+    display: none;
+}
+
+
+.worker-mobile-overlay {
+    display: none;
+}
+
+
+.worker-mobile-close {
+    display: none;
+}
+
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 900px) {
+
+    .worker-sidebar {
+        width: 230px;
+    }
+
+    .worker-main {
+        width: calc(100% - 230px);
+
+        margin-left: 230px;
+    }
+
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 768px) {
+
+    /* -----------------------------------------------------
+       MOBILE HEADER
+    ----------------------------------------------------- */
+
+    .worker-mobile-header {
+        position: fixed;
+
+        top: 0;
+        left: 0;
+        right: 0;
+
+        z-index: 900;
+
+        height: 64px;
+
+        display: flex;
+        align-items: center;
+
+        gap: 14px;
+
+        padding: 0 16px;
+
+        background: #0f172a;
+        color: #ffffff;
+    }
+
+
+    .worker-mobile-menu-button {
+        width: 40px;
+        height: 40px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        border: none;
+        border-radius: 8px;
+
+        background: transparent;
+        color: #ffffff;
+
+        font-size: 24px;
+    }
+
+
+    .worker-mobile-brand {
+        display: flex;
+        align-items: center;
+
+        gap: 10px;
+
+        font-size: 16px;
+        font-weight: 700;
+    }
+
+
+    .worker-mobile-brand .worker-brand-logo {
+        width: 34px;
+        height: 34px;
+
+        border-radius: 9px;
+
+        font-size: 12px;
+    }
+
+
+    /* -----------------------------------------------------
+       SIDEBAR
+    ----------------------------------------------------- */
+
+    .worker-sidebar {
+        width: 270px;
+
+        transform: translateX(-100%);
+
+        transition: transform 0.25s ease;
+
+        box-shadow:
+                8px 0 30px rgba(15, 23, 42, 0.18);
+    }
+
+
+    .worker-sidebar.worker-sidebar-open {
+        transform: translateX(0);
+    }
+
+
+    /* -----------------------------------------------------
+       CLOSE BUTTON
+    ----------------------------------------------------- */
+
+    .worker-mobile-close {
+        width: 34px;
+        height: 34px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        margin-left: auto;
+
+        border: none;
+        border-radius: 8px;
+
+        background: #1e293b;
+        color: #ffffff;
+
+        font-size: 24px;
+        line-height: 1;
+    }
+
+
+    /* -----------------------------------------------------
+       OVERLAY
+    ----------------------------------------------------- */
+
+    .worker-mobile-overlay {
+        display: block;
+
+        position: fixed;
+
+        inset: 0;
+
+        z-index: 950;
+
+        background: rgba(15, 23, 42, 0.45);
+    }
+
+
+    /* -----------------------------------------------------
+       MAIN CONTENT
+    ----------------------------------------------------- */
+
+    .worker-main {
+        width: 100%;
+
+        margin-left: 0;
+
+        padding: 80px 16px 24px;
+    }
+
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media (max-width: 400px) {
+
+    .worker-sidebar {
+        width: 260px;
+    }
+
+
+    .worker-mobile-header {
+        padding: 0 14px;
+    }
+
+
+    .worker-mobile-brand {
+        font-size: 15px;
+    }
+
+
+    .worker-main {
+        padding-left: 14px;
+        padding-right: 14px;
+    }
+
+}

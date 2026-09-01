@@ -1,0 +1,962 @@
+/* =========================================================
+   FIELD WORKER DASHBOARD
+========================================================= */
+
+.worker-dashboard {
+    width: 100%;
+    max-width: 1500px;
+    margin: 0 auto;
+}
+
+
+/* =========================================================
+   PAGE HEADER
+========================================================= */
+
+.worker-dashboard-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+
+    margin-bottom: 28px;
+}
+
+
+.worker-dashboard-eyebrow {
+    display: block;
+
+    margin-bottom: 7px;
+
+    color: #2563eb;
+
+    font-size: 11px;
+    font-weight: 800;
+
+    letter-spacing: 1.2px;
+}
+
+
+.worker-dashboard-header h1 {
+    margin: 0;
+
+    color: #0f172a;
+
+    font-size: 30px;
+    font-weight: 750;
+    line-height: 1.2;
+}
+
+
+.worker-dashboard-header p {
+    margin: 8px 0 0;
+
+    color: #64748b;
+
+    font-size: 14px;
+}
+
+
+.worker-dashboard-date {
+    min-width: 145px;
+
+    padding: 12px 16px;
+
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+
+    background: #ffffff;
+
+    text-align: right;
+}
+
+
+.worker-dashboard-date span {
+    display: block;
+
+    margin-bottom: 3px;
+
+    color: #94a3b8;
+
+    font-size: 11px;
+    font-weight: 600;
+}
+
+
+.worker-dashboard-date strong {
+    color: #334155;
+
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   KPI GRID
+========================================================= */
+
+.worker-kpi-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(5, minmax(0, 1fr));
+
+    gap: 16px;
+
+    margin-bottom: 28px;
+}
+
+
+.worker-kpi-card {
+    display: flex;
+    align-items: center;
+
+    gap: 14px;
+
+    min-width: 0;
+
+    padding: 18px;
+
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+
+    background: #ffffff;
+
+    box-shadow:
+            0 2px 6px rgba(15, 23, 42, 0.04);
+
+    transition:
+            transform 0.2s ease,
+            box-shadow 0.2s ease;
+}
+
+
+.worker-kpi-card:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+            0 8px 20px rgba(15, 23, 42, 0.07);
+}
+
+
+.worker-kpi-icon {
+    width: 42px;
+    height: 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border-radius: 10px;
+
+    background: #eff6ff;
+    color: #2563eb;
+
+    font-size: 16px;
+    font-weight: 800;
+}
+
+
+.worker-kpi-icon.pending {
+    background: #fff7ed;
+    color: #ea580c;
+}
+
+
+.worker-kpi-icon.progress {
+    background: #f5f3ff;
+    color: #7c3aed;
+}
+
+
+.worker-kpi-icon.completed {
+    background: #ecfdf5;
+    color: #059669;
+}
+
+
+.worker-kpi-icon.overdue {
+    background: #fef2f2;
+    color: #dc2626;
+}
+
+
+.worker-kpi-content {
+    min-width: 0;
+}
+
+
+.worker-kpi-content span {
+    display: block;
+
+    margin-bottom: 5px;
+
+    overflow: hidden;
+
+    color: #64748b;
+
+    font-size: 12px;
+    font-weight: 600;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+.worker-kpi-content strong {
+    display: block;
+
+    color: #0f172a;
+
+    font-size: 25px;
+    font-weight: 750;
+
+    line-height: 1;
+}
+
+
+.worker-kpi-danger {
+    border-color: #fecaca;
+}
+
+
+/* =========================================================
+   SECTIONS
+========================================================= */
+
+.worker-section {
+    margin-bottom: 24px;
+
+    padding: 22px;
+
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+
+    background: #ffffff;
+
+    box-shadow:
+            0 2px 6px rgba(15, 23, 42, 0.035);
+}
+
+
+.worker-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 16px;
+
+    margin-bottom: 18px;
+}
+
+
+.worker-section-header h2 {
+    margin: 0;
+
+    color: #0f172a;
+
+    font-size: 17px;
+    font-weight: 700;
+}
+
+
+.worker-section-header p {
+    margin: 5px 0 0;
+
+    color: #64748b;
+
+    font-size: 12px;
+}
+
+
+.worker-count-badge {
+    padding: 6px 10px;
+
+    border-radius: 20px;
+
+    background: #f1f5f9;
+    color: #475569;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   SLA ALERT
+========================================================= */
+
+.worker-sla-alert {
+    display: flex;
+    align-items: center;
+
+    gap: 14px;
+
+    padding: 15px 16px;
+
+    border: 1px solid #fecaca;
+    border-radius: 10px;
+
+    background: #fff7f7;
+}
+
+
+.worker-sla-alert-icon {
+    width: 38px;
+    height: 38px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    background: #fee2e2;
+    color: #dc2626;
+
+    font-size: 17px;
+    font-weight: 800;
+}
+
+
+.worker-sla-alert-content strong {
+    display: block;
+
+    margin-bottom: 3px;
+
+    color: #991b1b;
+
+    font-size: 13px;
+}
+
+
+.worker-sla-alert-content span {
+    color: #b91c1c;
+
+    font-size: 12px;
+}
+
+
+/* =========================================================
+   TODAY'S WORK
+========================================================= */
+
+.worker-work-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+    gap: 12px;
+}
+
+
+.worker-work-item {
+    padding: 16px;
+
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+
+    background: #f8fafc;
+}
+
+
+.worker-work-item span {
+    display: block;
+
+    margin-bottom: 8px;
+
+    color: #64748b;
+
+    font-size: 12px;
+    font-weight: 600;
+}
+
+
+.worker-work-item strong {
+    color: #0f172a;
+
+    font-size: 23px;
+    font-weight: 750;
+}
+
+
+/* =========================================================
+   ASSIGNMENTS
+========================================================= */
+
+.worker-assignment-list {
+    display: flex;
+    flex-direction: column;
+
+    gap: 10px;
+}
+
+
+.worker-assignment-card {
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1fr) auto;
+
+    gap: 22px;
+
+    padding: 16px;
+
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+
+    background: #ffffff;
+
+    transition:
+            border-color 0.2s ease,
+            box-shadow 0.2s ease;
+}
+
+
+.worker-assignment-card:hover {
+    border-color: #cbd5e1;
+
+    box-shadow:
+            0 5px 14px rgba(15, 23, 42, 0.05);
+}
+
+
+.worker-assignment-title-row {
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    min-width: 0;
+}
+
+
+.worker-assignment-title-row h3 {
+    margin: 0;
+
+    overflow: hidden;
+
+    color: #0f172a;
+
+    font-size: 14px;
+    font-weight: 700;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+.worker-issue-id {
+    display: block;
+
+    margin-top: 5px;
+
+    color: #94a3b8;
+
+    font-size: 10px;
+
+    word-break: break-all;
+}
+
+
+.worker-assignment-address {
+    margin: 8px 0 0;
+
+    overflow: hidden;
+
+    color: #64748b;
+
+    font-size: 12px;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   STATUS BADGES
+========================================================= */
+
+.worker-status-badge {
+    flex-shrink: 0;
+
+    padding: 5px 8px;
+
+    border-radius: 6px;
+
+    font-size: 9px;
+    font-weight: 800;
+
+    letter-spacing: 0.3px;
+}
+
+
+.status-reported {
+    background: #eff6ff;
+    color: #1d4ed8;
+}
+
+
+.status-under_review {
+    background: #fff7ed;
+    color: #c2410c;
+}
+
+
+.status-in_progress {
+    background: #f5f3ff;
+    color: #6d28d9;
+}
+
+
+.status-resolved {
+    background: #ecfdf5;
+    color: #047857;
+}
+
+
+.status-rejected {
+    background: #fef2f2;
+    color: #b91c1c;
+}
+
+
+/* =========================================================
+   ASSIGNMENT META
+========================================================= */
+
+.worker-assignment-meta {
+    display: flex;
+    align-items: center;
+
+    gap: 26px;
+
+    min-width: 300px;
+}
+
+
+.worker-assignment-meta > div {
+    min-width: 70px;
+}
+
+
+.worker-assignment-meta span {
+    display: block;
+
+    margin-bottom: 5px;
+
+    color: #94a3b8;
+
+    font-size: 10px;
+    font-weight: 600;
+
+    text-transform: uppercase;
+}
+
+
+.worker-assignment-meta strong {
+    display: block;
+
+    color: #334155;
+
+    font-size: 11px;
+    font-weight: 700;
+}
+
+
+.worker-sla-breached {
+    color: #dc2626 !important;
+}
+
+
+/* =========================================================
+   EMPTY STATE
+========================================================= */
+
+.worker-empty-state {
+    padding: 42px 20px;
+
+    border: 1px dashed #cbd5e1;
+    border-radius: 10px;
+
+    background: #f8fafc;
+
+    text-align: center;
+}
+
+
+.worker-empty-icon {
+    width: 46px;
+    height: 46px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin: 0 auto 12px;
+
+    border-radius: 50%;
+
+    background: #ecfdf5;
+    color: #059669;
+
+    font-size: 18px;
+    font-weight: 800;
+}
+
+
+.worker-empty-state h3 {
+    margin: 0;
+
+    color: #334155;
+
+    font-size: 14px;
+}
+
+
+.worker-empty-state p {
+    margin: 6px 0 0;
+
+    color: #94a3b8;
+
+    font-size: 12px;
+}
+
+
+/* =========================================================
+   ACTIVITY EMPTY
+========================================================= */
+
+.worker-activity-empty {
+    display: flex;
+    align-items: center;
+
+    gap: 13px;
+
+    padding: 16px;
+
+    border: 1px dashed #cbd5e1;
+    border-radius: 10px;
+
+    background: #f8fafc;
+}
+
+
+.worker-activity-icon {
+    width: 34px;
+    height: 34px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border-radius: 8px;
+
+    background: #e0f2fe;
+    color: #0369a1;
+
+    font-size: 14px;
+    font-weight: 800;
+}
+
+
+.worker-activity-empty strong {
+    display: block;
+
+    margin-bottom: 3px;
+
+    color: #334155;
+
+    font-size: 12px;
+}
+
+
+.worker-activity-empty p {
+    margin: 0;
+
+    color: #64748b;
+
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+
+/* =========================================================
+   LOADING
+========================================================= */
+
+.worker-dashboard-state {
+    min-height: 300px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    gap: 12px;
+
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+
+    background: #ffffff;
+}
+
+
+.worker-dashboard-state p {
+    margin: 0;
+
+    color: #64748b;
+
+    font-size: 13px;
+}
+
+
+.worker-spinner {
+    width: 30px;
+    height: 30px;
+
+    border: 3px solid #dbeafe;
+    border-top-color: #2563eb;
+
+    border-radius: 50%;
+
+    animation: worker-spin 0.8s linear infinite;
+}
+
+
+@keyframes worker-spin {
+
+    to {
+        transform: rotate(360deg);
+    }
+
+}
+
+
+/* =========================================================
+   ERROR
+========================================================= */
+
+.worker-dashboard-error {
+    display: flex;
+    align-items: center;
+
+    gap: 14px;
+
+    padding: 18px;
+
+    border: 1px solid #fecaca;
+    border-radius: 12px;
+
+    background: #fff7f7;
+}
+
+
+.worker-error-icon {
+    width: 40px;
+    height: 40px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    background: #fee2e2;
+    color: #dc2626;
+
+    font-size: 18px;
+    font-weight: 800;
+}
+
+
+.worker-dashboard-error h3 {
+    margin: 0 0 4px;
+
+    color: #991b1b;
+
+    font-size: 14px;
+}
+
+
+.worker-dashboard-error p {
+    margin: 0;
+
+    color: #b91c1c;
+
+    font-size: 12px;
+}
+
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 1200px) {
+
+    .worker-kpi-grid {
+        grid-template-columns:
+            repeat(3, minmax(0, 1fr));
+    }
+
+
+    .worker-assignment-card {
+        grid-template-columns: 1fr;
+    }
+
+
+    .worker-assignment-meta {
+        min-width: 0;
+    }
+
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 768px) {
+
+    .worker-dashboard-header {
+        flex-direction: column;
+
+        margin-bottom: 20px;
+    }
+
+
+    .worker-dashboard-header h1 {
+        font-size: 24px;
+    }
+
+
+    .worker-dashboard-date {
+        width: 100%;
+
+        box-sizing: border-box;
+
+        text-align: left;
+    }
+
+
+    .worker-kpi-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+        gap: 10px;
+    }
+
+
+    .worker-kpi-card {
+        padding: 14px;
+
+        gap: 10px;
+    }
+
+
+    .worker-kpi-icon {
+        width: 36px;
+        height: 36px;
+
+        border-radius: 8px;
+    }
+
+
+    .worker-kpi-content strong {
+        font-size: 21px;
+    }
+
+
+    .worker-kpi-content span {
+        font-size: 10px;
+    }
+
+
+    .worker-section {
+        padding: 16px;
+
+        margin-bottom: 16px;
+    }
+
+
+    .worker-work-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+
+    .worker-assignment-meta {
+        display: grid;
+
+        grid-template-columns:
+            repeat(3, minmax(0, 1fr));
+
+        gap: 12px;
+    }
+
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media (max-width: 480px) {
+
+    .worker-kpi-grid {
+        grid-template-columns: 1fr;
+    }
+
+
+    .worker-kpi-card {
+        padding: 15px;
+    }
+
+
+    .worker-section-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+
+    .worker-count-badge {
+        align-self: flex-start;
+    }
+
+
+    .worker-work-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+
+    .worker-assignment-title-row {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+
+    .worker-assignment-title-row h3 {
+        white-space: normal;
+    }
+
+
+    .worker-assignment-meta {
+        grid-template-columns: 1fr;
+    }
+
+
+    .worker-activity-empty {
+        align-items: flex-start;
+    }
+
+}

@@ -12,6 +12,25 @@ export const getMyIssues = async () => {
     return response.data
 }
 
+export const getAssignedIssues = async ({
+                                            page = 0,
+                                            size = 50,
+                                            sort = 'createdAt,desc',
+                                        } = {}) => {
+
+    const response = await apiClient.get(
+        '/issues/assigned',
+        {
+            params: {
+                page,
+                size,
+                sort,
+            },
+        }
+    )
+
+    return response.data
+}
 
 export const createIssue = async (formData) => {
     const response = await apiClient.post(

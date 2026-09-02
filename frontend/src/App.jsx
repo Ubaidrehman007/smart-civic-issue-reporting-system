@@ -82,7 +82,8 @@ import FieldWorkerIssueDetailsPage
     from './pages/FieldWorkerPage/FieldWorkerIssueDetailsPage'
 import FieldWorkerAssignmentsPage
     from './pages/FieldWorkerPage/FieldWorkerAssignmentsPage'
-
+import FieldWorkerActiveIssuesPage
+    from './pages/FieldWorkerPage/FieldWorkerActiveIssuesPage'
 
 function App() {
 
@@ -290,7 +291,10 @@ function App() {
                         path="/worker/assignments"
                         element={<FieldWorkerAssignmentsPage />}
                     />
-
+                    <Route
+                        path="/worker/active-issues"
+                        element={<FieldWorkerActiveIssuesPage />}
+                    />
                 </Route>
 
             </Route>

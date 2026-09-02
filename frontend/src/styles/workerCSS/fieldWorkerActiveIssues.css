@@ -1,0 +1,429 @@
+/* =====================================================
+   FIELD WORKER — ACTIVE ISSUES
+===================================================== */
+
+.worker-active-issues-page {
+    width: 100%;
+    min-height: 100%;
+    padding: 28px;
+    box-sizing: border-box;
+}
+
+
+/* =====================================================
+   PAGE HEADER
+===================================================== */
+
+.worker-active-page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 24px;
+}
+
+.worker-active-page-header h1 {
+    margin: 0 0 6px;
+    color: #111827;
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.worker-active-page-header p {
+    margin: 0;
+    color: #6b7280;
+    font-size: 14px;
+}
+
+
+/* =====================================================
+   ACTIVE COUNT
+===================================================== */
+
+.worker-active-count {
+    min-width: 125px;
+    padding: 14px 18px;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    background: #ffffff;
+    text-align: center;
+}
+
+.worker-active-count strong {
+    display: block;
+    color: #111827;
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.worker-active-count span {
+    display: block;
+    margin-top: 3px;
+    color: #6b7280;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+
+/* =====================================================
+   ACTIVE ISSUE LIST
+===================================================== */
+
+.worker-active-issue-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+
+
+/* =====================================================
+   ACTIVE ISSUE CARD
+===================================================== */
+
+.worker-active-issue-card {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    padding: 20px;
+    border: 1px solid #e5e7eb;
+    border-radius: 15px;
+    background: #ffffff;
+    box-shadow: 0 3px 12px rgba(15, 23, 42, 0.04);
+    transition:
+            transform 0.2s ease,
+            box-shadow 0.2s ease,
+            border-color 0.2s ease;
+}
+
+.worker-active-issue-card:hover {
+    transform: translateY(-2px);
+    border-color: #dbe3f0;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+}
+
+
+/* =====================================================
+   CARD HEADER
+===================================================== */
+
+.worker-active-card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+}
+
+.worker-active-issue-id {
+    display: inline-block;
+    margin-bottom: 7px;
+    color: #6b7280;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.worker-active-card-header h2 {
+    margin: 0;
+    color: #111827;
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 1.35;
+}
+
+
+/* =====================================================
+   STATUS
+===================================================== */
+
+.worker-active-status {
+    flex-shrink: 0;
+    padding: 6px 9px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.active-status-under_review {
+    background: #f5f3ff;
+    color: #6d28d9;
+}
+
+.active-status-in_progress {
+    background: #fff7ed;
+    color: #c2410c;
+}
+
+
+/* =====================================================
+   DESCRIPTION
+===================================================== */
+
+.worker-active-description {
+    display: -webkit-box;
+    overflow: hidden;
+    margin: 14px 0 18px;
+    color: #6b7280;
+    font-size: 13px;
+    line-height: 1.6;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+}
+
+
+/* =====================================================
+   INFORMATION GRID
+===================================================== */
+
+.worker-active-info-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: auto;
+    padding-top: 16px;
+    border-top: 1px solid #f0f1f3;
+}
+
+.worker-active-info-item {
+    min-width: 0;
+}
+
+.worker-active-info-item span {
+    display: block;
+    margin-bottom: 5px;
+    color: #9ca3af;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.worker-active-info-item strong {
+    display: block;
+    overflow: hidden;
+    color: #374151;
+    font-size: 13px;
+    font-weight: 600;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+/* =====================================================
+   PRIORITY
+===================================================== */
+
+.worker-active-priority.active-priority-high {
+    color: #dc2626;
+}
+
+.worker-active-priority.active-priority-medium {
+    color: #d97706;
+}
+
+.worker-active-priority.active-priority-low {
+    color: #059669;
+}
+
+
+/* =====================================================
+   FOOTER
+===================================================== */
+
+.worker-active-card-footer {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 18px;
+}
+
+.worker-active-open-btn {
+    border: none;
+    border-radius: 9px;
+    padding: 9px 16px;
+    background: #2563eb;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+            background 0.2s ease,
+            transform 0.2s ease;
+}
+
+.worker-active-open-btn:hover {
+    background: #1d4ed8;
+    transform: translateY(-1px);
+}
+
+.worker-active-open-btn:active {
+    transform: translateY(0);
+}
+
+
+/* =====================================================
+   LOADING / EMPTY / ERROR STATE
+===================================================== */
+
+.worker-active-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 280px;
+    padding: 30px;
+    border: 1px dashed #d1d5db;
+    border-radius: 14px;
+    background: #ffffff;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.worker-active-state h3 {
+    margin: 12px 0 6px;
+    color: #111827;
+    font-size: 17px;
+}
+
+.worker-active-state p {
+    margin: 0;
+    max-width: 420px;
+    color: #6b7280;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+
+/* =====================================================
+   EMPTY ICON
+===================================================== */
+
+.worker-active-empty-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #ecfdf5;
+    color: #059669;
+    font-size: 25px;
+    font-weight: 700;
+}
+
+
+/* =====================================================
+   LOADING SPINNER
+===================================================== */
+
+.worker-active-spinner {
+    width: 30px;
+    height: 30px;
+    border: 3px solid #e5e7eb;
+    border-top-color: #2563eb;
+    border-radius: 50%;
+    animation: workerActiveSpin 0.8s linear infinite;
+}
+
+@keyframes workerActiveSpin {
+
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+
+}
+
+
+/* =====================================================
+   ERROR
+===================================================== */
+
+.worker-active-error {
+    border-style: solid;
+    border-color: #fecaca;
+    background: #fffafa;
+}
+
+.worker-active-error h3 {
+    color: #b91c1c;
+}
+
+.worker-active-error button {
+    margin-top: 16px;
+    border: none;
+    border-radius: 8px;
+    padding: 9px 15px;
+    background: #dc2626;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.worker-active-error button:hover {
+    background: #b91c1c;
+}
+
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media (max-width: 1100px) {
+
+    .worker-active-issue-list {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+
+@media (max-width: 800px) {
+
+    .worker-active-issues-page {
+        padding: 20px;
+    }
+
+    .worker-active-page-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .worker-active-count {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+}
+
+
+@media (max-width: 560px) {
+
+    .worker-active-issues-page {
+        padding: 15px;
+    }
+
+    .worker-active-issue-card {
+        padding: 16px;
+    }
+
+    .worker-active-card-header {
+        flex-direction: column;
+    }
+
+    .worker-active-info-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .worker-active-card-footer {
+        justify-content: stretch;
+    }
+
+    .worker-active-open-btn {
+        width: 100%;
+    }
+
+}

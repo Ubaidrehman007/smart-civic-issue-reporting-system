@@ -80,7 +80,8 @@ import FieldWorkerDashboardPage
     from './pages/FieldWorkerPage/FieldWorkerDashboardPage'
 import FieldWorkerIssueDetailsPage
     from './pages/FieldWorkerPage/FieldWorkerIssueDetailsPage'
-
+import FieldWorkerAssignmentsPage
+    from './pages/FieldWorkerPage/FieldWorkerAssignmentsPage'
 
 
 function App() {
@@ -284,6 +285,10 @@ function App() {
                     <Route
                         path="/worker/issues/:issueId"
                         element={<FieldWorkerIssueDetailsPage />}
+                    />
+                    <Route
+                        path="/worker/assignments"
+                        element={<FieldWorkerAssignmentsPage />}
                     />
 
                 </Route>

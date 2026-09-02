@@ -1,8 +1,8 @@
 /* =====================================================
-   FIELD WORKER — MY ASSIGNMENTS
+   FIELD WORKER — COMPLETED ISSUES
 ===================================================== */
 
-.worker-assignments-page {
+.worker-completed-issues-page {
     width: 100%;
     min-height: 100%;
     padding: 28px;
@@ -14,7 +14,7 @@
    PAGE HEADER
 ===================================================== */
 
-.worker-page-header {
+.worker-completed-page-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -22,14 +22,15 @@
     margin-bottom: 24px;
 }
 
-.worker-page-header h1 {
+.worker-completed-page-header h1 {
     margin: 0 0 6px;
+    color: #111827;
     font-size: 28px;
     font-weight: 700;
     line-height: 1.2;
 }
 
-.worker-page-header p {
+.worker-completed-page-header p {
     margin: 0;
     color: #6b7280;
     font-size: 14px;
@@ -37,11 +38,11 @@
 
 
 /* =====================================================
-   ASSIGNMENT COUNT
+   COMPLETED COUNT
 ===================================================== */
 
-.worker-assignment-count {
-    min-width: 130px;
+.worker-completed-count {
+    min-width: 125px;
     padding: 14px 18px;
     border: 1px solid #e5e7eb;
     border-radius: 12px;
@@ -49,110 +50,27 @@
     text-align: center;
 }
 
-.worker-assignment-count strong {
+.worker-completed-count strong {
     display: block;
+    color: #111827;
     font-size: 24px;
     font-weight: 700;
 }
 
-.worker-assignment-count span {
+.worker-completed-count span {
     display: block;
     margin-top: 3px;
     color: #6b7280;
     font-size: 12px;
+    font-weight: 500;
 }
 
 
 /* =====================================================
-   TOOLBAR
+   ISSUE LIST
 ===================================================== */
 
-.worker-assignment-toolbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    margin-bottom: 22px;
-    padding: 14px;
-    border: 1px solid #e5e7eb;
-    border-radius: 14px;
-    background: #ffffff;
-}
-
-
-/* =====================================================
-   FILTERS
-===================================================== */
-
-.worker-assignment-filters {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-wrap: wrap;
-}
-
-.worker-assignment-filters button {
-    border: 1px solid #e5e7eb;
-    border-radius: 9px;
-    background: #ffffff;
-    color: #4b5563;
-    padding: 9px 14px;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    transition:
-            background 0.2s ease,
-            color 0.2s ease,
-            border-color 0.2s ease;
-}
-
-.worker-assignment-filters button:hover {
-    border-color: #c7d2fe;
-    background: #f5f7ff;
-}
-
-.worker-assignment-filters button.active {
-    border-color: #2563eb;
-    background: #2563eb;
-    color: #ffffff;
-}
-
-
-/* =====================================================
-   SEARCH
-===================================================== */
-
-.worker-assignment-search {
-    min-width: 250px;
-}
-
-.worker-assignment-search input {
-    width: 100%;
-    box-sizing: border-box;
-    padding: 10px 13px;
-    border: 1px solid #d1d5db;
-    border-radius: 9px;
-    outline: none;
-    font-size: 13px;
-    color: #111827;
-    background: #ffffff;
-}
-
-.worker-assignment-search input:focus {
-    border-color: #2563eb;
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.10);
-}
-
-.worker-assignment-search input::placeholder {
-    color: #9ca3af;
-}
-
-
-/* =====================================================
-   ASSIGNMENT LIST
-===================================================== */
-
-.worker-assignment-list {
+.worker-completed-issue-list {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 18px;
@@ -160,10 +78,10 @@
 
 
 /* =====================================================
-   ASSIGNMENT CARD
+   ISSUE CARD
 ===================================================== */
 
-.worker-assignment-card {
+.worker-completed-issue-card {
     display: flex;
     flex-direction: column;
     min-width: 0;
@@ -178,7 +96,7 @@
             border-color 0.2s ease;
 }
 
-.worker-assignment-card:hover {
+.worker-completed-issue-card:hover {
     transform: translateY(-2px);
     border-color: #dbe3f0;
     box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
@@ -186,17 +104,17 @@
 
 
 /* =====================================================
-   CARD TOP
+   CARD HEADER
 ===================================================== */
 
-.worker-assignment-card-top {
+.worker-completed-card-header {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
     gap: 14px;
 }
 
-.worker-issue-id {
+.worker-completed-issue-id {
     display: inline-block;
     margin-bottom: 7px;
     color: #6b7280;
@@ -204,7 +122,7 @@
     font-weight: 600;
 }
 
-.worker-assignment-card h2 {
+.worker-completed-card-header h2 {
     margin: 0;
     color: #111827;
     font-size: 17px;
@@ -214,41 +132,18 @@
 
 
 /* =====================================================
-   STATUS BADGE
+   RESOLVED STATUS
 ===================================================== */
 
-.worker-status-badge {
+.worker-completed-status {
     flex-shrink: 0;
-    padding: 6px 9px;
+    padding: 6px 10px;
     border-radius: 999px;
+    background: #ecfdf5;
+    color: #047857;
     font-size: 11px;
     font-weight: 700;
     white-space: nowrap;
-}
-
-.worker-status-badge.status-reported {
-    background: #eff6ff;
-    color: #1d4ed8;
-}
-
-.worker-status-badge.status-under_review {
-    background: #f5f3ff;
-    color: #6d28d9;
-}
-
-.worker-status-badge.status-in_progress {
-    background: #fff7ed;
-    color: #c2410c;
-}
-
-.worker-status-badge.status-resolved {
-    background: #ecfdf5;
-    color: #047857;
-}
-
-.worker-status-badge.status-rejected {
-    background: #fef2f2;
-    color: #b91c1c;
 }
 
 
@@ -256,23 +151,23 @@
    DESCRIPTION
 ===================================================== */
 
-.worker-assignment-description {
+.completed-issue-description {
     display: -webkit-box;
     overflow: hidden;
-    margin: 14px 0 18px;
-    color: #6b7280;
-    font-size: 13px;
-    line-height: 1.6;
+    margin: 14px 0 20px;
+    color: #64748b;
+    font-size: 14px;
+    line-height: 1.65;
     -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: 3;
 }
 
 
 /* =====================================================
-   META
+   INFORMATION GRID
 ===================================================== */
 
-.worker-assignment-meta {
+.worker-completed-info-grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 12px;
@@ -281,11 +176,11 @@
     border-top: 1px solid #f0f1f3;
 }
 
-.worker-assignment-meta div {
+.worker-completed-info-item {
     min-width: 0;
 }
 
-.worker-assignment-meta span {
+.worker-completed-info-item span {
     display: block;
     margin-bottom: 5px;
     color: #9ca3af;
@@ -295,7 +190,7 @@
     letter-spacing: 0.03em;
 }
 
-.worker-assignment-meta strong {
+.worker-completed-info-item strong {
     display: block;
     overflow: hidden;
     color: #374151;
@@ -310,33 +205,73 @@
    PRIORITY
 ===================================================== */
 
-.worker-priority.priority-high {
-    color: #dc2626;
+.completed-priority-high {
+    color: #dc2626 !important;
 }
 
-.worker-priority.priority-medium {
-    color: #d97706;
+.completed-priority-medium {
+    color: #d97706 !important;
 }
 
-.worker-priority.priority-low {
-    color: #059669;
+.completed-priority-low {
+    color: #059669 !important;
 }
 
 
 /* =====================================================
-   CARD FOOTER
+   SLA RESULT
 ===================================================== */
 
-.worker-assignment-card-footer {
+.worker-completed-sla {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 16px;
+    padding: 12px 14px;
+    border: 1px solid #f0f1f3;
+    border-radius: 10px;
+    background: #fafafa;
+}
+
+.worker-completed-sla span {
+    color: #6b7280;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.worker-completed-sla strong {
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.completed-sla-breached {
+    color: #dc2626;
+}
+
+.completed-sla-success {
+    color: #059669;
+}
+
+.completed-sla-neutral {
+    color: #6b7280;
+}
+
+
+/* =====================================================
+   FOOTER
+===================================================== */
+
+.worker-completed-card-footer {
     display: flex;
     justify-content: flex-end;
     margin-top: 18px;
 }
 
-.worker-view-issue-btn {
+.worker-completed-view-btn {
     border: none;
     border-radius: 9px;
-    padding: 9px 15px;
+    padding: 9px 16px;
     background: #2563eb;
     color: #ffffff;
     font-size: 13px;
@@ -347,21 +282,21 @@
             transform 0.2s ease;
 }
 
-.worker-view-issue-btn:hover {
+.worker-completed-view-btn:hover {
     background: #1d4ed8;
     transform: translateY(-1px);
 }
 
-.worker-view-issue-btn:active {
+.worker-completed-view-btn:active {
     transform: translateY(0);
 }
 
 
 /* =====================================================
-   LOADING / EMPTY / ERROR STATES
+   EMPTY / LOADING / ERROR
 ===================================================== */
 
-.worker-assignment-state {
+.worker-completed-state {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -375,13 +310,13 @@
     box-sizing: border-box;
 }
 
-.worker-assignment-state h3 {
+.worker-completed-state h3 {
     margin: 12px 0 6px;
     color: #111827;
     font-size: 17px;
 }
 
-.worker-assignment-state p {
+.worker-completed-state p {
     margin: 0;
     max-width: 420px;
     color: #6b7280;
@@ -389,25 +324,39 @@
     line-height: 1.6;
 }
 
-.worker-empty-icon {
-    font-size: 34px;
+
+/* =====================================================
+   EMPTY ICON
+===================================================== */
+
+.worker-completed-empty-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #ecfdf5;
+    color: #059669;
+    font-size: 25px;
+    font-weight: 700;
 }
 
 
 /* =====================================================
-   LOADING SPINNER
+   SPINNER
 ===================================================== */
 
-.worker-loading-spinner {
+.worker-completed-spinner {
     width: 30px;
     height: 30px;
     border: 3px solid #e5e7eb;
     border-top-color: #2563eb;
     border-radius: 50%;
-    animation: workerAssignmentSpin 0.8s linear infinite;
+    animation: workerCompletedSpin 0.8s linear infinite;
 }
 
-@keyframes workerAssignmentSpin {
+@keyframes workerCompletedSpin {
 
     from {
         transform: rotate(0deg);
@@ -421,20 +370,20 @@
 
 
 /* =====================================================
-   ERROR STATE
+   ERROR
 ===================================================== */
 
-.worker-assignment-state.error {
+.worker-completed-error {
     border-style: solid;
     border-color: #fecaca;
     background: #fffafa;
 }
 
-.worker-assignment-state.error h3 {
+.worker-completed-error h3 {
     color: #b91c1c;
 }
 
-.worker-assignment-state.error button {
+.worker-completed-error button {
     margin-top: 16px;
     border: none;
     border-radius: 8px;
@@ -446,7 +395,7 @@
     cursor: pointer;
 }
 
-.worker-assignment-state.error button:hover {
+.worker-completed-error button:hover {
     background: #b91c1c;
 }
 
@@ -457,7 +406,7 @@
 
 @media (max-width: 1100px) {
 
-    .worker-assignment-list {
+    .worker-completed-issue-list {
         grid-template-columns: 1fr;
     }
 
@@ -466,28 +415,18 @@
 
 @media (max-width: 800px) {
 
-    .worker-assignments-page {
+    .worker-completed-issues-page {
         padding: 20px;
     }
 
-    .worker-page-header {
+    .worker-completed-page-header {
         align-items: flex-start;
         flex-direction: column;
     }
 
-    .worker-assignment-count {
+    .worker-completed-count {
         width: 100%;
         box-sizing: border-box;
-    }
-
-    .worker-assignment-toolbar {
-        align-items: stretch;
-        flex-direction: column;
-    }
-
-    .worker-assignment-search {
-        width: 100%;
-        min-width: 0;
     }
 
 }
@@ -495,30 +434,33 @@
 
 @media (max-width: 560px) {
 
-    .worker-assignments-page {
+    .worker-completed-issues-page {
         padding: 15px;
     }
 
-    .worker-assignment-card {
+    .worker-completed-issue-card {
         padding: 16px;
     }
 
-    .worker-assignment-card-top {
+    .worker-completed-card-header {
         flex-direction: column;
     }
 
-    .worker-assignment-meta {
+    .worker-completed-info-grid {
         grid-template-columns: 1fr;
     }
 
-    .worker-assignment-card-footer {
+    .worker-completed-sla {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .worker-completed-card-footer {
         justify-content: stretch;
     }
 
-    .worker-view-issue-btn {
+    .worker-completed-view-btn {
         width: 100%;
     }
 
 }
-
-

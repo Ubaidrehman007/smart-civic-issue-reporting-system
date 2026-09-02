@@ -16,6 +16,7 @@ public class IssueSummaryResponse {
     private UUID id;
 
     private String title;
+    private String description;
 
     private IssueCategory category;
 
@@ -26,6 +27,8 @@ public class IssueSummaryResponse {
     private String address;
 
     private LocalDateTime createdAt;
+
+    private LocalDateTime resolvedAt;
 
     private Double distance;
 

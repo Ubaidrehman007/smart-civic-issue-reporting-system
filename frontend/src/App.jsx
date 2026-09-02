@@ -84,6 +84,8 @@ import FieldWorkerAssignmentsPage
     from './pages/FieldWorkerPage/FieldWorkerAssignmentsPage'
 import FieldWorkerActiveIssuesPage
     from './pages/FieldWorkerPage/FieldWorkerActiveIssuesPage'
+import FieldWorkerCompletedIssuesPage
+    from './pages/FieldWorkerPage/FieldWorkerCompletedIssuesPage'
 
 function App() {
 
@@ -295,6 +297,11 @@ function App() {
                         path="/worker/active-issues"
                         element={<FieldWorkerActiveIssuesPage />}
                     />
+                    <Route
+                        path="/worker/completed-issues"
+                        element={<FieldWorkerCompletedIssuesPage />}
+                    />
+
                 </Route>
 
             </Route>

@@ -993,23 +993,45 @@ public class IssueServiceImpl implements IssueService {
     }
     private IssueSummaryResponse mapToIssueSummaryResponse(Issue issue) {
 
+        LocalDateTime resolvedAt = null;
+
+        if (issue.getStatus() == IssueStatus.RESOLVED) {
+
+            resolvedAt = issueStatusHistoryRepository
+                    .findByIssueIdOrderByChangedAtAsc(issue.getId())
+                    .stream()
+                    .filter(history ->
+                            history.getToStatus() == IssueStatus.RESOLVED
+                    )
+                    .map(IssueStatusHistory::getChangedAt)
+                    .findFirst()
+                    .map(instant ->
+                            instant.atZone(
+                                    java.time.ZoneId.systemDefault()
+                            ).toLocalDateTime()
+                    )
+                    .orElse(null);
+        }
+
         return IssueSummaryResponse.builder()
                 .id(issue.getId())
                 .title(issue.getTitle())
+                .description(issue.getDescription())
                 .category(issue.getCategory())
                 .priority(issue.getPriority())
                 .status(issue.getStatus())
                 .address(issue.getAddress())
                 .createdAt(issue.getCreatedAt())
+                .resolvedAt(resolvedAt)
                 .slaDueAt(issue.getSlaDueAt())
                 .slaBreached(issue.getSlaBreached())
                 .slaBreachedAt(issue.getSlaBreachedAt())
 
-        .assignedToId(
-                issue.getAssignedTo() != null
-                        ? issue.getAssignedTo().getId()
-                        : null
-        )
+                .assignedToId(
+                        issue.getAssignedTo() != null
+                                ? issue.getAssignedTo().getId()
+                                : null
+                )
 
                 .assignedToName(
                         issue.getAssignedTo() != null
@@ -1022,6 +1044,7 @@ public class IssueServiceImpl implements IssueService {
                                 ? issue.getAssignedTo().getEmail()
                                 : null
                 )
+
                 .build();
     }
 

@@ -629,7 +629,24 @@ public class IssueServiceImpl implements IssueService {
                         )
                 );
 
+// =====================================================
+// FIELD WORKER OWNERSHIP VALIDATION
+// =====================================================
 
+        if (currentUser.getRole() == Role.FIELD_WORKER) {
+
+            if (
+                    issue.getAssignedTo() == null ||
+                            !issue.getAssignedTo()
+                                    .getId()
+                                    .equals(currentUser.getId())
+            ) {
+
+                throw new IssueAccessDeniedException(
+                        "You are not authorized to update this issue."
+                );
+            }
+        }
         // =====================================================
         // GET CURRENT STATUS
         // =====================================================

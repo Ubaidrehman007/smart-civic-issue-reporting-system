@@ -35,6 +35,8 @@ function AdminIssueDetailsPage() {
 
     const [selectedStatus, setSelectedStatus] = useState('')
 
+    const [evidencePhoto, setEvidencePhoto] = useState(null)
+
     const [updatingStatus, setUpdatingStatus] = useState(false)
 
     const [statusError, setStatusError] = useState('')
@@ -69,6 +71,29 @@ function AdminIssueDetailsPage() {
 
     const [assignmentSuccess, setAssignmentSuccess] =
         useState('')
+
+
+    /* =========================
+       IMAGE URL HELPER
+    ========================= */
+
+    const getImageUrl = (imageUrl) => {
+
+        if (!imageUrl) {
+            return null
+        }
+
+        /*
+         * Backend returns the stored image path/name.
+         *
+         * Keep the same image endpoint already
+         * used by the project.
+         */
+
+        return `http://localhost:8080/api/images/${encodeURIComponent(
+            imageUrl
+        )}`
+    }
 
 
     /* =========================
@@ -118,21 +143,6 @@ function AdminIssueDetailsPage() {
             )
 
 
-            /*
-             * =========================
-             * ASSIGNMENT DATA
-             * =========================
-             *
-             * Backend now returns:
-             *
-             * assignedToId
-             * assignedToName
-             * assignedToEmail
-             *
-             * Therefore we use the backend
-             * response as the source of truth.
-             */
-
             setSelectedWorkerId(
                 issueResponse?.assignedToId || ''
             )
@@ -177,16 +187,6 @@ function AdminIssueDetailsPage() {
                 response
             )
 
-
-            /*
-             * Backend response:
-             *
-             * {
-             *     success: true,
-             *     message: "...",
-             *     data: [...]
-             * }
-             */
 
             setFieldWorkers(
                 response?.data || []
@@ -272,6 +272,66 @@ function AdminIssueDetailsPage() {
 
 
     /* =========================
+       PHOTO REQUIRED CHECK
+    ========================= */
+
+    const isEvidencePhotoRequired = (
+        status
+    ) => {
+
+        return (
+            status === 'IN_PROGRESS' ||
+            status === 'RESOLVED'
+        )
+    }
+
+
+    /* =========================
+       STATUS SELECTION
+    ========================= */
+
+    const handleStatusSelection = (event) => {
+
+        const nextStatus =
+            event.target.value
+
+        setSelectedStatus(nextStatus)
+
+        setStatusError('')
+        setSuccessMessage('')
+
+        /*
+         * Whenever status changes,
+         * clear previously selected file.
+         *
+         * This prevents accidentally sending
+         * the wrong evidence photo.
+         */
+
+        setEvidencePhoto(null)
+
+    }
+
+
+    /* =========================
+       EVIDENCE PHOTO SELECTION
+    ========================= */
+
+    const handleEvidencePhotoChange = (
+        event
+    ) => {
+
+        const file =
+            event.target.files?.[0] || null
+
+        setEvidencePhoto(file)
+
+        setStatusError('')
+        setSuccessMessage('')
+    }
+
+
+    /* =========================
        UPDATE STATUS
     ========================= */
 
@@ -302,6 +362,44 @@ function AdminIssueDetailsPage() {
         }
 
 
+        if (
+            !allowedNextStatuses.includes(
+                selectedStatus
+            )
+        ) {
+
+            setStatusError(
+                'Invalid status transition.'
+            )
+
+            return
+        }
+
+
+        /*
+         * Evidence photo is mandatory for:
+         *
+         * UNDER_REVIEW → IN_PROGRESS
+         * IN_PROGRESS → RESOLVED
+         */
+
+        if (
+            isEvidencePhotoRequired(
+                selectedStatus
+            ) &&
+            !evidencePhoto
+        ) {
+
+            setStatusError(
+                selectedStatus === 'RESOLVED'
+                    ? 'Resolution photo is required before resolving the issue.'
+                    : 'Evidence photo is required before starting the work.'
+            )
+
+            return
+        }
+
+
         try {
 
             setUpdatingStatus(true)
@@ -311,14 +409,43 @@ function AdminIssueDetailsPage() {
 
 
             await updateIssueStatus({
+
                 issueId,
+
                 status: selectedStatus,
+
+                evidencePhoto,
+
             })
 
 
             setSuccessMessage(
-                'Issue status updated successfully.'
+                selectedStatus === 'RESOLVED'
+                    ? 'Issue resolved successfully with resolution evidence.'
+                    : 'Issue status updated successfully.'
             )
+
+
+            /*
+             * Clear selected photo after
+             * successful upload.
+             */
+
+            setEvidencePhoto(null)
+
+
+            /*
+             * Reset file input manually.
+             */
+
+            const fileInput =
+                document.getElementById(
+                    'admin-evidence-photo'
+                )
+
+            if (fileInput) {
+                fileInput.value = ''
+            }
 
 
             /*
@@ -348,11 +475,6 @@ function AdminIssueDetailsPage() {
                 updatedHistory || []
             )
 
-
-            /*
-             * Keep assignment selection
-             * synchronized with backend.
-             */
 
             setSelectedWorkerId(
                 updatedIssue?.assignedToId || ''
@@ -401,10 +523,6 @@ function AdminIssueDetailsPage() {
         }
 
 
-        /*
-         * Prevent unnecessary re-assignment.
-         */
-
         if (
             issue.assignedToId &&
             issue.assignedToId === selectedWorkerId
@@ -414,7 +532,8 @@ function AdminIssueDetailsPage() {
 
             setAssignmentSuccess(
                 `Issue is already assigned to ${
-                    issue.assignedToName || 'this field worker'
+                    issue.assignedToName ||
+                    'this field worker'
                 }.`
             )
 
@@ -431,21 +550,14 @@ function AdminIssueDetailsPage() {
 
 
             await assignIssue({
+
                 issueId,
-                fieldWorkerId: selectedWorkerId,
+
+                fieldWorkerId:
+                selectedWorkerId,
+
             })
 
-
-            /*
-             * Fetch fresh issue details from backend.
-             *
-             * This is important because the backend
-             * now returns:
-             *
-             * assignedToId
-             * assignedToName
-             * assignedToEmail
-             */
 
             const updatedIssue =
                 await getIssueById(issueId)
@@ -459,11 +571,6 @@ function AdminIssueDetailsPage() {
 
             setIssue(updatedIssue)
 
-
-            /*
-             * Keep dropdown synchronized
-             * with actual backend assignment.
-             */
 
             setSelectedWorkerId(
                 updatedIssue?.assignedToId || ''
@@ -769,6 +876,10 @@ function AdminIssueDetailsPage() {
 
                 <div className="admin-status-management">
 
+                    {/* =========================
+                        CURRENT STATUS
+                    ========================= */}
+
                     <div className="admin-status-current">
 
                         <span>
@@ -785,6 +896,10 @@ function AdminIssueDetailsPage() {
 
                     </div>
 
+
+                    {/* =========================
+                        STATUS CONTROLS
+                    ========================= */}
 
                     <div className="admin-status-update-controls">
 
@@ -804,16 +919,9 @@ function AdminIssueDetailsPage() {
                                     ? selectedStatus
                                     : ''
                             }
-                            onChange={(event) => {
-
-                                setSelectedStatus(
-                                    event.target.value
-                                )
-
-                                setStatusError('')
-                                setSuccessMessage('')
-
-                            }}
+                            onChange={
+                                handleStatusSelection
+                            }
                             disabled={
                                 updatingStatus ||
                                 allowedNextStatuses.length === 0
@@ -841,10 +949,78 @@ function AdminIssueDetailsPage() {
                         </select>
 
 
+                        {/* =========================
+                            EVIDENCE PHOTO UPLOAD
+                        ========================= */}
+
+                        {isEvidencePhotoRequired(
+                            selectedStatus
+                        ) && (
+
+                            <div className="admin-evidence-upload">
+
+                                <label
+                                    htmlFor="admin-evidence-photo"
+                                >
+
+                                    {selectedStatus === 'RESOLVED'
+                                        ? 'Resolution Evidence Photo'
+                                        : 'Work Evidence Photo'
+                                    }
+
+                                </label>
+
+
+                                <input
+                                    id="admin-evidence-photo"
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={
+                                        handleEvidencePhotoChange
+                                    }
+                                    disabled={
+                                        updatingStatus
+                                    }
+                                />
+
+
+                                <small>
+
+                                    {selectedStatus === 'RESOLVED'
+                                        ? 'Upload a photo showing that the civic issue has been resolved.'
+                                        : 'Upload a photo showing the work started on the issue.'
+                                    }
+
+                                </small>
+
+
+                                {evidencePhoto && (
+
+                                    <div className="admin-selected-photo">
+
+                                        Selected:
+
+                                        {' '}
+
+                                        <strong>
+                                            {evidencePhoto.name}
+                                        </strong>
+
+                                    </div>
+
+                                )}
+
+                            </div>
+
+                        )}
+
+
                         <button
                             type="button"
                             className="admin-status-update-button"
-                            onClick={handleStatusUpdate}
+                            onClick={
+                                handleStatusUpdate
+                            }
                             disabled={
                                 updatingStatus ||
                                 !selectedStatus ||
@@ -1019,9 +1195,13 @@ function AdminIssueDetailsPage() {
                                         key={worker.id}
                                         value={worker.id}
                                     >
+
                                         {worker.fullName}
+
                                         {' — '}
+
                                         {worker.email}
+
                                     </option>
 
                                 )
@@ -1033,7 +1213,9 @@ function AdminIssueDetailsPage() {
                         <button
                             type="button"
                             className="admin-status-update-button"
-                            onClick={handleAssignIssue}
+                            onClick={
+                                handleAssignIssue
+                            }
                             disabled={
                                 assigningIssue ||
                                 loadingWorkers ||
@@ -1191,15 +1373,19 @@ function AdminIssueDetailsPage() {
                             Issue Image
                         </h2>
 
+                        <p>
+                            Original photo submitted with the civic issue.
+                        </p>
+
                     </div>
 
 
                     <div className="admin-issue-image-container">
 
                         <img
-                            src={`http://localhost:8080/api/images/${encodeURIComponent(
+                            src={getImageUrl(
                                 issue.imageUrl
-                            )}`}
+                            )}
                             alt={issue.title}
                             className="admin-issue-image"
                         />
@@ -1262,6 +1448,10 @@ function AdminIssueDetailsPage() {
 
                                     <div className="admin-status-history-content">
 
+                                        {/* =========================
+                                            STATUS TRANSITION
+                                        ========================= */}
+
                                         <div className="admin-status-history-header">
 
                                             <strong>
@@ -1281,16 +1471,38 @@ function AdminIssueDetailsPage() {
                                         </div>
 
 
+                                        {/* =========================
+                                            CHANGED BY
+                                        ========================= */}
+
                                         <p>
 
                                             Changed by:{' '}
 
-                                            {history.changedByEmail ||
+                                            {history.changedByName
+                                                ? history.changedByName
+                                                : history.changedByEmail ||
                                                 'Unknown user'
                                             }
 
                                         </p>
 
+
+                                        {history.changedByName &&
+                                            history.changedByEmail && (
+
+                                                <p>
+
+                                                    {history.changedByEmail}
+
+                                                </p>
+
+                                            )}
+
+
+                                        {/* =========================
+                                            DATE
+                                        ========================= */}
 
                                         <span className="admin-status-history-date">
 
@@ -1304,6 +1516,10 @@ function AdminIssueDetailsPage() {
                                         </span>
 
 
+                                        {/* =========================
+                                            REMARK
+                                        ========================= */}
+
                                         {history.remark && (
 
                                             <p className="admin-status-history-remark">
@@ -1314,9 +1530,45 @@ function AdminIssueDetailsPage() {
 
                                         )}
 
+
+                                        {/* =========================
+                                            EVIDENCE PHOTO
+                                        ========================= */}
+
+                                        {history.evidencePhotoUrl && (
+
+                                            <div className="admin-status-history-evidence">
+
+                                                <h4>
+
+                                                    {history.toStatus === 'RESOLVED'
+                                                        ? 'RESOLUTION EVIDENCE'
+                                                        : 'EVIDENCE PHOTO'
+                                                    }
+
+                                                </h4>
+
+
+                                                <img
+                                                    src={getImageUrl(
+                                                        history.evidencePhotoUrl
+                                                    )}
+                                                    alt={
+                                                        history.toStatus === 'RESOLVED'
+                                                            ? 'Resolution evidence'
+                                                            : 'Status evidence'
+                                                    }
+                                                    className="admin-status-history-evidence-image"
+                                                />
+
+                                            </div>
+
+                                        )}
+
                                     </div>
 
                                 </div>
+
                             )
                         )}
 

@@ -9,6 +9,7 @@ import com.smartcivic.backend.issue.enums.IssuePriority;
 import com.smartcivic.backend.issue.enums.IssueStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
@@ -55,6 +56,7 @@ public interface IssueService {
     IssueResponse updateIssueStatus(
             UUID issueId,
             IssueStatus newStatus,
+            MultipartFile evidencePhoto,
             String email
     );
 
@@ -99,5 +101,7 @@ public interface IssueService {
     );
 
     SlaStatisticsResponse getSlaStatistics();
+
+
 
 }

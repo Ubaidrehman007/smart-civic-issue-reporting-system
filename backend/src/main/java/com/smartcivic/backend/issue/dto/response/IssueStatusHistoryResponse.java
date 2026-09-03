@@ -29,5 +29,7 @@ public class IssueStatusHistoryResponse {
 
     private String remark;
 
+    private String evidencePhotoUrl;
+
     private Instant changedAt;
 }

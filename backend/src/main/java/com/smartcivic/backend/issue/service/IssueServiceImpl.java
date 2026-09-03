@@ -39,6 +39,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.smartcivic.backend.audit.entity.AuditAction;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -330,7 +332,6 @@ public class IssueServiceImpl implements IssueService {
     }
 
 
-
     @Transactional(readOnly = true)
     @Override
     public Page<IssueSummaryResponse> getIssuesByCategory(
@@ -603,6 +604,7 @@ public class IssueServiceImpl implements IssueService {
     public IssueResponse updateIssueStatus(
             UUID issueId,
             IssueStatus newStatus,
+            MultipartFile evidencePhoto,
             String email
     ) {
 
@@ -629,17 +631,18 @@ public class IssueServiceImpl implements IssueService {
                         )
                 );
 
-// =====================================================
-// FIELD WORKER OWNERSHIP VALIDATION
-// =====================================================
+
+        // =====================================================
+        // FIELD WORKER OWNERSHIP VALIDATION
+        // =====================================================
 
         if (currentUser.getRole() == Role.FIELD_WORKER) {
 
             if (
-                    issue.getAssignedTo() == null ||
-                            !issue.getAssignedTo()
-                                    .getId()
-                                    .equals(currentUser.getId())
+                    issue.getAssignedTo() == null
+                            || !issue.getAssignedTo()
+                            .getId()
+                            .equals(currentUser.getId())
             ) {
 
                 throw new IssueAccessDeniedException(
@@ -647,6 +650,8 @@ public class IssueServiceImpl implements IssueService {
                 );
             }
         }
+
+
         // =====================================================
         // GET CURRENT STATUS
         // =====================================================
@@ -673,6 +678,45 @@ public class IssueServiceImpl implements IssueService {
 
 
         // =====================================================
+        // EVIDENCE PHOTO VALIDATION
+        // =====================================================
+
+        boolean photoRequired =
+                newStatus == IssueStatus.IN_PROGRESS
+                        || newStatus == IssueStatus.RESOLVED;
+
+        if (
+                photoRequired
+                        && (evidencePhoto == null
+                        || evidencePhoto.isEmpty())
+        ) {
+
+            throw new IllegalArgumentException(
+                    "Evidence photo is required when changing issue status to "
+                            + newStatus
+            );
+        }
+
+
+        // =====================================================
+        // STORE EVIDENCE PHOTO
+        // =====================================================
+
+        String evidencePhotoUrl = null;
+
+        if (
+                evidencePhoto != null
+                        && !evidencePhoto.isEmpty()
+        ) {
+
+            evidencePhotoUrl =
+                    imageStorageService.storeImage(
+                            evidencePhoto
+                    );
+        }
+
+
+        // =====================================================
         // UPDATE ISSUE STATUS
         // =====================================================
 
@@ -693,13 +737,16 @@ public class IssueServiceImpl implements IssueService {
                         .toStatus(newStatus)
                         .changedBy(currentUser)
                         .changedAt(Instant.now())
+                        .remark(null)
+                        .evidencePhotoUrl(evidencePhotoUrl)
                         .build();
 
         issueStatusHistoryRepository.save(statusHistory);
 
+
         // =====================================================
-// AUDIT LOG
-// =====================================================
+        // AUDIT LOG
+        // =====================================================
 
         auditLogService.createAuditLog(
 
@@ -722,6 +769,7 @@ public class IssueServiceImpl implements IssueService {
 
                 null
         );
+
 
         // =====================================================
         // NOTIFICATION TYPE AND TITLE
@@ -789,18 +837,18 @@ public class IssueServiceImpl implements IssueService {
         }
 
 
-
+        // =====================================================
         // FIELD WORKER NOTIFICATION
-
-        // Do NOT notify the worker if the worker himself
-        // performed the status change.
-
+        // =====================================================
 
         User fieldWorker =
                 updatedIssue.getAssignedTo();
 
-        if (fieldWorker != null
-                && !fieldWorker.getId().equals(currentUser.getId())) {
+        if (
+                fieldWorker != null
+                        && !fieldWorker.getId()
+                        .equals(currentUser.getId())
+        ) {
 
             String workerMessage;
 
@@ -834,8 +882,8 @@ public class IssueServiceImpl implements IssueService {
 
 
         // =====================================================
-// ADMIN NOTIFICATION
-// =====================================================
+        // ADMIN NOTIFICATION
+        // =====================================================
 
         List<User> admins =
                 userRepository.findByRole(Role.ADMIN);
@@ -876,13 +924,13 @@ public class IssueServiceImpl implements IssueService {
             );
         }
 
+
         // =====================================================
         // RETURN UPDATED ISSUE RESPONSE
         // =====================================================
 
         return mapToIssueResponse(updatedIssue);
     }
-
 
     /**
      * Convert Issue Entity to IssueResponse DTO
@@ -991,6 +1039,7 @@ public class IssueServiceImpl implements IssueService {
                 .findByPriority(priority, pageable)
                 .map(this::mapToIssueSummaryResponse);
     }
+
     private IssueSummaryResponse mapToIssueSummaryResponse(Issue issue) {
 
         LocalDateTime resolvedAt = null;
@@ -1078,18 +1127,33 @@ public class IssueServiceImpl implements IssueService {
 
         // Convert entities into response DTOs
         return historyList.stream()
-                .map(history -> IssueStatusHistoryResponse.builder()
-                        .id(history.getId())
-                        .fromStatus(history.getFromStatus())
-                        .toStatus(history.getToStatus())
-                        .changedById(history.getChangedBy().getId())
-                        .changedByEmail(history.getChangedBy().getEmail())
-                        .remark(history.getRemark())
-                        .changedAt(history.getChangedAt())
-                        .build())
+                .map(history ->
+                        IssueStatusHistoryResponse.builder()
+                                .id(history.getId())
+                                .fromStatus(history.getFromStatus())
+                                .toStatus(history.getToStatus())
+                                .changedById(
+                                        history.getChangedBy() != null
+                                                ? history.getChangedBy().getId()
+                                                : null
+                                )
+                                .changedByName(
+                                        history.getChangedBy() != null
+                                                ? history.getChangedBy().getFullName()
+                                                : null
+                                )
+                                .changedByEmail(
+                                        history.getChangedBy() != null
+                                                ? history.getChangedBy().getEmail()
+                                                : null
+                                )
+                                .remark(history.getRemark())
+                                .evidencePhotoUrl(history.getEvidencePhotoUrl())
+                                .changedAt(history.getChangedAt())
+                                .build()
+                )
                 .toList();
     }
-
     @Override
     @Transactional
     public void assignIssue(

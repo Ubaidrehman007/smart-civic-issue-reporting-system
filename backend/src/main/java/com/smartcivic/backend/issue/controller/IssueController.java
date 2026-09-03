@@ -25,6 +25,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.domain.Sort;
+import org.springframework.web.multipart.MultipartFile;
 
 
 import java.util.List;
@@ -343,10 +344,20 @@ public class IssueController {
         );
     }
 
-    @PatchMapping("/{issueId}/status")
+    @PatchMapping(
+            value = "/{issueId}/status",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
     public ResponseEntity<ApiResponse<IssueResponse>> updateIssueStatus(
+
             @PathVariable UUID issueId,
-            @Valid @RequestBody UpdateIssueStatusRequest request,
+
+            @RequestParam("status")
+            IssueStatus status,
+
+            @RequestPart(value = "evidencePhoto", required = false)
+            MultipartFile evidencePhoto,
+
             Authentication authentication
     ) {
 
@@ -354,7 +365,8 @@ public class IssueController {
 
         IssueResponse response = issueService.updateIssueStatus(
                 issueId,
-                request.getStatus(),
+                status,
+                evidencePhoto,
                 email
         );
 
@@ -365,7 +377,6 @@ public class IssueController {
                 )
         );
     }
-
     @DeleteMapping("/{issueId}")
     public ResponseEntity<ApiResponse<Void>> deleteIssue(
             @PathVariable UUID issueId,

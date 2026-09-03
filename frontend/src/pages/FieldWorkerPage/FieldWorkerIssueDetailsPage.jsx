@@ -25,8 +25,29 @@ function FieldWorkerIssueDetailsPage() {
     const [error, setError] = useState('')
 
     const [updatingStatus, setUpdatingStatus] = useState(false)
+
     const [statusMessage, setStatusMessage] = useState('')
     const [statusError, setStatusError] = useState('')
+
+    /*
+     * Status which the worker wants to move the issue to.
+     *
+     * Example:
+     * IN_PROGRESS -> RESOLVED
+     */
+    const [pendingStatus, setPendingStatus] = useState(null)
+
+    /*
+     * Evidence photo selected by field worker.
+     */
+    const [selectedEvidencePhoto, setSelectedEvidencePhoto] =
+        useState(null)
+
+    /*
+     * Temporary preview URL for selected photo.
+     */
+    const [evidencePhotoPreview, setEvidencePhotoPreview] =
+        useState(null)
 
 
     // =====================================================
@@ -67,6 +88,7 @@ function FieldWorkerIssueDetailsPage() {
 
                 setError(
                     err?.response?.data?.message ||
+                    err?.response?.data?.error ||
                     'Failed to load issue details.'
                 )
 
@@ -222,21 +244,52 @@ function FieldWorkerIssueDetailsPage() {
 
 
     // =====================================================
-    // UPDATE ISSUE STATUS
+    // RESET EVIDENCE PHOTO
     // =====================================================
 
-    const handleStatusUpdate = async (newStatus) => {
+    const resetEvidencePhoto = () => {
+
+        setSelectedEvidencePhoto(null)
+
+        if (evidencePhotoPreview) {
+
+            URL.revokeObjectURL(
+                evidencePhotoPreview
+            )
+        }
+
+        setEvidencePhotoPreview(null)
+    }
+
+
+    // =====================================================
+    // CANCEL PENDING STATUS UPDATE
+    // =====================================================
+
+    const cancelStatusUpdate = () => {
+
+        setPendingStatus(null)
+
+        resetEvidencePhoto()
+
+        setStatusError('')
+    }
+
+
+    // =====================================================
+    // OPEN STATUS UPDATE FLOW
+    // =====================================================
+
+    const handleStatusUpdate = (newStatus) => {
 
         if (!issue?.id || updatingStatus) {
             return
         }
 
 
-        /*
-         * Frontend transition guard.
-         *
-         * Backend validation is still the final authority.
-         */
+        // -------------------------------------------------
+        // Allowed frontend transitions
+        // -------------------------------------------------
 
         const allowedTransitions = {
 
@@ -261,14 +314,166 @@ function FieldWorkerIssueDetailsPage() {
         }
 
 
+        setStatusMessage('')
+        setStatusError('')
+
+
+        /*
+         * For IN_PROGRESS and RESOLVED the backend requires
+         * an evidence photo.
+         *
+         * Therefore we open the evidence upload step first.
+         */
+        if (
+            newStatus === 'IN_PROGRESS' ||
+            newStatus === 'RESOLVED'
+        ) {
+
+            setPendingStatus(newStatus)
+
+            resetEvidencePhoto()
+
+            return
+        }
+
+
+        /*
+         * UNDER_REVIEW does not require a photo.
+         */
+        submitStatusUpdate(
+            newStatus,
+            null
+        )
+
+    }
+
+
+    // =====================================================
+    // HANDLE EVIDENCE PHOTO SELECTION
+    // =====================================================
+
+    const handleEvidencePhotoChange = (event) => {
+
+        const file =
+            event.target.files?.[0] || null
+
+
+        if (!file) {
+
+            resetEvidencePhoto()
+
+            return
+        }
+
+
+        // -------------------------------------------------
+        // Validate file type
+        // -------------------------------------------------
+
+        if (!file.type.startsWith('image/')) {
+
+            setStatusError(
+                'Please select a valid image file.'
+            )
+
+            event.target.value = ''
+
+            return
+        }
+
+
+        // -------------------------------------------------
+        // Validate file size
+        // -------------------------------------------------
+
+        const maxSize =
+            10 * 1024 * 1024
+
+
+        if (file.size > maxSize) {
+
+            setStatusError(
+                'Evidence photo must be smaller than 10 MB.'
+            )
+
+            event.target.value = ''
+
+            return
+        }
+
+
+        setStatusError('')
+
+        setSelectedEvidencePhoto(file)
+
+
+        if (evidencePhotoPreview) {
+
+            URL.revokeObjectURL(
+                evidencePhotoPreview
+            )
+        }
+
+
+        setEvidencePhotoPreview(
+            URL.createObjectURL(file)
+        )
+
+    }
+
+
+    // =====================================================
+    // SUBMIT STATUS UPDATE
+    // =====================================================
+
+    const submitStatusUpdate = async (
+        newStatus,
+        evidencePhoto
+    ) => {
+
+        if (
+            !issue?.id ||
+            updatingStatus
+        ) {
+
+            return
+        }
+
+
+        /*
+         * Backend requires evidence photo for:
+         *
+         * IN_PROGRESS
+         * RESOLVED
+         */
+        const photoRequired =
+            newStatus === 'IN_PROGRESS' ||
+            newStatus === 'RESOLVED'
+
+
+        if (
+            photoRequired &&
+            (!evidencePhoto || evidencePhoto.size === 0)
+        ) {
+
+            setStatusError(
+                `Evidence photo is required before moving the issue to ${formatStatus(newStatus)}.`
+            )
+
+            return
+        }
+
+
         const confirmationMessage =
             newStatus === 'IN_PROGRESS'
-                ? 'Are you sure you want to start working on this issue?'
-                : 'Are you sure you want to mark this issue as resolved?'
+                ? 'Are you sure you want to start working on this issue with this evidence photo?'
+                : 'Are you sure you want to mark this issue as resolved with this evidence photo?'
 
 
         const confirmed =
-            window.confirm(confirmationMessage)
+            window.confirm(
+                confirmationMessage
+            )
 
 
         if (!confirmed) {
@@ -284,66 +489,58 @@ function FieldWorkerIssueDetailsPage() {
             setStatusError('')
 
 
+            // -------------------------------------------------
+            // SEND MULTIPART REQUEST
+            // -------------------------------------------------
+
             const response =
                 await updateIssueStatus({
+
                     issueId: issue.id,
+
                     status: newStatus,
+
+                    evidencePhoto,
+
                 })
 
 
             /*
-             * Depending on ApiResponse structure,
-             * updated issue may be inside response.data.
-             */
-
-            const updatedIssue =
-                response?.data?.status
-                    ? response.data
-                    : response?.status
-                        ? response
-                        : null
-
-
-            /*
-             * Update current issue immediately.
+             * Refresh complete issue + history from backend.
              *
-             * If backend response does not contain
-             * the complete issue object, preserve
-             * existing issue information.
+             * This is safer than trying to manually construct
+             * the response because backend may update additional
+             * fields such as resolvedAt / updatedAt.
              */
-
-            setIssue(
-                updatedIssue
-                    ? {
-                        ...issue,
-                        ...updatedIssue,
-                    }
-                    : {
-                        ...issue,
-                        status: newStatus,
-                    }
-            )
+            const [
+                updatedIssue,
+                updatedHistory,
+            ] = await Promise.all([
+                getIssueById(issue.id),
+                getIssueStatusHistory(issue.id),
+            ])
 
 
-            /*
-             * Refresh status history so the newly
-             * created transition appears immediately.
-             */
-
-            const historyResponse =
-                await getIssueStatusHistory(issue.id)
-
+            setIssue(updatedIssue)
 
             setStatusHistory(
-                Array.isArray(historyResponse)
-                    ? historyResponse
-                    : historyResponse?.content || []
+                Array.isArray(updatedHistory)
+                    ? updatedHistory
+                    : updatedHistory?.content || []
             )
 
 
             setStatusMessage(
-                `Issue status updated to ${formatStatus(newStatus)}.`
+                `Issue status updated to ${formatStatus(newStatus)} successfully.`
             )
+
+
+            /*
+             * Close upload flow after successful update.
+             */
+            setPendingStatus(null)
+
+            resetEvidencePhoto()
 
         } catch (err) {
 
@@ -353,10 +550,15 @@ function FieldWorkerIssueDetailsPage() {
             )
 
 
-            setStatusError(
+            const backendMessage =
                 err?.response?.data?.message ||
                 err?.response?.data?.error ||
-                'Unable to update issue status.'
+                err?.response?.data?.data?.message
+
+
+            setStatusError(
+                backendMessage ||
+                'Unable to update issue status. Please try again.'
             )
 
         } finally {
@@ -509,7 +711,9 @@ function FieldWorkerIssueDetailsPage() {
 
                         <div>
                             <h2>Issue Information</h2>
-                            <p>Reported civic issue details.</p>
+                            <p>
+                                Reported civic issue details.
+                            </p>
                         </div>
 
                     </div>
@@ -532,7 +736,9 @@ function FieldWorkerIssueDetailsPage() {
 
                     <div className="worker-detail-description">
 
-                        <span>Description</span>
+                        <span>
+                            Description
+                        </span>
 
                         <p>
                             {issue.description ||
@@ -546,7 +752,9 @@ function FieldWorkerIssueDetailsPage() {
 
                         <div className="worker-detail-field">
 
-                            <span>Category</span>
+                            <span>
+                                Category
+                            </span>
 
                             <strong>
                                 {formatStatus(issue.category)}
@@ -557,7 +765,9 @@ function FieldWorkerIssueDetailsPage() {
 
                         <div className="worker-detail-field">
 
-                            <span>Priority</span>
+                            <span>
+                                Priority
+                            </span>
 
                             <strong
                                 className={`priority-${issue.priority?.toLowerCase()}`}
@@ -570,10 +780,14 @@ function FieldWorkerIssueDetailsPage() {
 
                         <div className="worker-detail-field">
 
-                            <span>Reported</span>
+                            <span>
+                                Reported
+                            </span>
 
                             <strong>
-                                {formatDateTime(issue.createdAt)}
+                                {formatDateTime(
+                                    issue.createdAt
+                                )}
                             </strong>
 
                         </div>
@@ -581,10 +795,14 @@ function FieldWorkerIssueDetailsPage() {
 
                         <div className="worker-detail-field">
 
-                            <span>Last Updated</span>
+                            <span>
+                                Last Updated
+                            </span>
 
                             <strong>
-                                {formatDateTime(issue.updatedAt)}
+                                {formatDateTime(
+                                    issue.updatedAt
+                                )}
                             </strong>
 
                         </div>
@@ -603,8 +821,13 @@ function FieldWorkerIssueDetailsPage() {
                     <div className="worker-detail-card-header">
 
                         <div>
+
                             <h2>SLA</h2>
-                            <p>Service level information.</p>
+
+                            <p>
+                                Service level information.
+                            </p>
+
                         </div>
 
                     </div>
@@ -695,8 +918,13 @@ function FieldWorkerIssueDetailsPage() {
                     <div className="worker-detail-card-header">
 
                         <div>
+
                             <h2>Location</h2>
-                            <p>Reported issue location.</p>
+
+                            <p>
+                                Reported issue location.
+                            </p>
+
                         </div>
 
                     </div>
@@ -773,8 +1001,13 @@ function FieldWorkerIssueDetailsPage() {
                     <div className="worker-detail-card-header">
 
                         <div>
+
                             <h2>Assignment</h2>
-                            <p>Current assignment information.</p>
+
+                            <p>
+                                Current assignment information.
+                            </p>
+
                         </div>
 
                     </div>
@@ -783,9 +1016,11 @@ function FieldWorkerIssueDetailsPage() {
                     <div className="worker-assignee">
 
                         <div className="worker-assignee-avatar">
+
                             {issue.assignedToName
                                 ?.charAt(0)
                                 ?.toUpperCase() || 'W'}
+
                         </div>
 
 
@@ -836,7 +1071,8 @@ function FieldWorkerIssueDetailsPage() {
                             </h2>
 
                             <p>
-                                Update the issue status as you complete the work.
+                                Update the issue status as you
+                                complete the work.
                             </p>
 
                         </div>
@@ -844,7 +1080,9 @@ function FieldWorkerIssueDetailsPage() {
                     </div>
 
 
-                    {/* SUCCESS MESSAGE */}
+                    {/* =================================================
+                        SUCCESS MESSAGE
+                    ================================================= */}
 
                     {statusMessage && (
 
@@ -861,7 +1099,9 @@ function FieldWorkerIssueDetailsPage() {
                     )}
 
 
-                    {/* ERROR MESSAGE */}
+                    {/* =================================================
+                        ERROR MESSAGE
+                    ================================================= */}
 
                     {statusError && (
 
@@ -877,11 +1117,148 @@ function FieldWorkerIssueDetailsPage() {
 
                     )}
 
-                    {/* =================================================
-    ASSIGNED ISSUE → UNDER REVIEW
-================================================= */}
 
-                    {issue.status === 'REPORTED' &&
+                    {/* =================================================
+                        EVIDENCE PHOTO UPLOAD
+                    ================================================= */}
+
+                    {pendingStatus && (
+
+                        <div className="worker-evidence-upload">
+
+                            <div className="worker-evidence-header">
+
+                                <div>
+
+                                    <strong>
+                                        {pendingStatus === 'RESOLVED'
+                                            ? 'Resolution Evidence'
+                                            : 'Work Evidence'}
+                                    </strong>
+
+                                    <p>
+                                        {pendingStatus === 'RESOLVED'
+                                            ? 'Upload a photo showing that the civic issue has been fixed.'
+                                            : 'Upload a photo showing the work being started or performed.'}
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+
+                            <label
+                                htmlFor="worker-evidence-photo"
+                                className="worker-evidence-file-label"
+                            >
+
+                                <span>
+                                    📷
+                                </span>
+
+                                <strong>
+                                    {selectedEvidencePhoto
+                                        ? 'Change Photo'
+                                        : 'Choose Evidence Photo'}
+                                </strong>
+
+                                <small>
+                                    JPG, JPEG, PNG • Max 10 MB
+                                </small>
+
+                            </label>
+
+
+                            <input
+                                id="worker-evidence-photo"
+                                type="file"
+                                accept="image/*"
+                                onChange={
+                                    handleEvidencePhotoChange
+                                }
+                                className="worker-evidence-file-input"
+                            />
+
+
+                            {selectedEvidencePhoto && (
+
+                                <div className="worker-evidence-preview">
+
+                                    <img
+                                        src={evidencePhotoPreview}
+                                        alt="Evidence preview"
+                                    />
+
+                                    <div className="worker-evidence-file-info">
+
+                                        <strong>
+                                            {selectedEvidencePhoto.name}
+                                        </strong>
+
+                                        <span>
+                                            {(
+                                                selectedEvidencePhoto.size /
+                                                (1024 * 1024)
+                                            ).toFixed(2)} MB
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+                            )}
+
+
+                            <div className="worker-evidence-actions">
+
+                                <button
+                                    type="button"
+                                    className="worker-evidence-cancel-btn"
+                                    disabled={updatingStatus}
+                                    onClick={
+                                        cancelStatusUpdate
+                                    }
+                                >
+                                    Cancel
+                                </button>
+
+
+                                <button
+                                    type="button"
+                                    className="worker-action-btn worker-resolve-btn"
+                                    disabled={
+                                        updatingStatus ||
+                                        !selectedEvidencePhoto
+                                    }
+                                    onClick={() =>
+                                        submitStatusUpdate(
+                                            pendingStatus,
+                                            selectedEvidencePhoto
+                                        )
+                                    }
+                                >
+
+                                    {updatingStatus
+                                        ? 'Uploading...'
+                                        : pendingStatus === 'RESOLVED'
+                                            ? 'Upload & Mark Resolved'
+                                            : 'Upload & Start Work'}
+
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                    )}
+
+
+                    {/* =================================================
+                        ASSIGNED ISSUE → UNDER REVIEW
+                    ================================================= */}
+
+                    {!pendingStatus &&
+                        issue.status === 'REPORTED' &&
                         issue.assignedToId && (
 
                             <div className="worker-action-content">
@@ -921,92 +1298,96 @@ function FieldWorkerIssueDetailsPage() {
 
                         )}
 
+
                     {/* =================================================
                         UNDER REVIEW → IN PROGRESS
                     ================================================= */}
 
-                    {issue.status === 'UNDER_REVIEW' && (
+                    {!pendingStatus &&
+                        issue.status === 'UNDER_REVIEW' && (
 
-                        <div className="worker-action-content">
+                            <div className="worker-action-content">
 
-                            <div>
+                                <div>
 
-                                <strong>
-                                    Ready to start work
-                                </strong>
+                                    <strong>
+                                        Ready to start work
+                                    </strong>
 
-                                <p>
-                                    Start working on this assigned issue
-                                    to move it into progress.
-                                </p>
+                                    <p>
+                                        Upload a work photo before
+                                        starting this issue.
+                                    </p>
+
+                                </div>
+
+
+                                <button
+                                    type="button"
+                                    className="worker-action-btn worker-start-btn"
+                                    disabled={updatingStatus}
+                                    onClick={() =>
+                                        handleStatusUpdate(
+                                            'IN_PROGRESS'
+                                        )
+                                    }
+                                >
+
+                                    {updatingStatus
+                                        ? 'Updating...'
+                                        : 'Start Work'}
+
+                                </button>
 
                             </div>
 
-
-                            <button
-                                type="button"
-                                className="worker-action-btn worker-start-btn"
-                                disabled={updatingStatus}
-                                onClick={() =>
-                                    handleStatusUpdate(
-                                        'IN_PROGRESS'
-                                    )
-                                }
-                            >
-
-                                {updatingStatus
-                                    ? 'Updating...'
-                                    : 'Start Work'}
-
-                            </button>
-
-                        </div>
-
-                    )}
+                        )}
 
 
                     {/* =================================================
                         IN PROGRESS → RESOLVED
                     ================================================= */}
 
-                    {issue.status === 'IN_PROGRESS' && (
+                    {!pendingStatus &&
+                        issue.status === 'IN_PROGRESS' && (
 
-                        <div className="worker-action-content">
+                            <div className="worker-action-content">
 
-                            <div>
+                                <div>
 
-                                <strong>
-                                    Work in progress
-                                </strong>
+                                    <strong>
+                                        Work in progress
+                                    </strong>
 
-                                <p>
-                                    Once the civic issue has been fixed,
-                                    mark the issue as resolved.
-                                </p>
+                                    <p>
+                                        Upload a photo showing the
+                                        completed work before resolving
+                                        this issue.
+                                    </p>
+
+                                </div>
+
+
+                                <button
+                                    type="button"
+                                    className="worker-action-btn worker-resolve-btn"
+                                    disabled={updatingStatus}
+                                    onClick={() =>
+                                        handleStatusUpdate(
+                                            'RESOLVED'
+                                        )
+                                    }
+                                >
+
+                                    {updatingStatus
+                                        ? 'Updating...'
+                                        : 'Mark as Resolved'}
+
+                                </button>
 
                             </div>
 
-
-                            <button
-                                type="button"
-                                className="worker-action-btn worker-resolve-btn"
-                                disabled={updatingStatus}
-                                onClick={() =>
-                                    handleStatusUpdate(
-                                        'RESOLVED'
-                                    )
-                                }
-                            >
-
-                                {updatingStatus
-                                    ? 'Updating...'
-                                    : 'Mark as Resolved'}
-
-                            </button>
-
-                        </div>
-
-                    )}
+                        )}
 
 
                     {/* =================================================
@@ -1043,30 +1424,31 @@ function FieldWorkerIssueDetailsPage() {
                         OTHER STATUS
                     ================================================= */}
 
-                    {!(
-                        (
-                            issue.status === 'REPORTED' &&
-                            issue.assignedToId
-                        ) ||
-                        issue.status === 'UNDER_REVIEW' ||
-                        issue.status === 'IN_PROGRESS' ||
-                        issue.status === 'RESOLVED'
-                    ) && (
+                    {!pendingStatus &&
+                        !(
+                            (
+                                issue.status === 'REPORTED' &&
+                                issue.assignedToId
+                            ) ||
+                            issue.status === 'UNDER_REVIEW' ||
+                            issue.status === 'IN_PROGRESS' ||
+                            issue.status === 'RESOLVED'
+                        ) && (
 
-                        <div className="worker-no-action">
+                            <div className="worker-no-action">
 
-                            <strong>
-                                No worker action available
-                            </strong>
+                                <strong>
+                                    No worker action available
+                                </strong>
 
-                            <p>
-                                The current issue status does not
-                                allow a field worker action.
-                            </p>
+                                <p>
+                                    The current issue status does not
+                                    allow a field worker action.
+                                </p>
 
-                        </div>
+                            </div>
 
-                    )}
+                        )}
 
                 </section>
 
@@ -1080,8 +1462,15 @@ function FieldWorkerIssueDetailsPage() {
                     <div className="worker-detail-card-header">
 
                         <div>
-                            <h2>Status History</h2>
-                            <p>Issue status transition timeline.</p>
+
+                            <h2>
+                                Status History
+                            </h2>
+
+                            <p>
+                                Issue status transition timeline.
+                            </p>
+
                         </div>
 
                     </div>
@@ -1168,15 +1557,41 @@ function FieldWorkerIssueDetailsPage() {
                                             {history.changedByName && (
 
                                                 <span className="worker-history-user">
+
                                                     Changed by{' '}
+
                                                     {history.changedByName}
+
                                                 </span>
+
+                                            )}
+
+
+                                            {/* ---------------------------------
+                                                EVIDENCE PHOTO FROM HISTORY
+                                            --------------------------------- */}
+
+                                            {history.evidencePhotoUrl && (
+
+                                                <div className="worker-history-evidence">
+
+                                                    <span>
+                                                        Evidence Photo
+                                                    </span>
+
+                                                    <img
+                                                        src={`http://localhost:8080/api/images/${encodeURIComponent(history.evidencePhotoUrl)}`}
+                                                        alt="Status evidence"
+                                                    />
+
+                                                </div>
 
                                             )}
 
                                         </div>
 
                                     </div>
+
                                 )
                             )}
 

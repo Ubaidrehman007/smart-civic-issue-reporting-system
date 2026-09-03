@@ -12,6 +12,7 @@ export const getMyIssues = async () => {
     return response.data
 }
 
+
 export const getAssignedIssues = async ({
                                             page = 0,
                                             size = 50,
@@ -31,6 +32,7 @@ export const getAssignedIssues = async ({
 
     return response.data
 }
+
 
 export const createIssue = async (formData) => {
     const response = await apiClient.post(
@@ -69,12 +71,30 @@ export const getIssueStatusHistory = async (issueId) => {
 export const updateIssueStatus = async ({
                                             issueId,
                                             status,
+                                            evidencePhoto,
                                         }) => {
+
+    const formData = new FormData()
+
+    formData.append(
+        'status',
+        status
+    )
+
+    if (evidencePhoto) {
+        formData.append(
+            'evidencePhoto',
+            evidencePhoto
+        )
+    }
 
     const response = await apiClient.patch(
         `/issues/${issueId}/status`,
+        formData,
         {
-            status,
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
         }
     )
 
@@ -223,6 +243,7 @@ export const getIssuesByPriority = async ({
 
     return response.data
 }
+
 
 export const assignIssue = async ({
                                       issueId,

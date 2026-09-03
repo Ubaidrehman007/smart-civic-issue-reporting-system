@@ -42,4 +42,7 @@ public class IssueStatusHistory {
 
     @Column(name = "changed_at", nullable = false)
     private Instant changedAt;
+
+    @Column(name = "evidence_photo_url")
+    private String evidencePhotoUrl;
 }

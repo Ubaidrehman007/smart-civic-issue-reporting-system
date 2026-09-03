@@ -540,3 +540,33 @@
     }
 
 }
+
+.status-timeline-evidence {
+    margin-top: 18px;
+}
+
+.status-timeline-evidence > span {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.status-timeline-evidence-wrapper {
+    width: 100%;
+    max-width: 520px;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #e2e8f0;
+    background: #f8fafc;
+}
+
+.status-timeline-evidence-image {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 360px;
+    object-fit: cover;
+}

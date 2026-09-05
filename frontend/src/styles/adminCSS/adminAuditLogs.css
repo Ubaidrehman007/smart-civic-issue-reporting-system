@@ -1,118 +1,167 @@
-/* =========================================
-   ADMIN AUDIT LOGS PAGE
-========================================= */
+/* =========================================================
+   ADMIN AUDIT LOGS
+   ========================================================= */
 
 .admin-audit-page {
     width: 100%;
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 42px 48px 60px;
+    min-height: 100%;
     box-sizing: border-box;
+    padding: 42px 48px 60px;
+    background: #f5f7fb;
+    color: #172033;
 }
 
 
-/* =========================================
+/* =========================================================
    HEADER
-========================================= */
+   ========================================================= */
 
 .admin-audit-header {
-    margin-bottom: 34px;
+    margin-bottom: 30px;
 }
 
 .admin-audit-eyebrow {
     margin: 0 0 10px;
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 2px;
     color: #2563eb;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 3px;
+    text-transform: uppercase;
 }
 
 .admin-audit-header h1 {
     margin: 0;
-    font-size: 38px;
+    color: #182235;
+    font-size: 42px;
     line-height: 1.15;
     font-weight: 700;
-    color: #172033;
 }
 
 .admin-audit-header p:last-child {
     margin: 10px 0 0;
-    font-size: 16px;
-    color: #6b7280;
+    color: #7b879c;
+    font-size: 17px;
+    line-height: 1.6;
 }
 
 
-/* =========================================
+/* =========================================================
    TOOLBAR
-========================================= */
+   ========================================================= */
 
 .admin-audit-toolbar {
     display: grid;
-    grid-template-columns: minmax(240px, 1fr) 220px 220px;
+    grid-template-columns: minmax(280px, 1fr) 250px 250px auto;
     gap: 14px;
-    margin-bottom: 22px;
+    align-items: center;
+    margin-bottom: 26px;
 }
 
 .admin-audit-search input,
 .admin-audit-filter select {
     width: 100%;
-    height: 46px;
-    padding: 0 14px;
-    border: 1px solid #dfe3ea;
-    border-radius: 10px;
+    height: 54px;
+    box-sizing: border-box;
+    padding: 0 17px;
+    border: 1px solid #d9e0ec;
+    border-radius: 12px;
     outline: none;
     background: #ffffff;
-    color: #172033;
+    color: #1d2940;
     font-family: inherit;
-    font-size: 14px;
-    box-sizing: border-box;
+    font-size: 15px;
+    transition:
+            border-color 0.2s ease,
+            box-shadow 0.2s ease;
 }
 
 .admin-audit-search input::placeholder {
-    color: #98a2b3;
+    color: #a0a9b8;
 }
 
 .admin-audit-search input:focus,
 .admin-audit-filter select:focus {
     border-color: #2563eb;
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.10);
+}
+
+.admin-audit-filter select {
+    cursor: pointer;
+}
+
+.admin-audit-clear-button {
+    min-height: 54px;
+    padding: 0 18px;
+    border: 1px solid #d8deea;
+    border-radius: 12px;
+    background: #ffffff;
+    color: #42506a;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    white-space: nowrap;
+    transition:
+            background 0.2s ease,
+            border-color 0.2s ease;
+}
+
+.admin-audit-clear-button:hover {
+    border-color: #2563eb;
+    background: #eff6ff;
+    color: #2563eb;
 }
 
 
-/* =========================================
+/* =========================================================
    TABLE CARD
-========================================= */
+   ========================================================= */
 
 .admin-audit-table-card {
-    border: 1px solid #e4e8ef;
-    border-radius: 16px;
-    background: #ffffff;
-    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
     overflow: hidden;
+    border: 1px solid #e0e6f0;
+    border-radius: 18px;
+    background: #ffffff;
+    box-shadow:
+            0 10px 30px rgba(24, 34, 53, 0.05);
 }
 
 .admin-audit-table-header {
-    padding: 24px 26px;
-    border-bottom: 1px solid #edf0f4;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 28px 30px 24px;
+    border-bottom: 1px solid #e8edf4;
 }
 
 .admin-audit-table-header h2 {
     margin: 0;
-    font-size: 20px;
+    color: #1b263b;
+    font-size: 23px;
     font-weight: 700;
-    color: #172033;
 }
 
 .admin-audit-table-header p {
     margin: 6px 0 0;
+    color: #8a95a8;
+    font-size: 14px;
+}
+
+.admin-audit-total {
+    padding: 9px 13px;
+    border-radius: 999px;
+    background: #f1f5f9;
+    color: #536078;
     font-size: 13px;
-    color: #7a8496;
+    font-weight: 700;
+    white-space: nowrap;
 }
 
 
-/* =========================================
+/* =========================================================
    TABLE
-========================================= */
+   ========================================================= */
 
 .admin-audit-table-wrapper {
     width: 100%;
@@ -121,69 +170,336 @@
 
 .admin-audit-table {
     width: 100%;
-    min-width: 1000px;
+    min-width: 1050px;
     border-collapse: collapse;
 }
 
-.admin-audit-table th {
-    padding: 15px 18px;
+.admin-audit-table thead th {
+    padding: 15px 20px;
+    border-bottom: 1px solid #e2e8f0;
     background: #f8fafc;
-    border-bottom: 1px solid #e8ebf0;
+    color: #718096;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.7px;
     text-align: left;
-    white-space: nowrap;
-    font-size: 12px;
-    font-weight: 700;
-    color: #667085;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    white-space: nowrap;
 }
 
-.admin-audit-table td {
-    padding: 18px;
-    border-bottom: 1px solid #eef1f4;
-    vertical-align: middle;
+.admin-audit-table tbody td {
+    padding: 18px 20px;
+    border-bottom: 1px solid #edf1f6;
+    color: #344057;
     font-size: 13px;
-    color: #475467;
+    vertical-align: top;
 }
 
 .admin-audit-table tbody tr:last-child td {
     border-bottom: none;
 }
 
-.admin-audit-table tbody tr:hover {
-    background: #fafbfc;
+.admin-audit-row {
+    cursor: pointer;
+    outline: none;
+    transition:
+            background 0.15s ease;
+}
+
+.admin-audit-row:hover {
+    background: #f8fbff;
+}
+
+.admin-audit-row:focus {
+    background: #f0f6ff;
 }
 
 
-/* =========================================
-   EMPTY STATE
-========================================= */
+/* =========================================================
+   DATE
+   ========================================================= */
 
-.admin-audit-empty {
-    height: 220px;
-    text-align: center !important;
-    color: #98a2b3 !important;
-    font-size: 14px !important;
+.admin-audit-date strong {
+    display: block;
+    min-width: 145px;
+    color: #344057;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.5;
 }
 
 
-/* =========================================
+/* =========================================================
+   ACTOR
+   ========================================================= */
+
+.admin-audit-actor {
+    display: flex;
+    min-width: 155px;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.admin-audit-actor strong {
+    color: #26334b;
+    font-size: 13px;
+}
+
+.admin-audit-actor small {
+    color: #8994a7;
+    font-size: 11px;
+    word-break: break-word;
+}
+
+.admin-audit-role {
+    width: fit-content;
+    margin-top: 2px;
+    padding: 3px 7px;
+    border-radius: 5px;
+    background: #eef2f7;
+    color: #69758a;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+
+/* =========================================================
+   ACTION BADGES
+   ========================================================= */
+
+.admin-audit-action-badge {
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    min-height: 28px;
+    box-sizing: border-box;
+    padding: 5px 9px;
+    border-radius: 7px;
+    background: #eef2f7;
+    color: #4b5870;
+    font-size: 11px;
+    font-weight: 800;
+    line-height: 1.2;
+    white-space: nowrap;
+}
+
+.admin-audit-action-badge.create {
+    background: #ecfdf5;
+    color: #047857;
+}
+
+.admin-audit-action-badge.update {
+    background: #eff6ff;
+    color: #1d4ed8;
+}
+
+.admin-audit-action-badge.delete {
+    background: #fef2f2;
+    color: #b91c1c;
+}
+
+.admin-audit-action-badge.status {
+    background: #fff7ed;
+    color: #c2410c;
+}
+
+.admin-audit-action-badge.assignment {
+    background: #f5f3ff;
+    color: #6d28d9;
+}
+
+.admin-audit-action-badge.security {
+    background: #f0f9ff;
+    color: #0369a1;
+}
+
+.admin-audit-action-badge.large {
+    min-height: 34px;
+    padding: 8px 12px;
+    font-size: 12px;
+}
+
+
+/* =========================================================
+   ENTITY
+   ========================================================= */
+
+.admin-audit-entity {
+    display: flex;
+    min-width: 130px;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.admin-audit-entity strong {
+    color: #344057;
+    font-size: 13px;
+}
+
+.admin-audit-entity small {
+    max-width: 170px;
+    overflow: hidden;
+    color: #909bad;
+    font-size: 10px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   DESCRIPTION
+   ========================================================= */
+
+.admin-audit-description {
+    max-width: 270px;
+    color: #4e5b72;
+    line-height: 1.55;
+}
+
+
+/* =========================================================
+   CHANGES
+   ========================================================= */
+
+.admin-audit-changes {
+    display: flex;
+    min-width: 180px;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.admin-audit-changes small {
+    display: flex;
+    gap: 6px;
+    color: #69758a;
+    line-height: 1.4;
+}
+
+.admin-audit-changes small span {
+    min-width: 27px;
+    color: #9aa4b5;
+    font-weight: 700;
+}
+
+
+/* =========================================================
    LOADING
-========================================= */
+   ========================================================= */
 
 .admin-audit-loading {
-    min-height: 220px;
     display: flex;
+    min-height: 280px;
     align-items: center;
     justify-content: center;
-    color: #667085;
+    gap: 12px;
+    color: #78859a;
     font-size: 14px;
 }
 
+.admin-audit-spinner {
+    width: 22px;
+    height: 22px;
+    box-sizing: border-box;
+    border: 3px solid #dce5f2;
+    border-top-color: #2563eb;
+    border-radius: 50%;
+    animation: adminAuditSpin 0.8s linear infinite;
+}
 
-/* =========================================
+@keyframes adminAuditSpin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+
+/* =========================================================
+   ERROR
+   ========================================================= */
+
+.admin-audit-error {
+    display: flex;
+    min-height: 280px;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 30px;
+    text-align: center;
+}
+
+.admin-audit-error strong {
+    color: #b91c1c;
+    font-size: 16px;
+}
+
+.admin-audit-error p {
+    max-width: 500px;
+    margin: 8px 0 18px;
+    color: #7c8799;
+    line-height: 1.6;
+}
+
+.admin-audit-error button,
+.admin-audit-empty-state button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 9px;
+    background: #2563eb;
+    color: #ffffff;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   EMPTY
+   ========================================================= */
+
+.admin-audit-empty-state {
+    display: flex;
+    min-height: 300px;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 35px;
+    text-align: center;
+}
+
+.admin-audit-empty-icon {
+    display: flex;
+    width: 46px;
+    height: 46px;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 14px;
+    border-radius: 50%;
+    background: #eff6ff;
+    color: #2563eb;
+    font-size: 20px;
+    font-weight: 800;
+}
+
+.admin-audit-empty-state h3 {
+    margin: 0;
+    color: #344057;
+    font-size: 17px;
+}
+
+.admin-audit-empty-state p {
+    max-width: 460px;
+    margin: 8px 0 18px;
+    color: #8994a7;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+
+/* =========================================================
    PAGINATION
-========================================= */
+   ========================================================= */
 
 .admin-audit-pagination {
     display: flex;
@@ -191,61 +507,297 @@
     justify-content: space-between;
     gap: 20px;
     margin-top: 18px;
+    color: #7a8699;
     font-size: 13px;
-    color: #667085;
 }
 
 .admin-audit-pagination > div {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
 }
 
 .admin-audit-pagination button {
-    height: 36px;
-    padding: 0 14px;
-    border: 1px solid #dfe3ea;
+    min-width: 90px;
+    height: 38px;
+    padding: 0 13px;
+    border: 1px solid #d9e0eb;
     border-radius: 8px;
     background: #ffffff;
-    color: #475467;
-    font-family: inherit;
-    font-size: 13px;
+    color: #455269;
     cursor: pointer;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
 }
 
-.admin-audit-pagination button:not(:disabled):hover {
-    background: #f8fafc;
-    border-color: #cbd5e1;
+.admin-audit-pagination button:hover:not(:disabled) {
+    border-color: #2563eb;
+    color: #2563eb;
 }
 
 .admin-audit-pagination button:disabled {
     cursor: not-allowed;
-    opacity: 0.5;
+    opacity: 0.45;
 }
 
 .admin-audit-page-number {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 36px;
-    height: 36px;
-    padding: 0 8px;
-    border-radius: 8px;
-    background: #eff6ff;
-    color: #2563eb;
-    font-weight: 600;
+    min-width: 60px;
+    color: #364258;
+    font-weight: 700;
+    text-align: center;
 }
 
 
-/* =========================================
-   RESPONSIVE
-========================================= */
+/* =========================================================
+   MOBILE LIST
+   ========================================================= */
 
-@media (max-width: 1000px) {
+.admin-audit-mobile-list {
+    display: none;
+}
+
+
+/* =========================================================
+   DETAILS OVERLAY
+   ========================================================= */
+
+.admin-audit-overlay {
+    position: fixed;
+    z-index: 9999;
+    inset: 0;
+    display: flex;
+    justify-content: flex-end;
+    background: rgba(15, 23, 42, 0.42);
+    backdrop-filter: blur(2px);
+}
+
+
+/* =========================================================
+   DETAILS DRAWER
+   ========================================================= */
+
+.admin-audit-drawer {
+    display: flex;
+    width: min(520px, 100vw);
+    height: 100vh;
+    box-sizing: border-box;
+    flex-direction: column;
+    background: #ffffff;
+    box-shadow:
+            -12px 0 40px rgba(15, 23, 42, 0.16);
+    animation: adminAuditDrawerIn 0.22s ease-out;
+}
+
+@keyframes adminAuditDrawerIn {
+    from {
+        transform: translateX(100%);
+    }
+
+    to {
+        transform: translateX(0);
+    }
+}
+
+
+/* =========================================================
+   DRAWER HEADER
+   ========================================================= */
+
+.admin-audit-drawer-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 28px 30px;
+    border-bottom: 1px solid #e8edf4;
+}
+
+.admin-audit-drawer-header p {
+    margin: 0 0 6px;
+    color: #2563eb;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 2px;
+}
+
+.admin-audit-drawer-header h2 {
+    margin: 0;
+    color: #182235;
+    font-size: 24px;
+}
+
+.admin-audit-close {
+    display: flex;
+    width: 36px;
+    height: 36px;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border: 1px solid #dce3ee;
+    border-radius: 9px;
+    background: #ffffff;
+    color: #59667d;
+    cursor: pointer;
+    font-size: 25px;
+    line-height: 1;
+}
+
+.admin-audit-close:hover {
+    border-color: #2563eb;
+    color: #2563eb;
+}
+
+
+/* =========================================================
+   DRAWER CONTENT
+   ========================================================= */
+
+.admin-audit-drawer-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 28px 30px;
+}
+
+.admin-audit-detail-section {
+    margin-bottom: 24px;
+}
+
+.admin-audit-detail-section > span {
+    display: block;
+    margin-bottom: 8px;
+    color: #8a95a8;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.9px;
+    text-transform: uppercase;
+}
+
+.admin-audit-detail-main {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.admin-audit-detail-main strong {
+    color: #28344a;
+    font-size: 15px;
+}
+
+.admin-audit-detail-main small {
+    color: #7f8a9d;
+    font-size: 12px;
+}
+
+.admin-audit-detail-text {
+    margin: 0;
+    color: #455269;
+    font-size: 14px;
+    line-height: 1.65;
+}
+
+.admin-audit-value-box {
+    padding: 13px 15px;
+    border: 1px solid #e2e8f0;
+    border-radius: 9px;
+    background: #f8fafc;
+    color: #536078;
+    font-family: monospace;
+    font-size: 12px;
+    line-height: 1.55;
+    overflow-wrap: anywhere;
+}
+
+
+/* =========================================================
+   COPY
+   ========================================================= */
+
+.admin-audit-copy-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.admin-audit-copy-row code {
+    flex: 1;
+    padding: 10px 11px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: #f8fafc;
+    color: #56637a;
+    font-family: monospace;
+    font-size: 11px;
+    overflow-wrap: anywhere;
+}
+
+.admin-audit-copy-row button {
+    padding: 9px 11px;
+    border: 1px solid #d9e0eb;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #455269;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.admin-audit-copy-row button:hover {
+    border-color: #2563eb;
+    color: #2563eb;
+}
+
+
+/* =========================================================
+   DRAWER FOOTER
+   ========================================================= */
+
+.admin-audit-drawer-footer {
+    padding: 18px 30px;
+    border-top: 1px solid #e8edf4;
+}
+
+.admin-audit-drawer-footer button {
+    width: 100%;
+    height: 44px;
+    border: 1px solid #d8dfeb;
+    border-radius: 9px;
+    background: #ffffff;
+    color: #455269;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.admin-audit-drawer-footer button:hover {
+    border-color: #2563eb;
+    color: #2563eb;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 1200px) {
 
     .admin-audit-page {
-        padding: 30px 24px 50px;
+        padding: 36px 30px 50px;
     }
+
+    .admin-audit-toolbar {
+        grid-template-columns:
+            minmax(240px, 1fr)
+            210px
+            210px
+            auto;
+    }
+}
+
+
+@media (max-width: 900px) {
 
     .admin-audit-toolbar {
         grid-template-columns: 1fr 1fr;
@@ -255,21 +807,24 @@
         grid-column: 1 / -1;
     }
 
+    .admin-audit-clear-button {
+        width: fit-content;
+    }
+
+    .admin-audit-table {
+        min-width: 900px;
+    }
 }
 
 
-@media (max-width: 600px) {
+@media (max-width: 700px) {
 
     .admin-audit-page {
         padding: 24px 16px 40px;
     }
 
-    .admin-audit-header {
-        margin-bottom: 26px;
-    }
-
     .admin-audit-header h1 {
-        font-size: 28px;
+        font-size: 32px;
     }
 
     .admin-audit-header p:last-child {
@@ -277,46 +832,119 @@
     }
 
     .admin-audit-toolbar {
-        grid-template-columns: 1fr;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
     }
 
-    .admin-audit-search {
-        grid-column: auto;
+    .admin-audit-search input,
+    .admin-audit-filter select,
+    .admin-audit-clear-button {
+        width: 100%;
     }
 
-    .admin-audit-table-header {
-        padding: 20px;
+    .admin-audit-table-card {
+        border-radius: 14px;
+    }
+
+    .admin-audit-table-wrapper {
+        display: none;
+    }
+
+    .admin-audit-mobile-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 14px;
+    }
+
+    .admin-audit-mobile-card {
+        display: flex;
+        width: 100%;
+        box-sizing: border-box;
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 7px;
+        padding: 17px;
+        border: 1px solid #e0e6f0;
+        border-radius: 13px;
+        background: #ffffff;
+        color: #26334b;
+        cursor: pointer;
+        font-family: inherit;
+        text-align: left;
+        box-shadow:
+                0 6px 18px rgba(24, 34, 53, 0.04);
+    }
+
+    .admin-audit-mobile-card:hover {
+        border-color: #b9cdf2;
+    }
+
+    .admin-audit-mobile-top {
+        display: flex;
+        width: 100%;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .admin-audit-mobile-card > strong {
+        font-size: 14px;
+    }
+
+    .admin-audit-mobile-card > span {
+        color: #68758b;
+        font-size: 12px;
+    }
+
+    .admin-audit-mobile-card > small {
+        color: #939dad;
+        font-size: 11px;
     }
 
     .admin-audit-pagination {
-        flex-direction: column;
         align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .admin-audit-drawer {
+        width: 100%;
+    }
+
+    .admin-audit-drawer-header {
+        padding: 22px 20px;
+    }
+
+    .admin-audit-drawer-content {
+        padding: 22px 20px;
+    }
+
+    .admin-audit-drawer-footer {
+        padding: 15px 20px;
+    }
+}
+
+
+@media (max-width: 420px) {
+
+    .admin-audit-header h1 {
+        font-size: 28px;
+    }
+
+    .admin-audit-table-header {
+        padding: 22px 18px;
+    }
+
+    .admin-audit-table-header h2 {
+        font-size: 19px;
+    }
+
+    .admin-audit-total {
+        display: none;
     }
 
     .admin-audit-pagination > div {
         width: 100%;
         justify-content: space-between;
     }
-
-}
-/* =====================================================
-   CLEAR FILTER BUTTON
-===================================================== */
-
-.admin-audit-toolbar > button {
-    height: 52px;
-    padding: 0 20px;
-    border: 1px solid #d9e0eb;
-    border-radius: 10px;
-    background: #ffffff;
-    color: #1d2a44;
-    font-family: inherit;
-    font-size: 14px;
-    cursor: pointer;
-    transition: 0.2s ease;
-}
-
-.admin-audit-toolbar > button:hover {
-    border-color: #2563eb;
-    color: #2563eb;
 }

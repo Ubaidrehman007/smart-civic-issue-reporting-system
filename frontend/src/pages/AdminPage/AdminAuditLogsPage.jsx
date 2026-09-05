@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import '../../styles/adminCSS/adminAuditLogs.css'
 
 function AdminAuditLogsPage() {
@@ -35,6 +35,100 @@ function AdminAuditLogsPage() {
 
     const [entityType, setEntityType] = useState('')
 
+    const [selectedLog, setSelectedLog] = useState(null)
+
+
+    // =====================================================
+    // ACTION OPTIONS
+    // =====================================================
+
+    const actionOptions = [
+        {
+            value: 'LOGIN',
+            label: 'Login'
+        },
+        {
+            value: 'LOGOUT',
+            label: 'Logout'
+        },
+        {
+            value: 'PASSWORD_CHANGED',
+            label: 'Password Changed'
+        },
+        {
+            value: 'USER_CREATED',
+            label: 'User Created'
+        },
+        {
+            value: 'USER_UPDATED',
+            label: 'User Updated'
+        },
+        {
+            value: 'USER_STATUS_CHANGED',
+            label: 'User Status Changed'
+        },
+        {
+            value: 'USER_DELETED',
+            label: 'User Deleted'
+        },
+        {
+            value: 'ISSUE_CREATED',
+            label: 'Issue Created'
+        },
+        {
+            value: 'ISSUE_UPDATED',
+            label: 'Issue Updated'
+        },
+        {
+            value: 'ISSUE_STATUS_CHANGED',
+            label: 'Issue Status Changed'
+        },
+        {
+            value: 'ISSUE_ASSIGNED',
+            label: 'Issue Assigned'
+        },
+        {
+            value: 'ISSUE_DELETED',
+            label: 'Issue Deleted'
+        }
+    ]
+
+
+    // =====================================================
+    // ENTITY OPTIONS
+    // =====================================================
+
+    const entityOptions = [
+        {
+            value: 'USER',
+            label: 'User'
+        },
+        {
+            value: 'ISSUE',
+            label: 'Issue'
+        }
+    ]
+
+
+    // =====================================================
+    // ACTION LABEL MAP
+    // =====================================================
+
+    const actionLabelMap = useMemo(() => {
+
+        return actionOptions.reduce(
+            (map, item) => {
+
+                map[item.value] = item.label
+
+                return map
+
+            },
+            {}
+        )
+
+    }, [])
+
 
     // =====================================================
     // FETCH AUDIT LOGS
@@ -53,22 +147,30 @@ function AdminAuditLogsPage() {
                 localStorage.getItem('token')
 
 
+            if (!token) {
+
+                throw new Error(
+                    'Authentication token not found. Please login again.'
+                )
+            }
+
+
             const params =
                 new URLSearchParams()
 
 
             params.append(
                 'page',
-                page
+                String(page)
             )
+
 
             params.append(
                 'size',
-                PAGE_SIZE
+                String(PAGE_SIZE)
             )
 
 
-            // Search
             if (keyword.trim()) {
 
                 params.append(
@@ -78,7 +180,6 @@ function AdminAuditLogsPage() {
             }
 
 
-            // Action filter
             if (action) {
 
                 params.append(
@@ -88,7 +189,6 @@ function AdminAuditLogsPage() {
             }
 
 
-            // Entity filter
             if (entityType) {
 
                 params.append(
@@ -105,7 +205,7 @@ function AdminAuditLogsPage() {
                         method: 'GET',
 
                         headers: {
-                            'Authorization':
+                            Authorization:
                                 `Bearer ${token}`,
 
                             'Content-Type':
@@ -133,9 +233,27 @@ function AdminAuditLogsPage() {
                 }
 
 
-                throw new Error(
+                let message =
                     'Failed to fetch audit logs.'
-                )
+
+                try {
+
+                    const body =
+                        await response.json()
+
+                    if (body?.message) {
+
+                        message =
+                            body.message
+                    }
+
+                } catch {
+
+                    // Ignore invalid JSON response
+                }
+
+
+                throw new Error(message)
             }
 
 
@@ -144,17 +262,23 @@ function AdminAuditLogsPage() {
 
 
             setAuditLogs(
-                data.content || []
+                Array.isArray(data?.content)
+                    ? data.content
+                    : []
             )
 
 
             setTotalPages(
-                data.totalPages || 0
+                Number.isFinite(data?.totalPages)
+                    ? data.totalPages
+                    : 0
             )
 
 
             setTotalElements(
-                data.totalElements || 0
+                Number.isFinite(data?.totalElements)
+                    ? data.totalElements
+                    : 0
             )
 
         } catch (err) {
@@ -166,7 +290,7 @@ function AdminAuditLogsPage() {
 
 
             setError(
-                err.message ||
+                err?.message ||
                 'Unable to load audit logs.'
             )
 
@@ -185,7 +309,7 @@ function AdminAuditLogsPage() {
 
 
     // =====================================================
-    // LOAD AUDIT LOGS
+    // LOAD DATA
     // =====================================================
 
     useEffect(() => {
@@ -201,7 +325,7 @@ function AdminAuditLogsPage() {
 
 
     // =====================================================
-    // SEARCH CHANGE
+    // SEARCH
     // =====================================================
 
     const handleSearchChange = (event) => {
@@ -215,7 +339,7 @@ function AdminAuditLogsPage() {
 
 
     // =====================================================
-    // ACTION CHANGE
+    // ACTION FILTER
     // =====================================================
 
     const handleActionChange = (event) => {
@@ -229,7 +353,7 @@ function AdminAuditLogsPage() {
 
 
     // =====================================================
-    // ENTITY TYPE CHANGE
+    // ENTITY FILTER
     // =====================================================
 
     const handleEntityTypeChange = (event) => {
@@ -243,12 +367,31 @@ function AdminAuditLogsPage() {
 
 
     // =====================================================
+    // CLEAR FILTERS
+    // =====================================================
+
+    const handleClearFilters = () => {
+
+        setKeyword('')
+
+        setAction('')
+
+        setEntityType('')
+
+        setPage(0)
+    }
+
+
+    // =====================================================
     // PREVIOUS PAGE
     // =====================================================
 
     const handlePrevious = () => {
 
-        if (page > 0 && !loading) {
+        if (
+            page > 0 &&
+            !loading
+        ) {
 
             setPage(
                 previousPage =>
@@ -279,12 +422,79 @@ function AdminAuditLogsPage() {
 
 
     // =====================================================
-    // FORMAT DATE & TIME
+    // OPEN DETAILS
     // =====================================================
 
-    const formatDateTime = (
-        dateTime
-    ) => {
+    const handleOpenDetails = (log) => {
+
+        setSelectedLog(log)
+
+    }
+
+
+    // =====================================================
+    // CLOSE DETAILS
+    // =====================================================
+
+    const handleCloseDetails = () => {
+
+        setSelectedLog(null)
+
+    }
+
+
+    // =====================================================
+    // ESCAPE KEY
+    // =====================================================
+
+    useEffect(() => {
+
+        if (!selectedLog) {
+
+            return undefined
+        }
+
+
+        const handleKeyDown = (event) => {
+
+            if (event.key === 'Escape') {
+
+                setSelectedLog(null)
+            }
+        }
+
+
+        document.addEventListener(
+            'keydown',
+            handleKeyDown
+        )
+
+
+        document.body.style.overflow =
+            'hidden'
+
+
+        return () => {
+
+            document.removeEventListener(
+                'keydown',
+                handleKeyDown
+            )
+
+            document.body.style.overflow =
+                ''
+        }
+
+    }, [
+        selectedLog
+    ])
+
+
+    // =====================================================
+    // FORMAT DATE
+    // =====================================================
+
+    const formatDateTime = (dateTime) => {
 
         if (!dateTime) {
 
@@ -313,7 +523,8 @@ function AdminAuditLogsPage() {
                 month: 'short',
                 year: 'numeric',
                 hour: '2-digit',
-                minute: '2-digit'
+                minute: '2-digit',
+                hour12: true
             }
         )
     }
@@ -323,24 +534,25 @@ function AdminAuditLogsPage() {
     // FORMAT ACTION
     // =====================================================
 
-    const formatAction = (
-        value
-    ) => {
+    const formatAction = (value) => {
 
         if (!value) {
 
-            return '—'
+            return 'Unknown Action'
         }
 
 
-        return value
-            .replaceAll('_', ' ')
-            .toLowerCase()
-            .replace(
-                /\b\w/g,
-                char =>
-                    char.toUpperCase()
-            )
+        return (
+            actionLabelMap[value] ||
+            value
+                .replaceAll('_', ' ')
+                .toLowerCase()
+                .replace(
+                    /\b\w/g,
+                    char =>
+                        char.toUpperCase()
+                )
+        )
     }
 
 
@@ -348,9 +560,7 @@ function AdminAuditLogsPage() {
     // FORMAT ENTITY
     // =====================================================
 
-    const formatEntity = (
-        value
-    ) => {
+    const formatEntity = (value) => {
 
         if (!value) {
 
@@ -370,23 +580,105 @@ function AdminAuditLogsPage() {
 
 
     // =====================================================
-    // CLEAR FILTERS
+    // ACTION CATEGORY
     // =====================================================
 
-    const handleClearFilters = () => {
+    const getActionCategory = (value) => {
 
-        setKeyword('')
+        if (!value) {
 
-        setAction('')
+            return 'default'
+        }
 
-        setEntityType('')
 
-        setPage(0)
+        if (
+            value === 'LOGIN' ||
+            value === 'LOGOUT' ||
+            value === 'PASSWORD_CHANGED'
+        ) {
+
+            return 'security'
+        }
+
+
+        if (
+            value === 'USER_CREATED' ||
+            value === 'ISSUE_CREATED'
+        ) {
+
+            return 'create'
+        }
+
+
+        if (
+            value === 'USER_UPDATED' ||
+            value === 'ISSUE_UPDATED'
+        ) {
+
+            return 'update'
+        }
+
+
+        if (
+            value === 'USER_DELETED' ||
+            value === 'ISSUE_DELETED'
+        ) {
+
+            return 'delete'
+        }
+
+
+        if (
+            value === 'USER_STATUS_CHANGED' ||
+            value === 'ISSUE_STATUS_CHANGED'
+        ) {
+
+            return 'status'
+        }
+
+
+        if (
+            value === 'ISSUE_ASSIGNED'
+        ) {
+
+            return 'assignment'
+        }
+
+
+        return 'default'
     }
 
 
     // =====================================================
-    // CHECK ACTIVE FILTERS
+    // COPY TO CLIPBOARD
+    // =====================================================
+
+    const handleCopy = async (value) => {
+
+        if (!value) {
+
+            return
+        }
+
+
+        try {
+
+            await navigator.clipboard.writeText(
+                String(value)
+            )
+
+        } catch (err) {
+
+            console.error(
+                'Unable to copy value:',
+                err
+            )
+        }
+    }
+
+
+    // =====================================================
+    // ACTIVE FILTERS
     // =====================================================
 
     const hasActiveFilters =
@@ -404,9 +696,9 @@ function AdminAuditLogsPage() {
         <div className="admin-audit-page">
 
 
-            {/* =========================================
+            {/* =================================================
                 HEADER
-            ========================================= */}
+            ================================================= */}
 
             <section className="admin-audit-header">
 
@@ -432,9 +724,9 @@ function AdminAuditLogsPage() {
             </section>
 
 
-            {/* =========================================
+            {/* =================================================
                 FILTER BAR
-            ========================================= */}
+            ================================================= */}
 
             <section className="admin-audit-toolbar">
 
@@ -473,71 +765,31 @@ function AdminAuditLogsPage() {
                         </option>
 
 
-                        <option value="LOGIN">
-                            Login
-                        </option>
+                        {actionOptions.map(
+                            option => (
 
+                                <option
+                                    key={
+                                        option.value
+                                    }
+                                    value={
+                                        option.value
+                                    }
+                                >
+                                    {
+                                        option.label
+                                    }
+                                </option>
 
-                        <option value="LOGOUT">
-                            Logout
-                        </option>
-
-
-                        <option value="PASSWORD_CHANGED">
-                            Password Changed
-                        </option>
-
-
-                        <option value="USER_CREATED">
-                            User Created
-                        </option>
-
-
-                        <option value="USER_UPDATED">
-                            User Updated
-                        </option>
-
-
-                        <option value="USER_STATUS_CHANGED">
-                            User Status Changed
-                        </option>
-
-
-                        <option value="USER_DELETED">
-                            User Deleted
-                        </option>
-
-
-                        <option value="ISSUE_CREATED">
-                            Issue Created
-                        </option>
-
-
-                        <option value="ISSUE_UPDATED">
-                            Issue Updated
-                        </option>
-
-
-                        <option value="ISSUE_STATUS_CHANGED">
-                            Issue Status Changed
-                        </option>
-
-
-                        <option value="ISSUE_ASSIGNED">
-                            Issue Assigned
-                        </option>
-
-
-                        <option value="ISSUE_DELETED">
-                            Issue Deleted
-                        </option>
+                            )
+                        )}
 
                     </select>
 
                 </div>
 
 
-                {/* ENTITY TYPE */}
+                {/* ENTITY */}
 
                 <div className="admin-audit-filter">
 
@@ -554,14 +806,24 @@ function AdminAuditLogsPage() {
                         </option>
 
 
-                        <option value="USER">
-                            User
-                        </option>
+                        {entityOptions.map(
+                            option => (
 
+                                <option
+                                    key={
+                                        option.value
+                                    }
+                                    value={
+                                        option.value
+                                    }
+                                >
+                                    {
+                                        option.label
+                                    }
+                                </option>
 
-                        <option value="ISSUE">
-                            Issue
-                        </option>
+                            )
+                        )}
 
                     </select>
 
@@ -574,11 +836,12 @@ function AdminAuditLogsPage() {
 
                     <button
                         type="button"
+                        className="admin-audit-clear-button"
                         onClick={
                             handleClearFilters
                         }
                     >
-                        Clear
+                        Clear Filters
                     </button>
 
                 )}
@@ -586,12 +849,14 @@ function AdminAuditLogsPage() {
             </section>
 
 
-            {/* =========================================
+            {/* =================================================
                 TABLE CARD
-            ========================================= */}
+            ================================================= */}
 
             <section className="admin-audit-table-card">
 
+
+                {/* TABLE HEADER */}
 
                 <div className="admin-audit-table-header">
 
@@ -608,125 +873,218 @@ function AdminAuditLogsPage() {
 
                     </div>
 
+
+                    <div className="admin-audit-total">
+
+                        {totalElements}{' '}
+                        {totalElements === 1
+                            ? 'event'
+                            : 'events'
+                        }
+
+                    </div>
+
                 </div>
 
 
-                {/* =====================================
+                {/* =================================================
                     LOADING
-                ===================================== */}
+                ================================================= */}
 
                 {loading && (
 
                     <div className="admin-audit-loading">
 
-                        Loading audit logs...
+                        <div className="admin-audit-spinner" />
+
+                        <span>
+                            Loading audit logs...
+                        </span>
 
                     </div>
 
                 )}
 
 
-                {/* =====================================
+                {/* =================================================
                     ERROR
-                ===================================== */}
+                ================================================= */}
 
                 {!loading && error && (
 
-                    <div className="admin-audit-empty">
+                    <div className="admin-audit-error">
 
-                        {error}
+                        <strong>
+                            Unable to load audit logs
+                        </strong>
+
+
+                        <p>
+                            {error}
+                        </p>
+
+
+                        <button
+                            type="button"
+                            onClick={
+                                fetchAuditLogs
+                            }
+                        >
+                            Try Again
+                        </button>
 
                     </div>
 
                 )}
 
 
-                {/* =====================================
-                    TABLE
-                ===================================== */}
+                {/* =================================================
+                    EMPTY
+                ================================================= */}
 
-                {!loading && !error && (
+                {!loading &&
+                    !error &&
+                    auditLogs.length === 0 && (
 
-                    <div className="admin-audit-table-wrapper">
+                        <div className="admin-audit-empty-state">
 
-                        <table className="admin-audit-table">
-
-
-                            <thead>
-
-                            <tr>
-
-                                <th>
-                                    Date & Time
-                                </th>
+                            <div className="admin-audit-empty-icon">
+                                i
+                            </div>
 
 
-                                <th>
-                                    Actor
-                                </th>
+                            <h3>
+                                No audit logs found
+                            </h3>
 
 
-                                <th>
-                                    Action
-                                </th>
+                            <p>
+
+                                {hasActiveFilters
+                                    ? 'No audit events match the selected filters.'
+                                    : 'There are no audit events available yet.'
+                                }
+
+                            </p>
 
 
-                                <th>
-                                    Entity
-                                </th>
+                            {hasActiveFilters && (
+
+                                <button
+                                    type="button"
+                                    onClick={
+                                        handleClearFilters
+                                    }
+                                >
+                                    Clear Filters
+                                </button>
+
+                            )}
+
+                        </div>
+
+                    )}
 
 
-                                <th>
-                                    Description
-                                </th>
+                {/* =================================================
+                    DESKTOP TABLE
+                ================================================= */}
 
+                {!loading &&
+                    !error &&
+                    auditLogs.length > 0 && (
 
-                                <th>
-                                    Changes
-                                </th>
+                        <div className="admin-audit-table-wrapper">
 
-                            </tr>
+                            <table className="admin-audit-table">
 
-                            </thead>
-
-
-                            <tbody>
-
-                            {auditLogs.length === 0 ? (
+                                <thead>
 
                                 <tr>
 
-                                    <td
-                                        colSpan="6"
-                                        className="admin-audit-empty"
-                                    >
+                                    <th>
+                                        Date & Time
+                                    </th>
 
-                                        {hasActiveFilters
-                                            ? 'No audit logs match your filters.'
-                                            : 'No audit logs found.'
-                                        }
 
-                                    </td>
+                                    <th>
+                                        Actor
+                                    </th>
+
+
+                                    <th>
+                                        Action
+                                    </th>
+
+
+                                    <th>
+                                        Entity
+                                    </th>
+
+
+                                    <th>
+                                        Description
+                                    </th>
+
+
+                                    <th>
+                                        Changes
+                                    </th>
 
                                 </tr>
 
-                            ) : (
+                                </thead>
 
-                                auditLogs.map(
+
+                                <tbody>
+
+                                {auditLogs.map(
                                     log => (
 
                                         <tr
-                                            key={log.id}
-                                        >
+                                            key={
+                                                log.id
+                                            }
+                                            className="admin-audit-row"
+                                            onClick={() =>
+                                                handleOpenDetails(
+                                                    log
+                                                )
+                                            }
+                                            tabIndex={0}
+                                            role="button"
+                                            onKeyDown={event => {
 
+                                                if (
+                                                    event.key === 'Enter' ||
+                                                    event.key === ' '
+                                                ) {
+
+                                                    event.preventDefault()
+
+                                                    handleOpenDetails(
+                                                        log
+                                                    )
+                                                }
+
+                                            }}
+                                        >
 
                                             {/* DATE */}
 
                                             <td>
 
-                                                {formatDateTime(
-                                                    log.createdAt
-                                                )}
+                                                <div className="admin-audit-date">
+
+                                                    <strong>
+                                                        {
+                                                            formatDateTime(
+                                                                log.createdAt
+                                                            )
+                                                        }
+                                                    </strong>
+
+                                                </div>
 
                                             </td>
 
@@ -735,7 +1093,7 @@ function AdminAuditLogsPage() {
 
                                             <td>
 
-                                                <div>
+                                                <div className="admin-audit-actor">
 
                                                     <strong>
                                                         {
@@ -755,6 +1113,21 @@ function AdminAuditLogsPage() {
 
                                                     )}
 
+
+                                                    {log.actorRole && (
+
+                                                        <span className="admin-audit-role">
+
+                                                            {
+                                                                formatEntity(
+                                                                    log.actorRole
+                                                                )
+                                                            }
+
+                                                        </span>
+
+                                                    )}
+
                                                 </div>
 
                                             </td>
@@ -764,9 +1137,21 @@ function AdminAuditLogsPage() {
 
                                             <td>
 
-                                                {formatAction(
-                                                    log.action
-                                                )}
+                                                <span
+                                                    className={
+                                                        `admin-audit-action-badge ${getActionCategory(
+                                                            log.action
+                                                        )}`
+                                                    }
+                                                >
+
+                                                    {
+                                                        formatAction(
+                                                            log.action
+                                                        )
+                                                    }
+
+                                                </span>
 
                                             </td>
 
@@ -775,18 +1160,24 @@ function AdminAuditLogsPage() {
 
                                             <td>
 
-                                                <div>
+                                                <div className="admin-audit-entity">
 
                                                     <strong>
-                                                        {formatEntity(
-                                                            log.entityType
-                                                        )}
+                                                        {
+                                                            formatEntity(
+                                                                log.entityType
+                                                            )
+                                                        }
                                                     </strong>
 
 
                                                     {log.entityId && (
 
-                                                        <small>
+                                                        <small
+                                                            title={
+                                                                log.entityId
+                                                            }
+                                                        >
                                                             {
                                                                 log.entityId
                                                             }
@@ -803,10 +1194,14 @@ function AdminAuditLogsPage() {
 
                                             <td>
 
-                                                {
-                                                    log.description ||
-                                                    '—'
-                                                }
+                                                <div className="admin-audit-description">
+
+                                                    {
+                                                        log.description ||
+                                                        '—'
+                                                    }
+
+                                                </div>
 
                                             </td>
 
@@ -815,130 +1210,617 @@ function AdminAuditLogsPage() {
 
                                             <td>
 
-                                                {(
-                                                    log.oldValue ||
-                                                    log.newValue
-                                                ) ? (
+                                                <div className="admin-audit-changes">
 
-                                                    <div>
+                                                    {log.oldValue && (
 
-                                                        {log.oldValue && (
+                                                        <small>
 
-                                                            <small>
-                                                                From:{' '}
-                                                                {
-                                                                    log.oldValue
-                                                                }
-                                                            </small>
+                                                            <span>
+                                                                From
+                                                            </span>
+
+                                                            {
+                                                                log.oldValue
+                                                            }
+
+                                                        </small>
+
+                                                    )}
+
+
+                                                    {log.newValue && (
+
+                                                        <small>
+
+                                                            <span>
+                                                                To
+                                                            </span>
+
+                                                            {
+                                                                log.newValue
+                                                            }
+
+                                                        </small>
+
+                                                    )}
+
+
+                                                    {!log.oldValue &&
+                                                        !log.newValue && (
+
+                                                            <span>
+                                                                —
+                                                            </span>
 
                                                         )}
 
-
-                                                        {log.newValue && (
-
-                                                            <small>
-                                                                To:{' '}
-                                                                {
-                                                                    log.newValue
-                                                                }
-                                                            </small>
-
-                                                        )}
-
-                                                    </div>
-
-                                                ) : (
-
-                                                    '—'
-
-                                                )}
+                                                </div>
 
                                             </td>
 
                                         </tr>
 
                                     )
-                                )
+                                )}
 
-                            )}
+                                </tbody>
 
-                            </tbody>
+                            </table>
 
-                        </table>
+                        </div>
 
-                    </div>
+                    )}
+
+            </section>
+
+
+            {/* =================================================
+                MOBILE ACTIVITY LIST
+            ================================================= */}
+
+            {!loading &&
+                !error &&
+                auditLogs.length > 0 && (
+
+                    <section className="admin-audit-mobile-list">
+
+                        {auditLogs.map(
+                            log => (
+
+                                <button
+                                    key={
+                                        `mobile-${log.id}`
+                                    }
+                                    type="button"
+                                    className="admin-audit-mobile-card"
+                                    onClick={() =>
+                                        handleOpenDetails(
+                                            log
+                                        )
+                                    }
+                                >
+
+                                    <div className="admin-audit-mobile-top">
+
+                                        <span
+                                            className={
+                                                `admin-audit-action-badge ${getActionCategory(
+                                                    log.action
+                                                )}`
+                                            }
+                                        >
+                                            {
+                                                formatAction(
+                                                    log.action
+                                                )
+                                            }
+                                        </span>
+
+
+                                        <span>
+                                            →
+                                        </span>
+
+                                    </div>
+
+
+                                    <strong>
+
+                                        {
+                                            log.actorName ||
+                                            'System'
+                                        }
+
+                                    </strong>
+
+
+                                    <span>
+
+                                        {
+                                            formatEntity(
+                                                log.entityType
+                                            )
+                                        }
+
+                                        {' • '}
+
+                                        {
+                                            log.entityId
+                                                ? log.entityId
+                                                : 'No entity ID'
+                                        }
+
+                                    </span>
+
+
+                                    <small>
+
+                                        {
+                                            formatDateTime(
+                                                log.createdAt
+                                            )
+                                        }
+
+                                    </small>
+
+                                </button>
+
+                            )
+                        )}
+
+                    </section>
 
                 )}
 
-            </section>
 
-
-            {/* =========================================
+            {/* =================================================
                 PAGINATION
-            ========================================= */}
+            ================================================= */}
 
-            <section className="admin-audit-pagination">
+            {!loading &&
+                !error &&
+                totalElements > 0 && (
+
+                    <section className="admin-audit-pagination">
+
+                        <span>
+
+                            Showing{' '}
+
+                            <strong>
+                                {
+                                    auditLogs.length
+                                }
+                            </strong>
+
+                            {' '}of{' '}
+
+                            <strong>
+                                {
+                                    totalElements
+                                }
+                            </strong>
+
+                            {' '}audit logs
+
+                        </span>
 
 
-                <span>
+                        <div>
 
-                    Showing{' '}
-                    {auditLogs.length}{' '}
-                    of{' '}
-                    {totalElements}{' '}
-                    audit logs
+                            <button
+                                type="button"
+                                onClick={
+                                    handlePrevious
+                                }
+                                disabled={
+                                    page === 0 ||
+                                    loading
+                                }
+                            >
+                                Previous
+                            </button>
 
-                </span>
+
+                            <span className="admin-audit-page-number">
+
+                                {totalPages === 0
+                                    ? 0
+                                    : page + 1
+                                }
+
+                                {' / '}
+
+                                {
+                                    totalPages
+                                }
+
+                            </span>
 
 
-                <div>
+                            <button
+                                type="button"
+                                onClick={
+                                    handleNext
+                                }
+                                disabled={
+                                    loading ||
+                                    totalPages === 0 ||
+                                    page >= totalPages - 1
+                                }
+                            >
+                                Next
+                            </button>
+
+                        </div>
+
+                    </section>
+
+                )}
 
 
-                    <button
-                        type="button"
-                        onClick={
-                            handlePrevious
+            {/* =================================================
+                DETAILS DRAWER
+            ================================================= */}
+
+            {selectedLog && (
+
+                <div
+                    className="admin-audit-overlay"
+                    onMouseDown={event => {
+
+                        if (
+                            event.target ===
+                            event.currentTarget
+                        ) {
+
+                            handleCloseDetails()
                         }
-                        disabled={
-                            page === 0 ||
-                            loading
-                        }
+
+                    }}
+                >
+
+                    <aside
+                        className="admin-audit-drawer"
+                        role="dialog"
+                        aria-modal="true"
+                        aria-label="Audit event details"
                     >
 
-                        Previous
+                        {/* DRAWER HEADER */}
 
-                    </button>
+                        <div className="admin-audit-drawer-header">
 
+                            <div>
 
-                    <span className="admin-audit-page-number">
-
-                        {totalPages === 0
-                            ? 0
-                            : page + 1
-                        }
-
-                    </span>
+                                <p>
+                                    AUDIT EVENT
+                                </p>
 
 
-                    <button
-                        type="button"
-                        onClick={
-                            handleNext
-                        }
-                        disabled={
-                            loading ||
-                            totalPages === 0 ||
-                            page >= totalPages - 1
-                        }
-                    >
+                                <h2>
+                                    Event Details
+                                </h2>
 
-                        Next
+                            </div>
 
-                    </button>
+
+                            <button
+                                type="button"
+                                className="admin-audit-close"
+                                onClick={
+                                    handleCloseDetails
+                                }
+                                aria-label="Close audit event details"
+                            >
+                                ×
+                            </button>
+
+                        </div>
+
+
+                        {/* DRAWER CONTENT */}
+
+                        <div className="admin-audit-drawer-content">
+
+
+                            {/* ACTION */}
+
+                            <div className="admin-audit-detail-section">
+
+                                <span>
+                                    Action
+                                </span>
+
+
+                                <div>
+
+                                    <span
+                                        className={
+                                            `admin-audit-action-badge large ${getActionCategory(
+                                                selectedLog.action
+                                            )}`
+                                        }
+                                    >
+                                        {
+                                            formatAction(
+                                                selectedLog.action
+                                            )
+                                        }
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+
+                            {/* ACTOR */}
+
+                            <div className="admin-audit-detail-section">
+
+                                <span>
+                                    Performed By
+                                </span>
+
+
+                                <div className="admin-audit-detail-main">
+
+                                    <strong>
+                                        {
+                                            selectedLog.actorName ||
+                                            'System'
+                                        }
+                                    </strong>
+
+
+                                    {selectedLog.actorRole && (
+
+                                        <small>
+                                            Role:{' '}
+                                            {
+                                                formatEntity(
+                                                    selectedLog.actorRole
+                                                )
+                                            }
+                                        </small>
+
+                                    )}
+
+
+                                    {selectedLog.actorEmail && (
+
+                                        <small>
+                                            {
+                                                selectedLog.actorEmail
+                                            }
+                                        </small>
+
+                                    )}
+
+                                </div>
+
+                            </div>
+
+
+                            {/* ENTITY */}
+
+                            <div className="admin-audit-detail-section">
+
+                                <span>
+                                    Resource
+                                </span>
+
+
+                                <div className="admin-audit-detail-main">
+
+                                    <strong>
+                                        {
+                                            formatEntity(
+                                                selectedLog.entityType
+                                            )
+                                        }
+                                    </strong>
+
+
+                                    {selectedLog.entityId && (
+
+                                        <div className="admin-audit-copy-row">
+
+                                            <code>
+                                                {
+                                                    selectedLog.entityId
+                                                }
+                                            </code>
+
+
+                                            <button
+                                                type="button"
+                                                onClick={() =>
+                                                    handleCopy(
+                                                        selectedLog.entityId
+                                                    )
+                                                }
+                                            >
+                                                Copy
+                                            </button>
+
+                                        </div>
+
+                                    )}
+
+                                </div>
+
+                            </div>
+
+
+                            {/* DESCRIPTION */}
+
+                            <div className="admin-audit-detail-section">
+
+                                <span>
+                                    Description
+                                </span>
+
+
+                                <p className="admin-audit-detail-text">
+
+                                    {
+                                        selectedLog.description ||
+                                        '—'
+                                    }
+
+                                </p>
+
+                            </div>
+
+
+                            {/* OLD VALUE */}
+
+                            <div className="admin-audit-detail-section">
+
+                                <span>
+                                    Previous Value
+                                </span>
+
+
+                                <div className="admin-audit-value-box">
+
+                                    {
+                                        selectedLog.oldValue ||
+                                        'No previous value recorded'
+                                    }
+
+                                </div>
+
+                            </div>
+
+
+                            {/* NEW VALUE */}
+
+                            <div className="admin-audit-detail-section">
+
+                                <span>
+                                    New Value
+                                </span>
+
+
+                                <div className="admin-audit-value-box">
+
+                                    {
+                                        selectedLog.newValue ||
+                                        'No new value recorded'
+                                    }
+
+                                </div>
+
+                            </div>
+
+
+                            {/* IP */}
+
+                            <div className="admin-audit-detail-section">
+
+                                <span>
+                                    IP Address
+                                </span>
+
+
+                                <p className="admin-audit-detail-text">
+
+                                    {
+                                        selectedLog.ipAddress ||
+                                        'Not recorded'
+                                    }
+
+                                </p>
+
+                            </div>
+
+
+                            {/* TIMESTAMP */}
+
+                            <div className="admin-audit-detail-section">
+
+                                <span>
+                                    Timestamp
+                                </span>
+
+
+                                <p className="admin-audit-detail-text">
+
+                                    {
+                                        formatDateTime(
+                                            selectedLog.createdAt
+                                        )
+                                    }
+
+                                </p>
+
+                            </div>
+
+
+                            {/* AUDIT ID */}
+
+                            <div className="admin-audit-detail-section">
+
+                                <span>
+                                    Audit Event ID
+                                </span>
+
+
+                                <div className="admin-audit-copy-row">
+
+                                    <code>
+                                        {
+                                            selectedLog.id ||
+                                            '—'
+                                        }
+                                    </code>
+
+
+                                    {selectedLog.id && (
+
+                                        <button
+                                            type="button"
+                                            onClick={() =>
+                                                handleCopy(
+                                                    selectedLog.id
+                                                )
+                                            }
+                                        >
+                                            Copy
+                                        </button>
+
+                                    )}
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        {/* DRAWER FOOTER */}
+
+                        <div className="admin-audit-drawer-footer">
+
+                            <button
+                                type="button"
+                                onClick={
+                                    handleCloseDetails
+                                }
+                            >
+                                Close
+                            </button>
+
+                        </div>
+
+                    </aside>
 
                 </div>
 
-            </section>
+            )}
 
         </div>
     )

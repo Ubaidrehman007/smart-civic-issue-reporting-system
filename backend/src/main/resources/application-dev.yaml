@@ -32,7 +32,10 @@ spring:
 
   flyway:
     enabled: true
-
 jwt:
-  secret: c21hcnQtY2l2aWMtcmVwb3J0aW5nLXN5c3RlbS1zZWNyZXQta2V5LTIwMjYtZGV2ZWxvcG1lbnQ
+  secret: ${JWT_SECRET}
   expiration: 3600000
+
+gemini:
+  api-key: ${GEMINI_API_KEY}
+  model: gemini-3.6-flash

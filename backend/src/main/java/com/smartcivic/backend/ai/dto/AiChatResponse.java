@@ -1,8 +1,14 @@
 package com.smartcivic.backend.ai.dto;
 
+import java.time.LocalDateTime;
+
 public record AiChatResponse(
 
-        String reply
+        boolean success,
+
+        String message,
+
+        LocalDateTime timestamp
 
 ) {
 }

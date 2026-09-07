@@ -114,6 +114,12 @@ public class SecurityConfig {
                                 "/api/v1/users/me/password"
                         ).authenticated()
 
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/api/ai/chat"
+                        )
+                        .authenticated()
+
                         .anyRequest().authenticated()
                 )
 

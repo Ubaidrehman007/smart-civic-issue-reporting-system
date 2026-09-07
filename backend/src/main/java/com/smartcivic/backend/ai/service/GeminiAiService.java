@@ -1,7 +1,6 @@
 package com.smartcivic.backend.ai.service;
 
 import com.google.genai.Client;
-import com.smartcivic.backend.ai.dto.AiChatRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -23,62 +22,54 @@ public class GeminiAiService implements AiService {
     }
 
     @Override
-    public String chat(AiChatRequest request) {
+    public String chat(String message) {
 
-        if (request == null
-                || request.message() == null
-                || request.message().isBlank()) {
-
-            throw new IllegalArgumentException(
-                    "Message is required."
-            );
+        if (message == null || message.isBlank()) {
+            throw new IllegalArgumentException("Message is required.");
         }
 
         String prompt = """
                 You are the AI Assistant of the
-                Smart Civic Issue Reporting System.
+                                Smart Civic Issue Reporting System.
+                
+                                Your job is to help users understand and use
+                                the civic issue reporting platform.
+                
+                                You can help with:
+                                - Reporting civic issues
+                                - Understanding issue categories
+                                - Understanding issue statuses
+                                - Explaining the issue reporting workflow
+                                - Explaining notifications
+                                - Explaining issue assignment
+                                - Explaining SLA concepts
+                                - Explaining dashboard features
+                                - General questions about this project
+                
+                                Important rules:
+                                - Give clear and concise answers.
+                                - Never invent real issue, user, worker or admin data.
+                                - Never claim that an action was performed when it was not.
+                                - Do not expose passwords, API keys, tokens or other secrets.
+                                - Do not provide unauthorized private information.
+                                - If the user asks for information that requires backend data,
+                                  clearly say that the information requires access to the
+                                  relevant system data.
+                                - Stay focused on the Smart Civic Reporting System.
+                
+                                User message:
+                                %s
+                """.formatted(message.trim());
 
-                Your job is to help users understand and use
-                the civic issue reporting platform.
+        var response = client.models.generateContent(
+                model,
+                prompt,
+                null
+        );
 
-                You can help with:
-                - Reporting civic issues
-                - Understanding issue categories
-                - Understanding issue statuses
-                - Explaining the issue reporting workflow
-                - Explaining notifications
-                - Explaining issue assignment
-                - Explaining SLA concepts
-                - Explaining dashboard features
-                - General questions about this project
-
-                Important rules:
-                - Give clear and concise answers.
-                - Never invent real issue, user, worker or admin data.
-                - Never claim that an action was performed when it was not.
-                - Do not expose passwords, API keys, tokens or other secrets.
-                - Do not provide unauthorized private information.
-                - If the user asks for information that requires backend data,
-                  clearly say that the information requires access to the
-                  relevant system data.
-                - Stay focused on the Smart Civic Reporting System.
-
-                User message:
-                %s
-                """.formatted(request.message().trim());
-
-        var response =
-                client.models.generateContent(
-                        model,
-                        prompt,
-                        null
-                );
-
-        String result =
-                response.text();
+        String result = response.text();
 
         if (result == null || result.isBlank()) {
-
             throw new IllegalStateException(
                     "Gemini returned an empty response."
             );

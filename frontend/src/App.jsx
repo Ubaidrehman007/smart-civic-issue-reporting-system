@@ -25,12 +25,19 @@ import ResetPasswordPage
 import NotificationsPage
     from './pages/NotificationsPage'
 
+import ForgotPasswordPage
+    from './pages/ForgotPasswordPage'
+
+import AiAssistant
+    from './components/AiAssistant'
+
 
 // =====================================================
 // ADMIN IMPORTS
 // =====================================================
 
-import AdminLayout from './components/AdminLayout'
+import AdminLayout
+    from './components/AdminLayout'
 
 import AdminDashboardPage
     from './pages/AdminPage/AdminDashboardPage'
@@ -56,9 +63,6 @@ import AdminSlaPage
 import AdminAnalyticsPage
     from './pages/AdminPage/AdminAnalyticsPage'
 
-import ForgotPasswordPage
-    from './pages/ForgotPasswordPage'
-
 import AdminNotificationsPage
     from './pages/AdminPage/AdminNotificationsPage'
 
@@ -78,257 +82,276 @@ import FieldWorkerLayout
 
 import FieldWorkerDashboardPage
     from './pages/FieldWorkerPage/FieldWorkerDashboardPage'
+
 import FieldWorkerIssueDetailsPage
     from './pages/FieldWorkerPage/FieldWorkerIssueDetailsPage'
+
 import FieldWorkerAssignmentsPage
     from './pages/FieldWorkerPage/FieldWorkerAssignmentsPage'
+
 import FieldWorkerActiveIssuesPage
     from './pages/FieldWorkerPage/FieldWorkerActiveIssuesPage'
+
 import FieldWorkerCompletedIssuesPage
     from './pages/FieldWorkerPage/FieldWorkerCompletedIssuesPage'
+
 import FieldWorkerNotificationsPage
     from './pages/FieldWorkerPage/FieldWorkerNotificationsPage'
+
 import FieldWorkerProfilePage
     from './pages/FieldWorkerPage/FieldWorkerProfilePage'
+
 
 function App() {
 
     return (
 
-        <Routes>
+        <>
 
             {/* =================================================
-                PUBLIC ROUTES
+                APPLICATION ROUTES
             ================================================= */}
 
-            <Route
-                path="/"
-                element={<HomePage />}
-            />
+            <Routes>
 
-            <Route
-                path="/login"
-                element={<LoginPage />}
-            />
+                {/* =================================================
+                    PUBLIC ROUTES
+                ================================================= */}
 
-            <Route
-                path="/register"
-                element={<RegisterPage />}
-            />
+                <Route
+                    path="/"
+                    element={<HomePage />}
+                />
 
-            <Route
-                path="/forgot-password"
-                element={<ForgotPasswordPage />}
-            />
+                <Route
+                    path="/login"
+                    element={<LoginPage />}
+                />
 
-            <Route
-                path="/reset-password"
-                element={<ResetPasswordPage />}
-            />
+                <Route
+                    path="/register"
+                    element={<RegisterPage />}
+                />
 
-            <Route
-                path="/verify-registration"
-                element={<VerifyRegistrationOtpPage />}
-            />
+                <Route
+                    path="/forgot-password"
+                    element={<ForgotPasswordPage />}
+                />
 
-            <Route
-                path="/unauthorized"
-                element={<UnauthorizedPage />}
-            />
+                <Route
+                    path="/reset-password"
+                    element={<ResetPasswordPage />}
+                />
 
+                <Route
+                    path="/verify-registration"
+                    element={<VerifyRegistrationOtpPage />}
+                />
 
-            {/* =================================================
-                CITIZEN ROUTES
-            ================================================= */}
-
-            <Route
-                element={
-                    <ProtectedRoute
-                        allowedRoles={['CITIZEN']}
-                    />
-                }
-            >
-
-                <Route element={<CitizenLayout />}>
-
-                    <Route
-                        path="/dashboard"
-                        element={<DashboardPage />}
-                    />
+                <Route
+                    path="/unauthorized"
+                    element={<UnauthorizedPage />}
+                />
 
 
-                    <Route
-                        path="/profile"
-                        element={<ProfilePage />}
-                    />
+                {/* =================================================
+                    CITIZEN ROUTES
+                ================================================= */}
 
+                <Route
+                    element={
+                        <ProtectedRoute
+                            allowedRoles={['CITIZEN']}
+                        />
+                    }
+                >
 
-                    <Route
-                        path="/settings"
-                        element={<SettingsPage />}
-                    />
+                    <Route element={<CitizenLayout />}>
 
+                        <Route
+                            path="/dashboard"
+                            element={<DashboardPage />}
+                        />
 
-                    <Route
-                        path="/my-issues"
-                        element={<MyIssuesPage />}
-                    />
+                        <Route
+                            path="/profile"
+                            element={<ProfilePage />}
+                        />
 
+                        <Route
+                            path="/settings"
+                            element={<SettingsPage />}
+                        />
 
-                    <Route
-                        path="/my-issues/:issueId"
-                        element={<IssueDetailsPage />}
-                    />
+                        <Route
+                            path="/my-issues"
+                            element={<MyIssuesPage />}
+                        />
 
+                        <Route
+                            path="/my-issues/:issueId"
+                            element={<IssueDetailsPage />}
+                        />
 
-                    <Route
-                        path="/report-issue"
-                        element={<ReportIssuePage />}
-                    />
+                        <Route
+                            path="/report-issue"
+                            element={<ReportIssuePage />}
+                        />
 
+                        <Route
+                            path="/notifications"
+                            element={<NotificationsPage />}
+                        />
 
-                    <Route
-                        path="/notifications"
-                        element={<NotificationsPage />}
-                    />
+                    </Route>
 
                 </Route>
 
-            </Route>
 
+                {/* =================================================
+                    ADMIN ROUTES
+                ================================================= */}
 
-            {/* =================================================
-                ADMIN ROUTES
-            ================================================= */}
+                <Route
+                    element={
+                        <ProtectedRoute
+                            allowedRoles={['ADMIN']}
+                        />
+                    }
+                >
 
-            <Route
-                element={
-                    <ProtectedRoute
-                        allowedRoles={['ADMIN']}
-                    />
-                }
-            >
+                    <Route element={<AdminLayout />}>
 
-                <Route element={<AdminLayout />}>
+                        <Route
+                            path="/admin/dashboard"
+                            element={<AdminDashboardPage />}
+                        />
 
-                    <Route
-                        path="/admin/dashboard"
-                        element={<AdminDashboardPage />}
-                    />
+                        <Route
+                            path="/admin/issues"
+                            element={<AdminIssuesPage />}
+                        />
 
-                    <Route
-                        path="/admin/issues"
-                        element={<AdminIssuesPage />}
-                    />
+                        <Route
+                            path="/admin/issues/:issueId"
+                            element={<AdminIssueDetailsPage />}
+                        />
 
-                    <Route
-                        path="/admin/issues/:issueId"
-                        element={<AdminIssueDetailsPage />}
-                    />
+                        <Route
+                            path="/admin/users"
+                            element={<AdminUsersPage />}
+                        />
 
-                    <Route
-                        path="/admin/users"
-                        element={<AdminUsersPage />}
-                    />
+                        <Route
+                            path="/admin/workers"
+                            element={<AdminWorkersPage />}
+                        />
 
-                    <Route
-                        path="/admin/workers"
-                        element={<AdminWorkersPage />}
-                    />
+                        <Route
+                            path="/admin/assignments"
+                            element={<AdminAssignmentsPage />}
+                        />
 
-                    <Route
-                        path="/admin/assignments"
-                        element={<AdminAssignmentsPage />}
-                    />
+                        <Route
+                            path="/admin/sla"
+                            element={<AdminSlaPage />}
+                        />
 
-                    <Route
-                        path="/admin/sla"
-                        element={<AdminSlaPage />}
-                    />
+                        <Route
+                            path="/admin/analytics"
+                            element={<AdminAnalyticsPage />}
+                        />
 
-                    <Route
-                        path="/admin/analytics"
-                        element={<AdminAnalyticsPage />}
-                    />
+                        <Route
+                            path="/admin/notifications"
+                            element={<AdminNotificationsPage />}
+                        />
 
-                    <Route
-                        path="/admin/notifications"
-                        element={<AdminNotificationsPage />}
-                    />
+                        <Route
+                            path="/admin/audit-logs"
+                            element={<AdminAuditLogsPage />}
+                        />
 
-                    <Route
-                        path="/admin/audit-logs"
-                        element={<AdminAuditLogsPage />}
-                    />
+                        <Route
+                            path="/admin/settings"
+                            element={<AdminSettingsPage />}
+                        />
 
-                    <Route
-                        path="/admin/settings"
-                        element={<AdminSettingsPage />}
-                    />
-
-                </Route>
-
-            </Route>
-
-
-            {/* =================================================
-    FIELD WORKER ROUTES
-================================================= */}
-
-            <Route
-                element={
-                    <ProtectedRoute
-                        allowedRoles={['FIELD_WORKER']}
-                    />
-                }
-            >
-
-                <Route element={<FieldWorkerLayout />}>
-
-                    <Route
-                        path="/worker/dashboard"
-                        element={<FieldWorkerDashboardPage />}
-                    />
-                    <Route
-                        path="/worker/issues/:issueId"
-                        element={<FieldWorkerIssueDetailsPage />}
-                    />
-                    <Route
-                        path="/worker/assignments"
-                        element={<FieldWorkerAssignmentsPage />}
-                    />
-                    <Route
-                        path="/worker/active-issues"
-                        element={<FieldWorkerActiveIssuesPage />}
-                    />
-                    <Route
-                        path="/worker/completed-issues"
-                        element={<FieldWorkerCompletedIssuesPage />}
-                    />
-                    <Route
-                        path="/worker/notifications"
-                        element={<FieldWorkerNotificationsPage />}
-                    />
-                    <Route
-                        path="/worker/profile"
-                        element={<FieldWorkerProfilePage />}
-                    />
+                    </Route>
 
                 </Route>
 
-            </Route>
 
-            {/*
-                404
-            */}
+                {/* =================================================
+                    FIELD WORKER ROUTES
+                ================================================= */}
 
-            <Route
-                path="*"
-                element={<NotFoundPage />}
-            />
+                <Route
+                    element={
+                        <ProtectedRoute
+                            allowedRoles={['FIELD_WORKER']}
+                        />
+                    }
+                >
 
-        </Routes>
+                    <Route element={<FieldWorkerLayout />}>
+
+                        <Route
+                            path="/worker/dashboard"
+                            element={<FieldWorkerDashboardPage />}
+                        />
+
+                        <Route
+                            path="/worker/issues/:issueId"
+                            element={<FieldWorkerIssueDetailsPage />}
+                        />
+
+                        <Route
+                            path="/worker/assignments"
+                            element={<FieldWorkerAssignmentsPage />}
+                        />
+
+                        <Route
+                            path="/worker/active-issues"
+                            element={<FieldWorkerActiveIssuesPage />}
+                        />
+
+                        <Route
+                            path="/worker/completed-issues"
+                            element={<FieldWorkerCompletedIssuesPage />}
+                        />
+
+                        <Route
+                            path="/worker/notifications"
+                            element={<FieldWorkerNotificationsPage />}
+                        />
+
+                        <Route
+                            path="/worker/profile"
+                            element={<FieldWorkerProfilePage />}
+                        />
+
+                    </Route>
+
+                </Route>
+
+
+                {/*
+                    404
+                 */}
+
+                <Route
+                    path="*"
+                    element={<NotFoundPage />}
+                />
+
+            </Routes>
+            <AiAssistant />
+
+        </>
+
     )
 }
+
 
 export default App

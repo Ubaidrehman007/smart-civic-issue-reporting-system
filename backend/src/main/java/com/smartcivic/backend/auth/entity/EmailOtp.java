@@ -27,6 +27,10 @@ public class EmailOtp {
     @Column(nullable = false, length = 255)
     private String email;
 
+    @Version
+    @Column(nullable = false)
+    private Long version;
+
     @Column(name = "otp_hash", nullable = false, length = 255)
     private String otpHash;
 

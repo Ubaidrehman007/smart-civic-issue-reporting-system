@@ -1,0 +1,2 @@
+ALTER TABLE email_otps
+    ADD COLUMN version BIGINT NOT NULL DEFAULT 0;

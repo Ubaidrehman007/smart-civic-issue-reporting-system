@@ -4,6 +4,7 @@ import com.smartcivic.backend.auth.entity.EmailOtp;
 import com.smartcivic.backend.auth.entity.OtpPurpose;
 import com.smartcivic.backend.auth.repository.EmailOtpRepository;
 import com.smartcivic.backend.user.entity.User;
+import jakarta.persistence.OptimisticLockException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -143,11 +144,9 @@ public class OtpServiceImpl implements OtpService {
                         )
                         .orElse(null);
 
-
         if (emailOtp == null) {
             return false;
         }
-
 
         /*
          * OTP cannot be reused.
@@ -155,7 +154,6 @@ public class OtpServiceImpl implements OtpService {
         if (emailOtp.getVerifiedAt() != null) {
             return false;
         }
-
 
         /*
          * OTP has expired.
@@ -166,14 +164,12 @@ public class OtpServiceImpl implements OtpService {
             return false;
         }
 
-
         /*
          * Prevent unlimited guessing attempts.
          */
         if (emailOtp.getAttempts() >= MAX_ATTEMPTS) {
             return false;
         }
-
 
         /*
          * Count every verification attempt.
@@ -182,21 +178,26 @@ public class OtpServiceImpl implements OtpService {
                 emailOtp.getAttempts() + 1
         );
 
-
         boolean matches =
                 passwordEncoder.matches(
                         otp,
                         emailOtp.getOtpHash()
                 );
 
-
         if (!matches) {
 
-            emailOtpRepository.save(emailOtp);
+            try {
+                emailOtpRepository.saveAndFlush(emailOtp);
+            } catch (OptimisticLockException exception) {
+                /*
+                 * Another concurrent request updated
+                 * this OTP first.
+                 */
+                return false;
+            }
 
             return false;
         }
-
 
         /*
          * Mark OTP as consumed.
@@ -205,11 +206,18 @@ public class OtpServiceImpl implements OtpService {
                 Instant.now()
         );
 
-        emailOtpRepository.save(emailOtp);
+        try {
+            emailOtpRepository.saveAndFlush(emailOtp);
+        } catch (OptimisticLockException exception) {
+            /*
+             * Another concurrent request consumed
+             * this OTP first.
+             */
+            return false;
+        }
 
         return true;
     }
-
 
     /*
      * =====================================================

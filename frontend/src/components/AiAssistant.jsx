@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import {
     Bot,
@@ -28,6 +28,8 @@ function AiAssistant() {
 
     const messagesEndRef = useRef(null)
 
+    const inputRef = useRef(null)
+
 
     /*
      * =====================================================
@@ -46,25 +48,31 @@ function AiAssistant() {
 
     const storedUser = localStorage.getItem('user')
 
-    let user = null
+    const user = useMemo(() => {
 
-    try {
-        user = storedUser
-            ? JSON.parse(storedUser)
-            : null
-    } catch {
-        user = null
-    }
+        try {
+
+            return storedUser
+                ? JSON.parse(storedUser)
+                : null
+
+        } catch {
+
+            return null
+
+        }
+
+    }, [storedUser])
 
 
     /*
      * =====================================================
      * ROLE
      *
-     * This is ONLY used for frontend UX.
+     * Frontend role is ONLY for UX.
      *
-     * Backend remains responsible for actual
-     * authorization and role security.
+     * Backend gets the actual role from the
+     * authenticated database user.
      * =====================================================
      */
 
@@ -77,19 +85,27 @@ function AiAssistant() {
      * =====================================================
      */
 
-    const getAssistantContent = () => {
+    const assistantContent = useMemo(() => {
 
         if (role === 'ADMIN') {
 
             return {
+
+                roleLabel: 'Administrator',
+
                 welcome:
-                    'Hi! I’m your Smart Civic AI Assistant. I can help you understand admin workflows, issue management, assignments, SLA, analytics and other Smart Civic features.',
+                    `Hi ${user?.fullName || 'Admin'}! 👋 I’m your Smart Civic AI Assistant. I can help you understand live system statistics, issue management, SLA performance, assignments and worker workload.`,
 
                 suggestions: [
-                    'How does issue assignment work?',
-                    'Explain the SLA workflow',
-                    'How can I manage reported issues?'
+                    'How many total issues are there?',
+                    'How many issues are unassigned?',
+                    'How many SLA breached issues are there?',
+                    'Show category-wise issue statistics',
+                    'Show priority-wise issue statistics',
+                    'Show worker workload',
+                    'How many issues were resolved in the last 7 days?'
                 ]
+
             }
         }
 
@@ -97,32 +113,58 @@ function AiAssistant() {
         if (role === 'FIELD_WORKER') {
 
             return {
+
+                roleLabel: 'Field Worker',
+
                 welcome:
-                    'Hi! I’m your Smart Civic AI Assistant. I can help you with field-worker workflows, assignments, issue status updates, SLA information and Smart Civic features.',
+                    `Hi ${user?.fullName || 'Worker'}! 👋 I’m your Smart Civic AI Assistant. I can help you understand your assigned issues, priorities, statuses, SLA information and workload.`,
 
                 suggestions: [
-                    'How do I manage my assigned issues?',
-                    'How does issue status update work?',
-                    'Explain the field worker workflow'
+                    'How many issues are assigned to me?',
+                    'How many of my issues are in progress?',
+                    'How many high priority issues do I have?',
+                    'How many of my issues have breached SLA?',
+                    'Which of my issues need attention?',
+                    'Show my recent assigned issues'
                 ]
+
             }
         }
 
 
         return {
+
+            roleLabel: 'Citizen',
+
             welcome:
-                'Hi! I’m your Smart Civic AI Assistant. I can help you report civic issues, understand issue statuses, track your reports and use Smart Civic features.',
+                `Hi ${user?.fullName || 'there'}! 👋 I’m your Smart Civic AI Assistant. I can help you understand your reported issues, their current status, SLA information and recent updates.`,
 
             suggestions: [
-                'How do I report a civic issue?',
-                'How can I track my reported issue?',
-                'Explain the issue status workflow'
+                'How many issues have I reported?',
+                'How many of my issues are resolved?',
+                'How many of my issues are in progress?',
+                'Show my recent issues',
+                'What is the issue status workflow?',
+                'How can I track my reported issue?'
             ]
+
         }
-    }
+
+    }, [role, user?.fullName])
 
 
-    const assistantContent = getAssistantContent()
+    /*
+     * =====================================================
+     * PUBLIC PAGES
+     * =====================================================
+     */
+
+    const isPublicPage =
+        location.pathname === '/' ||
+        location.pathname === '/login' ||
+        location.pathname === '/register' ||
+        location.pathname === '/forgot-password' ||
+        location.pathname === '/reset-password'
 
 
     /*
@@ -133,20 +175,28 @@ function AiAssistant() {
 
     useEffect(() => {
 
-        if (!token) {
+        if (!token || isPublicPage) {
             return
         }
 
         setMessages([
             {
-                id: Date.now(),
+                id: `welcome-${Date.now()}`,
                 sender: 'ai',
                 text: assistantContent.welcome,
-                suggestions: assistantContent.suggestions
+                suggestions: assistantContent.suggestions,
+                welcome: true
             }
         ])
 
-    }, [role])
+        setMessage('')
+
+    }, [
+        token,
+        role,
+        isPublicPage,
+        assistantContent
+    ])
 
 
     /*
@@ -166,35 +216,73 @@ function AiAssistant() {
 
     /*
      * =====================================================
+     * INPUT AUTO FOCUS
+     * =====================================================
+     */
+
+    useEffect(() => {
+
+        if (!open) {
+            return
+        }
+
+        const timer = setTimeout(() => {
+
+            inputRef.current?.focus()
+
+        }, 100)
+
+        return () => clearTimeout(timer)
+
+    }, [open])
+
+
+    /*
+     * =====================================================
      * SEND MESSAGE
      * =====================================================
- */
+     */
 
-    const handleSend = async (customMessage = null) => {
+    const handleSend = async (
+        customMessage = null
+    ) => {
 
         const textToSend =
             customMessage !== null
                 ? customMessage
                 : message
 
-        const trimmedMessage = textToSend.trim()
+        const trimmedMessage =
+            textToSend.trim()
 
-        if (!trimmedMessage || loading) {
+
+        if (
+            !trimmedMessage ||
+            loading
+        ) {
             return
         }
 
 
         const userMessage = {
-            id: Date.now(),
+
+            id: `user-${Date.now()}`,
+
             sender: 'user',
+
             text: trimmedMessage
+
         }
 
 
         setMessages(previous => [
+
             ...previous,
+
             userMessage
+
         ])
+
 
         setMessage('')
 
@@ -204,18 +292,24 @@ function AiAssistant() {
         try {
 
             const response =
-                await sendAiMessage(trimmedMessage)
+                await sendAiMessage(
+                    trimmedMessage
+                )
 
 
             const aiReply =
                 response?.message
 
 
-            if (!aiReply) {
+            if (
+                !aiReply ||
+                !aiReply.trim()
+            ) {
 
                 throw new Error(
                     'AI returned an empty response.'
                 )
+
             }
 
 
@@ -224,9 +318,9 @@ function AiAssistant() {
                 ...previous,
 
                 {
-                    id: Date.now() + 1,
+                    id: `ai-${Date.now()}`,
                     sender: 'ai',
-                    text: aiReply
+                    text: aiReply.trim()
                 }
 
             ])
@@ -250,7 +344,7 @@ function AiAssistant() {
                 ...previous,
 
                 {
-                    id: Date.now() + 1,
+                    id: `error-${Date.now()}`,
                     sender: 'ai',
                     text: errorMessage,
                     error: true
@@ -262,7 +356,14 @@ function AiAssistant() {
 
             setLoading(false)
 
+            setTimeout(() => {
+
+                inputRef.current?.focus()
+
+            }, 100)
+
         }
+
     }
 
 
@@ -272,7 +373,13 @@ function AiAssistant() {
      * =====================================================
      */
 
-    const handleSuggestionClick = (suggestion) => {
+    const handleSuggestionClick = (
+        suggestion
+    ) => {
+
+        if (loading) {
+            return
+        }
 
         handleSend(suggestion)
 
@@ -283,9 +390,11 @@ function AiAssistant() {
      * =====================================================
      * ENTER KEY
      * =====================================================
- */
+     */
 
-    const handleKeyDown = (event) => {
+    const handleKeyDown = (
+        event
+    ) => {
 
         if (
             event.key === 'Enter' &&
@@ -295,7 +404,9 @@ function AiAssistant() {
             event.preventDefault()
 
             handleSend()
+
         }
+
     }
 
 
@@ -303,31 +414,65 @@ function AiAssistant() {
      * =====================================================
      * NEW CHAT
      * =====================================================
- */
+     */
 
     const handleNewChat = () => {
 
+        if (loading) {
+            return
+        }
+
         setMessages([
             {
-                id: Date.now(),
+                id: `welcome-${Date.now()}`,
                 sender: 'ai',
                 text: assistantContent.welcome,
-                suggestions: assistantContent.suggestions
+                suggestions: assistantContent.suggestions,
+                welcome: true
             }
         ])
 
         setMessage('')
+
+        setTimeout(() => {
+
+            inputRef.current?.focus()
+
+        }, 100)
+
     }
 
 
     /*
      * =====================================================
-     * HIDE ON PUBLIC PAGES
+     * CLOSE ASSISTANT
      * =====================================================
- */
+     */
 
-    if (!token) {
+    const handleClose = () => {
+
+        if (loading) {
+            return
+        }
+
+        setOpen(false)
+
+    }
+
+
+    /*
+     * =====================================================
+     * HIDE ASSISTANT
+     * =====================================================
+     */
+
+    if (
+        !token ||
+        isPublicPage
+    ) {
+
         return null
+
     }
 
 
@@ -335,7 +480,7 @@ function AiAssistant() {
      * =====================================================
      * RENDER
      * =====================================================
- */
+     */
 
     return (
 
@@ -391,6 +536,7 @@ function AiAssistant() {
 
                             </div>
 
+
                             <div>
 
                                 <h2>
@@ -411,25 +557,46 @@ function AiAssistant() {
                             <button
                                 type="button"
                                 onClick={handleNewChat}
+                                disabled={loading}
                                 title="New chat"
                                 aria-label="New chat"
                             >
+
                                 <Minimize2 size={17} />
+
                             </button>
 
 
                             <button
                                 type="button"
-                                onClick={() => setOpen(false)}
+                                onClick={handleClose}
+                                disabled={loading}
                                 title="Close assistant"
                                 aria-label="Close assistant"
                             >
+
                                 <X size={19} />
+
                             </button>
 
                         </div>
 
                     </header>
+
+
+                    {/* =================================================
+                        ROLE CONTEXT
+                    ================================================= */}
+
+                    <div className="ai-assistant-role-context">
+
+                        <Sparkles size={13} />
+
+                        <span>
+                            {assistantContent.roleLabel}
+                        </span>
+
+                    </div>
 
 
                     {/* =================================================
@@ -478,10 +645,11 @@ function AiAssistant() {
 
 
                                     {/* =================================================
-                                        ROLE-BASED SUGGESTIONS
+                                        INITIAL SUGGESTIONS ONLY
                                     ================================================= */}
 
                                     {item.sender === 'ai' &&
+                                        item.welcome &&
                                         item.suggestions &&
                                         item.suggestions.length > 0 && (
 
@@ -500,7 +668,9 @@ function AiAssistant() {
                                                             }
                                                             disabled={loading}
                                                         >
+
                                                             {suggestion}
+
                                                         </button>
 
                                                     )
@@ -573,9 +743,12 @@ function AiAssistant() {
                     <div className="ai-assistant-input-area">
 
                         <textarea
+                            ref={inputRef}
                             value={message}
                             onChange={event =>
-                                setMessage(event.target.value)
+                                setMessage(
+                                    event.target.value
+                                )
                             }
                             onKeyDown={handleKeyDown}
                             placeholder="Ask about Smart Civic..."
@@ -619,7 +792,8 @@ function AiAssistant() {
 
                     <div className="ai-assistant-footer">
 
-                        AI can make mistakes. Verify important information.
+                        AI uses available Smart Civic system information.
+                        Verify important information when necessary.
 
                     </div>
 
@@ -628,6 +802,7 @@ function AiAssistant() {
             )}
 
         </>
+
     )
 }
 

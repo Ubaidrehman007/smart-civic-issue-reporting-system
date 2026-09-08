@@ -190,6 +190,10 @@ public class AuthenticationService {
 // FORGOT PASSWORD
 // =====================================================
 
+    // =====================================================
+// FORGOT PASSWORD
+// =====================================================
+
     @Transactional
     public void forgotPassword(
             ForgotPasswordRequest request
@@ -219,12 +223,40 @@ public class AuthenticationService {
             return;
         }
 
+        /*
+         * Prevent password-reset OTP spam.
+         *
+         * A new OTP can only be generated after
+         * the existing 60-second cooldown expires.
+         */
+        Optional<EmailOtp> latestOtp =
+                emailOtpRepository
+                        .findTopByUserAndPurposeOrderByCreatedAtDesc(
+                                user,
+                                OtpPurpose.PASSWORD_RESET
+                        );
+
+        if (latestOtp.isPresent()) {
+
+            EmailOtp otp = latestOtp.get();
+
+            if (otp.getCreatedAt() != null) {
+
+                Instant cooldownEnd =
+                        otp.getCreatedAt()
+                                .plusSeconds(60);
+
+                if (Instant.now().isBefore(cooldownEnd)) {
+                    return;
+                }
+            }
+        }
+
         otpService.generateAndSendOtp(
                 user,
                 OtpPurpose.PASSWORD_RESET
         );
     }
-
     // =====================================================
     // RESET PASSWORD
     // =====================================================

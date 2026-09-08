@@ -22,9 +22,9 @@ public class AiController {
     }
 
 
-    // =========================================================
+
     // AI ASSISTANT CHAT
-    // =========================================================
+
 
     @PostMapping("/chat")
     public ResponseEntity<AiChatResponse> chat(

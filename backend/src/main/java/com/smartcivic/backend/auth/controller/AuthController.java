@@ -8,6 +8,8 @@ import com.smartcivic.backend.auth.dto.VerifyRegistrationOtpRequest;
 import com.smartcivic.backend.auth.service.AuthenticationService;
 import com.smartcivic.backend.common.response.ApiResponse;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -120,7 +122,10 @@ public class AuthController {
 
     @PostMapping("/resend-registration-otp")
     public ResponseEntity<ApiResponse<Void>> resendRegistrationOtp(
-            @RequestParam String email
+            @RequestParam
+            @NotBlank
+            @Email
+            String email
     ) {
 
         authenticationService.resendRegistrationOtp(email);

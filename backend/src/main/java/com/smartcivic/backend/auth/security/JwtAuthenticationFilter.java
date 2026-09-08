@@ -23,8 +23,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     public JwtAuthenticationFilter(
             JwtService jwtService,
-            CustomUserDetailsService userDetailsService) {
-
+            CustomUserDetailsService userDetailsService
+    ) {
         this.jwtService = jwtService;
         this.userDetailsService = userDetailsService;
     }
@@ -54,6 +54,34 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 UserDetails userDetails =
                         userDetailsService.loadUserByUsername(email);
 
+                /*
+                 * =====================================================
+                 * ACCOUNT STATUS CHECK
+                 * =====================================================
+                 *
+                 * CustomUserDetailsService maps:
+                 *
+                 * SUSPENDED -> accountLocked
+                 * DISABLED  -> disabled
+                 *
+                 * Therefore an already-issued JWT cannot be used
+                 * after the user's account is suspended or disabled.
+                 */
+                boolean accountActive =
+                        userDetails.isAccountNonLocked()
+                                && userDetails.isEnabled();
+
+                if (!accountActive) {
+                    SecurityContextHolder.clearContext();
+                    filterChain.doFilter(request, response);
+                    return;
+                }
+
+                /*
+                 * =====================================================
+                 * JWT VALIDATION
+                 * =====================================================
+                 */
                 if (jwtService.isTokenValid(
                         jwt,
                         userDetails.getUsername()
@@ -78,6 +106,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         } catch (JwtException | IllegalArgumentException exception) {
 
+            /*
+             * Invalid, malformed, expired or tampered JWT.
+             */
             SecurityContextHolder.clearContext();
         }
 

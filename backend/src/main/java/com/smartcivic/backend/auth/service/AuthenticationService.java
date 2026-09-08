@@ -76,7 +76,7 @@ public class AuthenticationService {
         if (user.getAccountStatus() != AccountStatus.ACTIVE) {
 
             throw new InvalidCredentialsException(
-                    "Your account is not active"
+                    "Invalid email or password"
             );
         }
 
@@ -182,17 +182,9 @@ public class AuthenticationService {
 
 
 
-    // =====================================================
+
     // FORGOT PASSWORD
-    // =====================================================
 
-    // =====================================================
-// FORGOT PASSWORD
-// =====================================================
-
-    // =====================================================
-// FORGOT PASSWORD
-// =====================================================
 
     @Transactional
     public void forgotPassword(

@@ -1,9 +1,9 @@
 import { Link } from 'react-router-dom'
 import {
     ArrowDown,
-    ArrowLeft,
     ArrowRight,
     Bell,
+    Bot,
     Camera,
     Check,
     CheckCircle2,
@@ -11,7 +11,6 @@ import {
     ChevronRight,
     Clock3,
     FileCheck2,
-    FileWarning,
     Image as ImageIcon,
     MapPin,
     Menu,
@@ -26,44 +25,39 @@ import {
 import { useEffect, useState } from 'react'
 import '../styles/home.css'
 
+
 const civicIssues = [
     {
         title: 'Road Damage',
         description: 'Report potholes, damaged roads and unsafe surfaces.',
         location: 'Road Infrastructure',
-        image:
-            'https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=1200&q=85',
+        image: '/images/issues/road-damage.jpg',
     },
     {
         title: 'Street Light',
         description: 'Help report broken or non-functional street lighting.',
         location: 'Public Lighting',
-        image:
-            'https://images.unsplash.com/photo-1519608487953-e999c86e7455?auto=format&fit=crop&w=1200&q=85',
+        image: '/images/issues/street-light.jpg',
     },
     {
         title: 'Water Leakage',
         description: 'Report visible water leaks and related infrastructure issues.',
         location: 'Water & Utilities',
-        image:
-            'https://images.unsplash.com/photo-1547683905-f686c993aae5?auto=format&fit=crop&w=1200&q=85',
+        image: '/images/issues/water-leakage.jpg',
     },
     {
         title: 'Waste Management',
         description: 'Report garbage accumulation and illegal dumping.',
         location: 'Cleanliness',
-        image:
-            'https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&w=1200&q=85',
+        image: '/images/issues/waste-management.jpg',
     },
     {
         title: 'Drainage Issue',
         description: 'Report blocked or damaged drainage infrastructure.',
         location: 'Drainage',
-        image:
-            'https://images.unsplash.com/photo-1509395176047-4a66953fd231?auto=format&fit=crop&w=1200&q=85',
+        image: '/images/issues/drainage-issue.jpg',
     },
 ]
-
 const featureHighlights = [
     {
         icon: MapPin,
@@ -95,40 +89,76 @@ const featureHighlights = [
         title: 'SLA awareness',
         text: 'The platform supports tracking issues that require timely attention.',
     },
+    {
+        icon: Sparkles,
+        title: 'AI-powered assistance',
+        text: 'Get role-aware assistance for issue status, SLA information, assignments, statistics and Smart Civic workflows.',
+    },
 ]
 
+
 function HomePage() {
+
     const [menuOpen, setMenuOpen] = useState(false)
+
     const [activeIssue, setActiveIssue] = useState(0)
 
+
     useEffect(() => {
+
         const interval = setInterval(() => {
-            setActiveIssue((current) => (current + 1) % civicIssues.length)
+
+            setActiveIssue(
+                current =>
+                    (current + 1) % civicIssues.length
+            )
+
         }, 4500)
 
+
         return () => clearInterval(interval)
+
     }, [])
 
+
     const previousIssue = () => {
-        setActiveIssue((current) =>
-            current === 0 ? civicIssues.length - 1 : current - 1
+
+        setActiveIssue(
+            current =>
+                current === 0
+                    ? civicIssues.length - 1
+                    : current - 1
         )
+
     }
+
 
     const nextIssue = () => {
-        setActiveIssue((current) => (current + 1) % civicIssues.length)
+
+        setActiveIssue(
+            current =>
+                (current + 1) % civicIssues.length
+        )
+
     }
+
 
     const scrollToSection = (id) => {
+
         setMenuOpen(false)
 
-        document.getElementById(id)?.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start',
-        })
+        document
+            .getElementById(id)
+            ?.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start',
+            })
+
     }
 
+
     return (
+
         <main className="home-page">
 
             {/* =====================================================
@@ -136,68 +166,133 @@ function HomePage() {
             ====================================================== */}
 
             <nav className="navbar">
-                <Link to="/" className="brand">
+
+                <Link
+                    to="/"
+                    className="brand"
+                >
+
                     <div className="brand-logo">
                         SC
                     </div>
 
-                    <span>Smart Civic</span>
+                    <span>
+                        Smart Civic
+                    </span>
+
                 </Link>
 
-                <div className={`nav-links ${menuOpen ? 'nav-open' : ''}`}>
+
+                <div
+                    className={
+                        `nav-links ${
+                            menuOpen
+                                ? 'nav-open'
+                                : ''
+                        }`
+                    }
+                >
+
                     <button
                         type="button"
-                        onClick={() => scrollToSection('how-it-works')}
+                        onClick={() =>
+                            scrollToSection(
+                                'how-it-works'
+                            )
+                        }
                     >
                         How it works
                     </button>
 
+
                     <button
                         type="button"
-                        onClick={() => scrollToSection('issues')}
+                        onClick={() =>
+                            scrollToSection(
+                                'issues'
+                            )
+                        }
                     >
                         Issues
                     </button>
 
+
                     <button
                         type="button"
-                        onClick={() => scrollToSection('features')}
+                        onClick={() =>
+                            scrollToSection(
+                                'features'
+                            )
+                        }
                     >
                         Features
                     </button>
 
+
                     <button
                         type="button"
-                        onClick={() => scrollToSection('why-smart-civic')}
+                        onClick={() =>
+                            scrollToSection(
+                                'ai-assistant'
+                            )
+                        }
+                    >
+                        AI Assistant
+                    </button>
+
+
+                    <button
+                        type="button"
+                        onClick={() =>
+                            scrollToSection(
+                                'why-smart-civic'
+                            )
+                        }
                     >
                         Why Smart Civic
                     </button>
 
+
                     <Link
                         to="/login"
                         className="nav-login"
-                        onClick={() => setMenuOpen(false)}
+                        onClick={() =>
+                            setMenuOpen(false)
+                        }
                     >
                         Sign in
                     </Link>
 
+
                     <Link
                         to="/register"
                         className="nav-register"
-                        onClick={() => setMenuOpen(false)}
+                        onClick={() =>
+                            setMenuOpen(false)
+                        }
                     >
                         Get started
                     </Link>
+
                 </div>
+
 
                 <button
                     type="button"
                     className="menu-button"
-                    onClick={() => setMenuOpen(!menuOpen)}
+                    onClick={() =>
+                        setMenuOpen(!menuOpen)
+                    }
                     aria-label="Toggle navigation menu"
                 >
-                    {menuOpen ? <X size={24} /> : <Menu size={24} />}
+
+                    {menuOpen
+                        ? <X size={24} />
+                        : <Menu size={24} />
+                    }
+
                 </button>
+
             </nav>
 
 
@@ -210,48 +305,94 @@ function HomePage() {
                 <div className="hero-content">
 
                     <div className="hero-badge">
+
                         <Sparkles size={15} />
-                        A smarter way to report civic issues
+
+                        A smarter civic platform,
+                        powered by intelligent assistance
+
                     </div>
+
 
                     <h1>
+
                         Report problems.
-                        <span> Track progress. </span>
+                        <span>
+                            {' '}Track progress.{' '}
+                        </span>
                         See resolution.
+
                     </h1>
 
+
                     <p className="hero-description">
-                        Smart Civic connects citizens, field workers, and
-                        administrators through one transparent civic issue
-                        management platform.
+
+                        Smart Civic connects citizens, field workers,
+                        and administrators through one transparent
+                        civic issue management platform with
+                        AI-powered assistance.
+
                     </p>
 
+
                     <div className="hero-actions">
-                        <Link to="/register" className="primary-button">
+
+                        <Link
+                            to="/register"
+                            className="primary-button"
+                        >
+
                             Report an issue
+
                             <ArrowRight size={18} />
+
                         </Link>
 
-                        <Link to="/login" className="secondary-button">
+
+                        <Link
+                            to="/login"
+                            className="secondary-button"
+                        >
                             Track my issues
                         </Link>
+
                     </div>
 
+
                     <div className="hero-trust">
+
                         <div>
+
                             <MapPin size={18} />
-                            <span>Precise location</span>
+
+                            <span>
+                                Precise location
+                            </span>
+
                         </div>
 
+
                         <div>
+
                             <ShieldCheck size={18} />
-                            <span>Transparent tracking</span>
+
+                            <span>
+                                Transparent tracking
+                            </span>
+
                         </div>
 
+
                         <div>
-                            <Bell size={18} />
-                            <span>Status updates</span>
+
+                            <Sparkles size={18} />
+
+                            <span>
+                                AI assistance
+                            </span>
+
                         </div>
+
                     </div>
 
                 </div>
@@ -262,19 +403,29 @@ function HomePage() {
                 <div className="hero-visual">
 
                     <div className="hero-glow hero-glow-one"></div>
+
                     <div className="hero-glow hero-glow-two"></div>
+
 
                     <div className="hero-map">
 
                         <div className="map-road road-one"></div>
+
                         <div className="map-road road-two"></div>
+
                         <div className="map-road road-three"></div>
+
                         <div className="map-road road-four"></div>
 
+
                         <div className="map-block block-one"></div>
+
                         <div className="map-block block-two"></div>
+
                         <div className="map-block block-three"></div>
+
                         <div className="map-block block-four"></div>
+
 
                         <div className="map-location location-one">
                             <MapPin size={19} />
@@ -288,61 +439,124 @@ function HomePage() {
                             <MapPin size={15} />
                         </div>
 
+
                         <div className="map-center">
+
                             <div className="map-center-pulse"></div>
+
                             <Navigation size={21} />
+
                         </div>
 
+
                         <div className="hero-map-label">
+
                             <MapPin size={15} />
+
                             Civic issue location
+
                         </div>
 
                     </div>
 
 
                     <div className="floating-status status-card-one">
+
                         <div className="floating-status-icon reported-icon">
                             <Camera size={17} />
                         </div>
 
                         <div>
-                            <strong>Issue Reported</strong>
-                            <span>Location attached</span>
+
+                            <strong>
+                                Issue Reported
+                            </strong>
+
+                            <span>
+                                Location attached
+                            </span>
+
                         </div>
 
                         <CheckCircle2 size={17} />
+
                     </div>
 
 
                     <div className="floating-status status-card-two">
+
                         <div className="floating-status-icon assigned-icon">
                             <Users size={17} />
                         </div>
 
                         <div>
-                            <strong>Assigned</strong>
-                            <span>Field worker notified</span>
+
+                            <strong>
+                                Assigned
+                            </strong>
+
+                            <span>
+                                Field worker notified
+                            </span>
+
                         </div>
 
                         <CheckCircle2 size={17} />
+
                     </div>
 
 
                     <div className="floating-status status-card-three">
+
                         <div className="floating-status-icon resolved-icon">
                             <FileCheck2 size={17} />
                         </div>
 
                         <div>
-                            <strong>Resolved</strong>
-                            <span>Evidence available</span>
+
+                            <strong>
+                                Resolved
+                            </strong>
+
+                            <span>
+                                Evidence available
+                            </span>
+
                         </div>
 
                         <CheckCircle2 size={17} />
+
+                    </div>
+
+
+                    {/* AI HERO CARD */}
+
+                    <div className="hero-ai-card">
+
+                        <div className="hero-ai-icon">
+
+                            <Sparkles size={18} />
+
+                        </div>
+
+                        <div>
+
+                            <strong>
+                                AI Assistant
+                            </strong>
+
+                            <span>
+                                Ask about your civic workflow
+                            </span>
+
+                        </div>
+
+                        <Bot size={18} />
+
                     </div>
 
                 </div>
+
             </section>
 
 
@@ -353,43 +567,97 @@ function HomePage() {
             <section className="capability-strip">
 
                 <div className="capability-item">
+
                     <MapPin size={21} />
+
                     <div>
-                        <strong>Location-aware</strong>
-                        <span>Precise issue locations</span>
+
+                        <strong>
+                            Location-aware
+                        </strong>
+
+                        <span>
+                            Precise issue locations
+                        </span>
+
                     </div>
+
                 </div>
 
+
                 <div className="capability-item">
+
                     <Search size={21} />
+
                     <div>
-                        <strong>Duplicate-aware</strong>
-                        <span>Nearby issue detection</span>
+
+                        <strong>
+                            Duplicate-aware
+                        </strong>
+
+                        <span>
+                            Nearby issue detection
+                        </span>
+
                     </div>
+
                 </div>
 
+
                 <div className="capability-item">
+
                     <Users size={21} />
+
                     <div>
-                        <strong>Structured workflow</strong>
-                        <span>Citizen to field worker</span>
+
+                        <strong>
+                            Structured workflow
+                        </strong>
+
+                        <span>
+                            Citizen to field worker
+                        </span>
+
                     </div>
+
                 </div>
 
+
                 <div className="capability-item">
+
                     <Bell size={21} />
+
                     <div>
-                        <strong>Stay informed</strong>
-                        <span>Important status updates</span>
+
+                        <strong>
+                            Stay informed
+                        </strong>
+
+                        <span>
+                            Important status updates
+                        </span>
+
                     </div>
+
                 </div>
 
+
                 <div className="capability-item">
-                    <FileCheck2 size={21} />
+
+                    <Sparkles size={21} />
+
                     <div>
-                        <strong>Evidence-based</strong>
-                        <span>Resolution evidence</span>
+
+                        <strong>
+                            AI-powered
+                        </strong>
+
+                        <span>
+                            Role-aware assistance
+                        </span>
+
                     </div>
+
                 </div>
 
             </section>
@@ -399,7 +667,10 @@ function HomePage() {
                 HOW IT WORKS
             ====================================================== */}
 
-            <section className="how-it-works" id="how-it-works">
+            <section
+                className="how-it-works"
+                id="how-it-works"
+            >
 
                 <div className="section-heading">
 
@@ -409,18 +680,22 @@ function HomePage() {
 
                     <h2>
                         From a reported problem
-                        <span> to a visible resolution.</span>
+                        <span>
+                            {' '}to a visible resolution.
+                        </span>
                     </h2>
 
                     <p>
-                        A connected workflow designed to make civic issue
-                        reporting easier to follow and easier to manage.
+                        A connected workflow designed to make civic
+                        issue reporting easier to follow and easier
+                        to manage.
                     </p>
 
                 </div>
 
 
                 <div className="workflow-line"></div>
+
 
                 <div className="steps-grid">
 
@@ -438,11 +713,14 @@ function HomePage() {
                             REPORT
                         </span>
 
-                        <h3>Report the problem</h3>
+                        <h3>
+                            Report the problem
+                        </h3>
 
                         <p>
-                            Add the issue details, category, photo, and
-                            location so the problem is clearly documented.
+                            Add the issue details, category, photo,
+                            and location so the problem is clearly
+                            documented.
                         </p>
 
                     </article>
@@ -462,11 +740,14 @@ function HomePage() {
                             LOCATE
                         </span>
 
-                        <h3>Pin the location</h3>
+                        <h3>
+                            Pin the location
+                        </h3>
 
                         <p>
-                            Connect the report to its geographic location
-                            and help identify nearby related issues.
+                            Connect the report to its geographic
+                            location and help identify nearby
+                            related issues.
                         </p>
 
                     </article>
@@ -486,11 +767,13 @@ function HomePage() {
                             ASSIGN
                         </span>
 
-                        <h3>Coordinate the work</h3>
+                        <h3>
+                            Coordinate the work
+                        </h3>
 
                         <p>
-                            Issues can move through a structured assignment
-                            and field-worker workflow.
+                            Issues can move through a structured
+                            assignment and field-worker workflow.
                         </p>
 
                     </article>
@@ -510,7 +793,9 @@ function HomePage() {
                             TRACK
                         </span>
 
-                        <h3>Follow progress</h3>
+                        <h3>
+                            Follow progress
+                        </h3>
 
                         <p>
                             Track status changes and receive important
@@ -534,11 +819,14 @@ function HomePage() {
                             RESOLVE
                         </span>
 
-                        <h3>See the resolution</h3>
+                        <h3>
+                            See the resolution
+                        </h3>
 
                         <p>
-                            Completed issues can include supporting evidence
-                            so resolution is easier to understand.
+                            Completed issues can include supporting
+                            evidence so resolution is easier to
+                            understand.
                         </p>
 
                     </article>
@@ -552,7 +840,10 @@ function HomePage() {
                 CIVIC ISSUE CAROUSEL
             ====================================================== */}
 
-            <section className="issues-section" id="issues">
+            <section
+                className="issues-section"
+                id="issues"
+            >
 
                 <div className="issues-heading">
 
@@ -564,16 +855,19 @@ function HomePage() {
 
                         <h2>
                             Problems worth
-                            <span> reporting.</span>
+                            <span>
+                                {' '}reporting.
+                            </span>
                         </h2>
 
                         <p>
-                            From damaged roads to water and drainage issues,
-                            help bring attention to problems that affect
-                            everyday life.
+                            From damaged roads to water and drainage
+                            issues, help bring attention to problems
+                            that affect everyday life.
                         </p>
 
                     </div>
+
 
                     <div className="carousel-controls">
 
@@ -584,6 +878,7 @@ function HomePage() {
                         >
                             <ChevronLeft size={21} />
                         </button>
+
 
                         <button
                             type="button"
@@ -603,11 +898,13 @@ function HomePage() {
                     <div
                         className="issues-track"
                         style={{
-                            transform: `translateX(-${activeIssue * 100}%)`,
+                            transform:
+                                `translateX(-${activeIssue * 100}%)`,
                         }}
                     >
 
-                        {civicIssues.map((issue) => (
+                        {civicIssues.map(issue => (
+
                             <article
                                 className="issue-slide"
                                 key={issue.title}
@@ -616,7 +913,8 @@ function HomePage() {
                                 <div
                                     className="issue-slide-image"
                                     style={{
-                                        backgroundImage: `url("${issue.image}")`,
+                                        backgroundImage:
+                                            `url("${issue.image}")`,
                                     }}
                                 >
 
@@ -641,6 +939,7 @@ function HomePage() {
                                 </div>
 
                             </article>
+
                         ))}
 
                     </div>
@@ -650,19 +949,27 @@ function HomePage() {
 
                 <div className="carousel-indicators">
 
-                    {civicIssues.map((issue, index) => (
-                        <button
-                            type="button"
-                            key={issue.title}
-                            className={
-                                index === activeIssue
-                                    ? 'active'
-                                    : ''
-                            }
-                            onClick={() => setActiveIssue(index)}
-                            aria-label={`Show ${issue.title}`}
-                        />
-                    ))}
+                    {civicIssues.map(
+                        (issue, index) => (
+
+                            <button
+                                type="button"
+                                key={issue.title}
+                                className={
+                                    index === activeIssue
+                                        ? 'active'
+                                        : ''
+                                }
+                                onClick={() =>
+                                    setActiveIssue(index)
+                                }
+                                aria-label={
+                                    `Show ${issue.title}`
+                                }
+                            />
+
+                        )
+                    )}
 
                 </div>
 
@@ -680,25 +987,35 @@ function HomePage() {
                     <div className="location-map-card">
 
                         <div className="location-map-header">
+
                             <div>
+
                                 <span className="map-live-dot"></span>
+
                                 Location intelligence
+
                             </div>
 
                             <span>
                                 Nearby
                             </span>
+
                         </div>
 
 
                         <div className="location-map">
 
                             <div className="location-road location-road-one"></div>
+
                             <div className="location-road location-road-two"></div>
+
                             <div className="location-road location-road-three"></div>
 
+
                             <div className="nearby-ring ring-one"></div>
+
                             <div className="nearby-ring ring-two"></div>
+
 
                             <div className="location-pin main-location">
                                 <MapPin size={22} />
@@ -716,9 +1033,17 @@ function HomePage() {
                                 <MapPin size={15} />
                             </div>
 
+
                             <div className="location-map-tooltip">
-                                <strong>Your reported issue</strong>
-                                <span>Precise location attached</span>
+
+                                <strong>
+                                    Your reported issue
+                                </strong>
+
+                                <span>
+                                    Precise location attached
+                                </span>
+
                             </div>
 
                         </div>
@@ -731,6 +1056,7 @@ function HomePage() {
                             </div>
 
                             <div>
+
                                 <strong>
                                     Possible nearby report
                                 </strong>
@@ -738,6 +1064,7 @@ function HomePage() {
                                 <span>
                                     Same category · nearby location
                                 </span>
+
                             </div>
 
                             <Check size={17} />
@@ -757,63 +1084,83 @@ function HomePage() {
 
                     <h2>
                         Every report
-                        <span> has a place.</span>
+                        <span>
+                            {' '}has a place.
+                        </span>
                     </h2>
 
                     <p>
-                        Accurate location information helps civic issues
-                        become easier to identify, understand, and route
-                        through the right workflow.
+                        Accurate location information helps civic
+                        issues become easier to identify, understand,
+                        and route through the right workflow.
                     </p>
 
 
                     <div className="location-points">
 
                         <div>
+
                             <div className="point-icon">
                                 <MapPin size={19} />
                             </div>
 
                             <div>
-                                <strong>Precise issue location</strong>
+
+                                <strong>
+                                    Precise issue location
+                                </strong>
 
                                 <span>
-                                    Attach the report to the place where
-                                    the problem actually exists.
+                                    Attach the report to the place
+                                    where the problem actually exists.
                                 </span>
+
                             </div>
+
                         </div>
 
 
                         <div>
+
                             <div className="point-icon">
                                 <Search size={19} />
                             </div>
 
                             <div>
-                                <strong>Nearby issue awareness</strong>
+
+                                <strong>
+                                    Nearby issue awareness
+                                </strong>
 
                                 <span>
-                                    Possible nearby duplicate reports can
-                                    be identified.
+                                    Possible nearby duplicate reports
+                                    can be identified.
                                 </span>
+
                             </div>
+
                         </div>
 
 
                         <div>
+
                             <div className="point-icon">
                                 <Navigation size={19} />
                             </div>
 
                             <div>
-                                <strong>Better coordination</strong>
+
+                                <strong>
+                                    Better coordination
+                                </strong>
 
                                 <span>
-                                    Location information gives the workflow
-                                    useful geographic context.
+                                    Location information gives the
+                                    workflow useful geographic context.
                                 </span>
+
                             </div>
+
                         </div>
 
                     </div>
@@ -837,12 +1184,14 @@ function HomePage() {
 
                     <h2>
                         More than a complaint form.
-                        <span> A complete workflow.</span>
+                        <span>
+                            {' '}A complete workflow.
+                        </span>
                     </h2>
 
                     <p>
-                        Smart Civic connects the journey from the first
-                        citizen report to field-level resolution.
+                        Smart Civic connects the journey from the
+                        first citizen report to field-level resolution.
                     </p>
 
                 </div>
@@ -856,7 +1205,9 @@ function HomePage() {
                             <Camera size={22} />
                         </div>
 
-                        <strong>Reported</strong>
+                        <strong>
+                            Reported
+                        </strong>
 
                         <span>
                             Issue submitted
@@ -876,7 +1227,9 @@ function HomePage() {
                             <Users size={22} />
                         </div>
 
-                        <strong>Assigned</strong>
+                        <strong>
+                            Assigned
+                        </strong>
 
                         <span>
                             Work coordinated
@@ -896,7 +1249,9 @@ function HomePage() {
                             <Clock3 size={22} />
                         </div>
 
-                        <strong>In Progress</strong>
+                        <strong>
+                            In Progress
+                        </strong>
 
                         <span>
                             Work underway
@@ -916,7 +1271,9 @@ function HomePage() {
                             <ImageIcon size={22} />
                         </div>
 
-                        <strong>Evidence</strong>
+                        <strong>
+                            Evidence
+                        </strong>
 
                         <span>
                             Supporting photo
@@ -936,7 +1293,9 @@ function HomePage() {
                             <CheckCircle2 size={22} />
                         </div>
 
-                        <strong>Resolved</strong>
+                        <strong>
+                            Resolved
+                        </strong>
 
                         <span>
                             Issue completed
@@ -963,13 +1322,15 @@ function HomePage() {
 
                     <h2>
                         Know what happened
-                        <span> to your report.</span>
+                        <span>
+                            {' '}to your report.
+                        </span>
                     </h2>
 
                     <p>
-                        Reporting an issue should not mean wondering what
-                        happened next. Follow status changes and understand
-                        when the issue reaches resolution.
+                        Reporting an issue should not mean wondering
+                        what happened next. Follow status changes and
+                        understand when the issue reaches resolution.
                     </p>
 
 
@@ -977,20 +1338,25 @@ function HomePage() {
 
                         <div>
                             <Check size={17} />
+
                             <span>
                                 Clear issue status history
                             </span>
                         </div>
 
+
                         <div>
                             <Check size={17} />
+
                             <span>
                                 Important status notifications
                             </span>
                         </div>
 
+
                         <div>
                             <Check size={17} />
+
                             <span>
                                 Resolution evidence when available
                             </span>
@@ -1006,16 +1372,21 @@ function HomePage() {
                     <div className="notification-window">
 
                         <div className="notification-window-header">
+
                             <div>
+
                                 <Bell size={18} />
+
                                 <strong>
                                     Issue updates
                                 </strong>
+
                             </div>
 
                             <span>
                                 3 updates
                             </span>
+
                         </div>
 
 
@@ -1026,18 +1397,20 @@ function HomePage() {
                             </div>
 
                             <div>
+
                                 <strong>
                                     Issue assigned
                                 </strong>
 
                                 <span>
-                                    Your reported issue has been assigned
-                                    for field action.
+                                    Your reported issue has been
+                                    assigned for field action.
                                 </span>
 
                                 <small>
                                     Recently
                                 </small>
+
                             </div>
 
                         </div>
@@ -1050,6 +1423,7 @@ function HomePage() {
                             </div>
 
                             <div>
+
                                 <strong>
                                     Status updated
                                 </strong>
@@ -1061,6 +1435,7 @@ function HomePage() {
                                 <small>
                                     Recently
                                 </small>
+
                             </div>
 
                         </div>
@@ -1073,6 +1448,7 @@ function HomePage() {
                             </div>
 
                             <div>
+
                                 <strong>
                                     Issue resolved
                                 </strong>
@@ -1084,6 +1460,7 @@ function HomePage() {
                                 <small>
                                     Recently
                                 </small>
+
                             </div>
 
                         </div>
@@ -1105,9 +1482,11 @@ function HomePage() {
 
                         </div>
 
+
                         <div className="evidence-card-content">
 
                             <div>
+
                                 <strong>
                                     Resolution evidence
                                 </strong>
@@ -1115,6 +1494,7 @@ function HomePage() {
                                 <span>
                                     Supporting photo attached
                                 </span>
+
                             </div>
 
                             <CheckCircle2 size={22} />
@@ -1132,7 +1512,10 @@ function HomePage() {
                 FEATURES
             ====================================================== */}
 
-            <section className="features-section" id="features">
+            <section
+                className="features-section"
+                id="features"
+            >
 
                 <div className="features-intro">
 
@@ -1142,13 +1525,16 @@ function HomePage() {
 
                     <h2>
                         The tools behind
-                        <span> a connected civic workflow.</span>
+                        <span>
+                            {' '}a connected civic workflow.
+                        </span>
                     </h2>
 
                     <p>
                         From reporting and location intelligence to
-                        assignment, notifications, and resolution evidence,
-                        Smart Civic brings the workflow together.
+                        assignment, notifications, resolution evidence,
+                        and AI assistance, Smart Civic brings the
+                        workflow together.
                     </p>
 
                 </div>
@@ -1156,35 +1542,286 @@ function HomePage() {
 
                 <div className="features-grid">
 
-                    {featureHighlights.map((feature) => {
+                    {featureHighlights.map(
+                        feature => {
 
-                        const Icon = feature.icon
+                            const Icon =
+                                feature.icon
 
-                        return (
-                            <article
-                                className="feature-card"
-                                key={feature.title}
-                            >
+                            return (
 
-                                <div className="feature-icon">
-                                    <Icon size={23} />
+                                <article
+                                    className="feature-card"
+                                    key={feature.title}
+                                >
+
+                                    <div className="feature-icon">
+                                        <Icon size={23} />
+                                    </div>
+
+                                    <h3>
+                                        {feature.title}
+                                    </h3>
+
+                                    <p>
+                                        {feature.text}
+                                    </p>
+
+                                    <div className="feature-card-arrow">
+                                        <ArrowRight size={17} />
+                                    </div>
+
+                                </article>
+
+                            )
+
+                        }
+                    )}
+
+                </div>
+
+            </section>
+
+
+            {/* =====================================================
+                AI ASSISTANT
+            ====================================================== */}
+
+            <section
+                className="ai-home-section"
+                id="ai-assistant"
+            >
+
+                <div className="ai-home-visual">
+
+                    <div className="ai-home-glow"></div>
+
+
+                    <div className="ai-home-window">
+
+                        <div className="ai-home-window-header">
+
+                            <div className="ai-home-window-brand">
+
+                                <div className="ai-home-window-icon">
+                                    <Bot size={19} />
                                 </div>
 
-                                <h3>
-                                    {feature.title}
-                                </h3>
+                                <div>
 
-                                <p>
-                                    {feature.text}
-                                </p>
+                                    <strong>
+                                        AI Assistant
+                                    </strong>
 
-                                <div className="feature-card-arrow">
-                                    <ArrowRight size={17} />
+                                    <span>
+                                        Smart Civic Support
+                                    </span>
+
                                 </div>
 
-                            </article>
-                        )
-                    })}
+                            </div>
+
+
+                            <div className="ai-home-status">
+
+                                <span></span>
+
+                                Available
+
+                            </div>
+
+                        </div>
+
+
+                        <div className="ai-home-chat">
+
+                            <div className="ai-home-chat-message ai-message-preview">
+
+                                <div className="ai-home-chat-avatar">
+                                    <Sparkles size={14} />
+                                </div>
+
+                                <div>
+
+                                    <span>
+                                        Ask me about Smart Civic.
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+
+                            <div className="ai-home-chat-message user-message-preview">
+
+                                <div>
+
+                                    <span>
+                                        How many issues are assigned to me?
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+
+                            <div className="ai-home-chat-message ai-message-preview">
+
+                                <div className="ai-home-chat-avatar">
+                                    <Sparkles size={14} />
+                                </div>
+
+                                <div>
+
+                                    <span>
+                                        I can use your authorized
+                                        system context to help answer
+                                        that.
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+
+                            <div className="ai-home-chat-input">
+
+                                <span>
+                                    Ask about Smart Civic...
+                                </span>
+
+                                <div>
+                                    <ArrowRight size={16} />
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div className="ai-home-content">
+
+                    <span className="section-tag">
+                        SMART CIVIC AI ASSISTANT
+                    </span>
+
+
+                    <h2>
+                        Your civic questions,
+                        <span>
+                            {' '}answered with context.
+                        </span>
+                    </h2>
+
+
+                    <p>
+                        Smart Civic includes an AI Assistant designed
+                        to help authenticated users understand the
+                        platform and, where available, their authorized
+                        live civic information.
+                    </p>
+
+
+                    <div className="ai-home-points">
+
+                        <div>
+
+                            <div className="ai-home-point-icon">
+                                <MapPin size={18} />
+                            </div>
+
+                            <div>
+
+                                <strong>
+                                    Citizens
+                                </strong>
+
+                                <span>
+                                    Understand your reported issues,
+                                    statuses, recent updates and SLA
+                                    information.
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+                        <div>
+
+                            <div className="ai-home-point-icon">
+                                <Users size={18} />
+                            </div>
+
+                            <div>
+
+                                <strong>
+                                    Field workers
+                                </strong>
+
+                                <span>
+                                    Understand assigned issues,
+                                    priorities, workload and SLA
+                                    attention.
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+                        <div>
+
+                            <div className="ai-home-point-icon">
+                                <ShieldCheck size={18} />
+                            </div>
+
+                            <div>
+
+                                <strong>
+                                    Administrators
+                                </strong>
+
+                                <span>
+                                    Understand issue statistics,
+                                    SLA performance, unassigned
+                                    issues and worker workload.
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div className="ai-home-note">
+
+                        <Sparkles size={17} />
+
+                        <span>
+                            AI assistance is role-aware and read-only.
+                            It does not replace the application's
+                            actual workflows or permissions.
+                        </span>
+
+                    </div>
+
+
+                    <Link
+                        to="/login"
+                        className="ai-home-button"
+                    >
+
+                        Sign in to use AI Assistant
+
+                        <ArrowRight size={18} />
+
+                    </Link>
 
                 </div>
 
@@ -1205,7 +1842,9 @@ function HomePage() {
 
                     <h2>
                         Built for everyone involved
-                        <span> in the resolution.</span>
+                        <span>
+                            {' '}in the resolution.
+                        </span>
                     </h2>
 
                     <p>
@@ -1232,11 +1871,13 @@ function HomePage() {
                         </h3>
 
                         <p>
-                            Report local problems with photos and location,
-                            follow progress, and stay informed about updates.
+                            Report local problems with photos and
+                            location, follow progress, and stay informed
+                            about updates.
                         </p>
 
                         <ul>
+
                             <li>
                                 <Check size={16} />
                                 Report civic issues
@@ -1251,6 +1892,7 @@ function HomePage() {
                                 <Check size={16} />
                                 Receive notifications
                             </li>
+
                         </ul>
 
                     </article>
@@ -1276,6 +1918,7 @@ function HomePage() {
                         </p>
 
                         <ul>
+
                             <li>
                                 <Check size={16} />
                                 Manage assigned issues
@@ -1290,6 +1933,7 @@ function HomePage() {
                                 <Check size={16} />
                                 Submit resolution evidence
                             </li>
+
                         </ul>
 
                     </article>
@@ -1315,6 +1959,7 @@ function HomePage() {
                         </p>
 
                         <ul>
+
                             <li>
                                 <Check size={16} />
                                 Manage civic issues
@@ -1329,6 +1974,7 @@ function HomePage() {
                                 <Check size={16} />
                                 Monitor issue workflows
                             </li>
+
                         </ul>
 
                     </article>
@@ -1352,21 +1998,28 @@ function HomePage() {
                     <div className="why-panel">
 
                         <div className="why-panel-header">
+
                             <div>
+
                                 <span className="why-panel-dot"></span>
+
                                 Smart Civic workflow
+
                             </div>
 
                             <ShieldCheck size={19} />
+
                         </div>
 
 
                         <div className="why-timeline">
 
                             <div className="why-timeline-item completed">
+
                                 <span></span>
 
                                 <div>
+
                                     <strong>
                                         Issue reported
                                     </strong>
@@ -1374,14 +2027,18 @@ function HomePage() {
                                     <small>
                                         Photo + location added
                                     </small>
+
                                 </div>
+
                             </div>
 
 
                             <div className="why-timeline-item completed">
+
                                 <span></span>
 
                                 <div>
+
                                     <strong>
                                         Issue assigned
                                     </strong>
@@ -1389,14 +2046,18 @@ function HomePage() {
                                     <small>
                                         Structured field workflow
                                     </small>
+
                                 </div>
+
                             </div>
 
 
                             <div className="why-timeline-item active">
+
                                 <span></span>
 
                                 <div>
+
                                     <strong>
                                         Work in progress
                                     </strong>
@@ -1404,14 +2065,18 @@ function HomePage() {
                                     <small>
                                         Citizen can follow updates
                                     </small>
+
                                 </div>
+
                             </div>
 
 
                             <div className="why-timeline-item">
+
                                 <span></span>
 
                                 <div>
+
                                     <strong>
                                         Resolution
                                     </strong>
@@ -1419,7 +2084,9 @@ function HomePage() {
                                     <small>
                                         Supporting evidence available
                                     </small>
+
                                 </div>
+
                             </div>
 
                         </div>
@@ -1437,48 +2104,86 @@ function HomePage() {
 
                     <h2>
                         Built around
-                        <span> transparency and action.</span>
+                        <span>
+                            {' '}transparency and action.
+                        </span>
                     </h2>
 
                     <p>
-                        Civic reporting should not end when someone presses
-                        "Submit". Smart Civic is designed around the complete
-                        journey of an issue.
+                        Civic reporting should not end when someone
+                        presses "Submit". Smart Civic is designed
+                        around the complete journey of an issue.
                     </p>
 
 
                     <div className="why-grid">
 
                         <div>
-                            <span>01</span>
-                            <h3>Location-aware</h3>
+
+                            <span>
+                                01
+                            </span>
+
+                            <h3>
+                                Location-aware
+                            </h3>
+
                             <p>
                                 Give every issue useful geographic context.
                             </p>
+
                         </div>
 
+
                         <div>
-                            <span>02</span>
-                            <h3>Transparent</h3>
+
+                            <span>
+                                02
+                            </span>
+
+                            <h3>
+                                Transparent
+                            </h3>
+
                             <p>
                                 Follow what happens after reporting.
                             </p>
+
                         </div>
 
+
                         <div>
-                            <span>03</span>
-                            <h3>Evidence-driven</h3>
+
+                            <span>
+                                03
+                            </span>
+
+                            <h3>
+                                Evidence-driven
+                            </h3>
+
                             <p>
                                 Support completed work with evidence.
                             </p>
+
                         </div>
 
+
                         <div>
-                            <span>04</span>
-                            <h3>Structured</h3>
+
+                            <span>
+                                04
+                            </span>
+
+                            <h3>
+                                Intelligent
+                            </h3>
+
                             <p>
-                                Connect citizens, workers, and administrators.
+                                Use AI assistance to understand
+                                authorized civic information.
                             </p>
+
                         </div>
 
                     </div>
@@ -1496,21 +2201,29 @@ function HomePage() {
 
                 <div className="cta-pattern"></div>
 
+
                 <div className="cta-content">
 
                     <span className="section-tag cta-tag">
                         MAKE YOUR CITY BETTER
                     </span>
 
+
                     <h2>
                         See a civic problem?
-                        <span> Don't just walk past it.</span>
+                        <span>
+                            {' '}Don't just walk past it.
+                        </span>
                     </h2>
 
+
                     <p>
-                        Report it with Smart Civic and follow the journey
-                        from your report to resolution.
+                        Report it with Smart Civic, follow the journey
+                        from your report to resolution, and use AI
+                        assistance when you need help understanding
+                        the platform.
                     </p>
+
 
                     <div className="cta-actions">
 
@@ -1518,9 +2231,13 @@ function HomePage() {
                             to="/register"
                             className="cta-primary"
                         >
+
                             Create free account
+
                             <ArrowRight size={18} />
+
                         </Link>
+
 
                         <Link
                             to="/login"
@@ -1550,6 +2267,7 @@ function HomePage() {
                             to="/"
                             className="brand footer-brand"
                         >
+
                             <div className="brand-logo">
                                 SC
                             </div>
@@ -1557,11 +2275,14 @@ function HomePage() {
                             <span>
                                 Smart Civic
                             </span>
+
                         </Link>
+
 
                         <p>
                             Making civic issue reporting simpler,
-                            more transparent, and easier to track.
+                            more transparent, intelligent, and easier
+                            to track.
                         </p>
 
                     </div>
@@ -1575,21 +2296,33 @@ function HomePage() {
 
                         <button
                             type="button"
-                            onClick={() => scrollToSection('how-it-works')}
+                            onClick={() =>
+                                scrollToSection(
+                                    'how-it-works'
+                                )
+                            }
                         >
                             How it works
                         </button>
 
                         <button
                             type="button"
-                            onClick={() => scrollToSection('issues')}
+                            onClick={() =>
+                                scrollToSection(
+                                    'issues'
+                                )
+                            }
                         >
                             Civic issues
                         </button>
 
                         <button
                             type="button"
-                            onClick={() => scrollToSection('features')}
+                            onClick={() =>
+                                scrollToSection(
+                                    'features'
+                                )
+                            }
                         >
                             Features
                         </button>
@@ -1600,22 +2333,33 @@ function HomePage() {
                     <div className="footer-column">
 
                         <h4>
-                            Learn
+                            Smart tools
                         </h4>
 
                         <button
                             type="button"
-                            onClick={() => scrollToSection('why-smart-civic')}
+                            onClick={() =>
+                                scrollToSection(
+                                    'ai-assistant'
+                                )
+                            }
+                        >
+                            AI Assistant
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={() =>
+                                scrollToSection(
+                                    'why-smart-civic'
+                                )
+                            }
                         >
                             Why Smart Civic
                         </button>
 
                         <Link to="/login">
                             Sign in
-                        </Link>
-
-                        <Link to="/register">
-                            Get started
                         </Link>
 
                     </div>
@@ -1631,8 +2375,11 @@ function HomePage() {
                             to="/register"
                             className="footer-start-button"
                         >
+
                             Report an issue
+
                             <ArrowRight size={16} />
+
                         </Link>
 
                     </div>
@@ -1655,7 +2402,9 @@ function HomePage() {
             </footer>
 
 
-            {/* Scroll hint */}
+            {/* =====================================================
+                SCROLL TOP
+            ====================================================== */}
 
             <button
                 type="button"
@@ -1668,11 +2417,16 @@ function HomePage() {
                 }
                 aria-label="Scroll to top"
             >
+
                 <ArrowDown size={16} />
+
             </button>
 
         </main>
+
     )
+
 }
+
 
 export default HomePage

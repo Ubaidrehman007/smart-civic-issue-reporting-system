@@ -38,4 +38,4 @@ jwt:
 
 gemini:
   api-key: ${GEMINI_API_KEY}
-  model: gemini-3.6-flash
+  model: gemini-3.8-flash

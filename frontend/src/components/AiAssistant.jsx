@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 import {
     Bot,
     Send,
@@ -15,22 +16,137 @@ import '../styles/aiAssistant.css'
 
 function AiAssistant() {
 
+    const location = useLocation()
+
     const [open, setOpen] = useState(false)
 
     const [message, setMessage] = useState('')
 
-    const [messages, setMessages] = useState([
-        {
-            id: 1,
-            sender: 'ai',
-            text:
-                'Hi! I’m the Smart Civic AI Assistant. How can I help you?'
-        }
-    ])
+    const [messages, setMessages] = useState([])
 
     const [loading, setLoading] = useState(false)
 
     const messagesEndRef = useRef(null)
+
+
+    /*
+     * =====================================================
+     * AUTHENTICATION
+     * =====================================================
+     */
+
+    const token = localStorage.getItem('token')
+
+
+    /*
+     * =====================================================
+     * CURRENT USER
+     * =====================================================
+     */
+
+    const storedUser = localStorage.getItem('user')
+
+    let user = null
+
+    try {
+        user = storedUser
+            ? JSON.parse(storedUser)
+            : null
+    } catch {
+        user = null
+    }
+
+
+    /*
+     * =====================================================
+     * ROLE
+     *
+     * This is ONLY used for frontend UX.
+     *
+     * Backend remains responsible for actual
+     * authorization and role security.
+     * =====================================================
+     */
+
+    const role = user?.role || null
+
+
+    /*
+     * =====================================================
+     * ROLE-BASED ASSISTANT CONTENT
+     * =====================================================
+     */
+
+    const getAssistantContent = () => {
+
+        if (role === 'ADMIN') {
+
+            return {
+                welcome:
+                    'Hi! I’m your Smart Civic AI Assistant. I can help you understand admin workflows, issue management, assignments, SLA, analytics and other Smart Civic features.',
+
+                suggestions: [
+                    'How does issue assignment work?',
+                    'Explain the SLA workflow',
+                    'How can I manage reported issues?'
+                ]
+            }
+        }
+
+
+        if (role === 'FIELD_WORKER') {
+
+            return {
+                welcome:
+                    'Hi! I’m your Smart Civic AI Assistant. I can help you with field-worker workflows, assignments, issue status updates, SLA information and Smart Civic features.',
+
+                suggestions: [
+                    'How do I manage my assigned issues?',
+                    'How does issue status update work?',
+                    'Explain the field worker workflow'
+                ]
+            }
+        }
+
+
+        return {
+            welcome:
+                'Hi! I’m your Smart Civic AI Assistant. I can help you report civic issues, understand issue statuses, track your reports and use Smart Civic features.',
+
+            suggestions: [
+                'How do I report a civic issue?',
+                'How can I track my reported issue?',
+                'Explain the issue status workflow'
+            ]
+        }
+    }
+
+
+    const assistantContent = getAssistantContent()
+
+
+    /*
+     * =====================================================
+     * INITIAL / ROLE CHANGE MESSAGE
+     * =====================================================
+     */
+
+    useEffect(() => {
+
+        if (!token) {
+            return
+        }
+
+        setMessages([
+            {
+                id: Date.now(),
+                sender: 'ai',
+                text: assistantContent.welcome,
+                suggestions: assistantContent.suggestions
+            }
+        ])
+
+    }, [role])
 
 
     /*
@@ -52,11 +168,16 @@ function AiAssistant() {
      * =====================================================
      * SEND MESSAGE
      * =====================================================
-     */
+ */
 
-    const handleSend = async () => {
+    const handleSend = async (customMessage = null) => {
 
-        const trimmedMessage = message.trim()
+        const textToSend =
+            customMessage !== null
+                ? customMessage
+                : message
+
+        const trimmedMessage = textToSend.trim()
 
         if (!trimmedMessage || loading) {
             return
@@ -76,6 +197,7 @@ function AiAssistant() {
         ])
 
         setMessage('')
+
         setLoading(true)
 
 
@@ -146,9 +268,22 @@ function AiAssistant() {
 
     /*
      * =====================================================
-     * ENTER KEY
+     * SUGGESTION CLICK
      * =====================================================
      */
+
+    const handleSuggestionClick = (suggestion) => {
+
+        handleSend(suggestion)
+
+    }
+
+
+    /*
+     * =====================================================
+     * ENTER KEY
+     * =====================================================
+ */
 
     const handleKeyDown = (event) => {
 
@@ -166,9 +301,9 @@ function AiAssistant() {
 
     /*
      * =====================================================
-     * CLEAR CHAT
+     * NEW CHAT
      * =====================================================
-     */
+ */
 
     const handleNewChat = () => {
 
@@ -176,28 +311,31 @@ function AiAssistant() {
             {
                 id: Date.now(),
                 sender: 'ai',
-                text:
-                    'Hi! I’m the Smart Civic AI Assistant. How can I help you?'
+                text: assistantContent.welcome,
+                suggestions: assistantContent.suggestions
             }
         ])
 
+        setMessage('')
     }
 
 
     /*
      * =====================================================
-     * AUTH CHECK
+     * HIDE ON PUBLIC PAGES
      * =====================================================
-     */
-
-    const token =
-        localStorage.getItem('token')
-
+ */
 
     if (!token) {
         return null
     }
 
+
+    /*
+     * =====================================================
+     * RENDER
+     * =====================================================
+ */
 
     return (
 
@@ -239,7 +377,9 @@ function AiAssistant() {
                     aria-label="AI Assistant"
                 >
 
-                    {/* HEADER */}
+                    {/* =================================================
+                        HEADER
+                    ================================================= */}
 
                     <header className="ai-assistant-header">
 
@@ -292,7 +432,9 @@ function AiAssistant() {
                     </header>
 
 
-                    {/* MESSAGE AREA */}
+                    {/* =================================================
+                        MESSAGE AREA
+                    ================================================= */}
 
                     <div className="ai-assistant-messages">
 
@@ -318,17 +460,55 @@ function AiAssistant() {
                                 )}
 
 
-                                <div
-                                    className={
-                                        item.sender === 'user'
-                                            ? 'ai-message user-message'
-                                            : item.error
-                                                ? 'ai-message ai-error-message'
-                                                : 'ai-message'
-                                    }
-                                >
+                                <div>
 
-                                    {item.text}
+                                    <div
+                                        className={
+                                            item.sender === 'user'
+                                                ? 'ai-message user-message'
+                                                : item.error
+                                                    ? 'ai-message ai-error-message'
+                                                    : 'ai-message'
+                                        }
+                                    >
+
+                                        {item.text}
+
+                                    </div>
+
+
+                                    {/* =================================================
+                                        ROLE-BASED SUGGESTIONS
+                                    ================================================= */}
+
+                                    {item.sender === 'ai' &&
+                                        item.suggestions &&
+                                        item.suggestions.length > 0 && (
+
+                                            <div className="ai-suggestions">
+
+                                                {item.suggestions.map(
+                                                    suggestion => (
+
+                                                        <button
+                                                            key={suggestion}
+                                                            type="button"
+                                                            onClick={() =>
+                                                                handleSuggestionClick(
+                                                                    suggestion
+                                                                )
+                                                            }
+                                                            disabled={loading}
+                                                        >
+                                                            {suggestion}
+                                                        </button>
+
+                                                    )
+                                                )}
+
+                                            </div>
+
+                                        )}
 
                                 </div>
 
@@ -348,7 +528,9 @@ function AiAssistant() {
                         ))}
 
 
-                        {/* LOADING */}
+                        {/* =================================================
+                            LOADING
+                        ================================================= */}
 
                         {loading && (
 
@@ -359,6 +541,7 @@ function AiAssistant() {
                                     <Bot size={15} />
 
                                 </div>
+
 
                                 <div className="ai-message ai-loading">
 
@@ -383,7 +566,9 @@ function AiAssistant() {
                     </div>
 
 
-                    {/* INPUT */}
+                    {/* =================================================
+                        INPUT
+                    ================================================= */}
 
                     <div className="ai-assistant-input-area">
 
@@ -402,7 +587,7 @@ function AiAssistant() {
 
                         <button
                             type="button"
-                            onClick={handleSend}
+                            onClick={() => handleSend()}
                             disabled={
                                 loading ||
                                 !message.trim()
@@ -426,6 +611,11 @@ function AiAssistant() {
                         </button>
 
                     </div>
+
+
+                    {/* =================================================
+                        FOOTER
+                    ================================================= */}
 
                     <div className="ai-assistant-footer">
 

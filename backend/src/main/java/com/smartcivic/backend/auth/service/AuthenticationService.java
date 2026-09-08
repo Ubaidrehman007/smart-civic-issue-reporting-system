@@ -23,7 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
-
+import java.util.Optional;
 
 
 @Service
@@ -186,6 +186,10 @@ public class AuthenticationService {
     // FORGOT PASSWORD
     // =====================================================
 
+    // =====================================================
+// FORGOT PASSWORD
+// =====================================================
+
     @Transactional
     public void forgotPassword(
             ForgotPasswordRequest request
@@ -198,31 +202,28 @@ public class AuthenticationService {
 
         User user =
                 userRepository.findByEmail(email)
-                        .orElseThrow(() ->
-                                new InvalidCredentialsException(
-                                        "No account found with this email"
-                                )
-                        );
+                        .orElse(null);
 
         /*
-         * Only active accounts can reset passwords.
+         * Generic behavior intentionally used
+         * to prevent account enumeration.
          */
-        if (user.getAccountStatus() != AccountStatus.ACTIVE) {
-
-            throw new InvalidCredentialsException(
-                    "Your account is not active"
-            );
+        if (user == null) {
+            return;
         }
 
         /*
-         * Password reset OTP.
+         * Do not reveal account status to the caller.
          */
+        if (user.getAccountStatus() != AccountStatus.ACTIVE) {
+            return;
+        }
+
         otpService.generateAndSendOtp(
                 user,
                 OtpPurpose.PASSWORD_RESET
         );
     }
-
 
     // =====================================================
     // RESET PASSWORD
@@ -283,63 +284,64 @@ public class AuthenticationService {
         userRepository.save(user);
     }
 
-    @Transactional
-    public void resendRegistrationOtp(String email) {
+    // =====================================================
+// RESEND REGISTRATION OTP
+// =====================================================
 
-        String normalizedEmail =
-                email.trim().toLowerCase();
+    @Transactional
+    public void resendRegistrationOtp(String rawEmail) {
+
+        String email = rawEmail.trim().toLowerCase();
 
         User user =
-                userRepository.findByEmail(normalizedEmail)
-                        .orElseThrow(() ->
-                                new InvalidCredentialsException(
-                                        "Invalid email"
-                                )
-                        );
+                userRepository.findByEmail(email)
+                        .orElse(null);
 
-        if (user.getRole() != Role.CITIZEN) {
-
-            throw new InvalidCredentialsException(
-                    "Registration verification is only available for citizens"
-            );
+        /*
+         * Generic behavior:
+         * Do not reveal whether the email exists.
+         */
+        if (user == null) {
+            return;
         }
 
-        if (user.getAccountStatus() != AccountStatus.PENDING) {
-
-            throw new InvalidCredentialsException(
-                    "This account does not require registration verification"
-            );
+        /*
+         * Only pending citizen accounts are eligible
+         * for registration OTP resend.
+         *
+         * Do not reveal role/account status.
+         */
+        if (user.getRole() != Role.CITIZEN
+                || user.getAccountStatus() != AccountStatus.PENDING) {
+            return;
         }
 
-        EmailOtp latestOtp =
+        /*
+         * Preserve the existing 60-second cooldown.
+         *
+         * If the cooldown has not elapsed, silently return
+         * instead of exposing the cooldown/account state.
+         */
+        Optional<EmailOtp> latestOtp =
                 emailOtpRepository
                         .findTopByUserAndPurposeOrderByCreatedAtDesc(
                                 user,
                                 OtpPurpose.REGISTRATION
-                        )
-                        .orElse(null);
+                        );
 
-        if (latestOtp != null) {
+        if (latestOtp.isPresent()) {
 
-            Instant now = Instant.now();
+            EmailOtp otp = latestOtp.get();
 
-            Instant nextAllowedTime =
-                    latestOtp.getCreatedAt()
-                            .plusSeconds(60);
+            if (otp.getCreatedAt() != null) {
 
-            if (now.isBefore(nextAllowedTime)) {
+                Instant cooldownEnd =
+                        otp.getCreatedAt()
+                                .plusSeconds(60);
 
-                long remainingSeconds =
-                        Duration.between(
-                                now,
-                                nextAllowedTime
-                        ).getSeconds();
-
-                throw new InvalidCredentialsException(
-                        "Please wait "
-                                + remainingSeconds
-                                + " seconds before requesting another OTP."
-                );
+                if (Instant.now().isBefore(cooldownEnd)) {
+                    return;
+                }
             }
         }
 
@@ -348,5 +350,4 @@ public class AuthenticationService {
                 OtpPurpose.REGISTRATION
         );
     }
-
 }

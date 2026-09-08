@@ -88,7 +88,7 @@ public class AuthController {
 
         return ResponseEntity.ok(
                 ApiResponse.success(
-                        "Password reset OTP sent to your email.",
+                        "If the email is registered, a password reset OTP has been sent.",
                         null
                 )
         );

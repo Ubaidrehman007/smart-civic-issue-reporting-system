@@ -1,7 +1,6 @@
 package com.smartcivic.backend.ai.repository;
 
 import com.smartcivic.backend.issue.entity.Issue;
-import com.smartcivic.backend.issue.enums.IssueCategory;
 import com.smartcivic.backend.issue.enums.IssuePriority;
 import com.smartcivic.backend.issue.enums.IssueStatus;
 import com.smartcivic.backend.user.entity.User;
@@ -11,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface AiContextRepository extends JpaRepository<Issue, UUID> {
@@ -53,6 +53,20 @@ public interface AiContextRepository extends JpaRepository<Issue, UUID> {
 
     List<Issue> findTop10ByAssignedToOrderByCreatedAtDesc(
             User worker
+    );
+
+
+    // =========================================================
+    // FIELD WORKER - SLA APPROACHING
+    // =========================================================
+    // Only returns SLA-approaching issues assigned to
+    // the authenticated field worker.
+
+    long countByAssignedToAndSlaDueAtBetweenAndSlaBreachedFalseAndStatusNot(
+            User worker,
+            LocalDateTime start,
+            LocalDateTime end,
+            IssueStatus status
     );
 
 
@@ -121,8 +135,9 @@ public interface AiContextRepository extends JpaRepository<Issue, UUID> {
 
 
     // =========================================================
-    // SLA APPROACHING
+    // ADMIN - GLOBAL SLA APPROACHING
     // =========================================================
+    // ADMIN is allowed to see system-wide SLA information.
 
     long countBySlaDueAtBetweenAndSlaBreachedFalseAndStatusNot(
             LocalDateTime start,
@@ -149,7 +164,7 @@ public interface AiContextRepository extends JpaRepository<Issue, UUID> {
 
 
     // =========================================================
-    // EXACT ISSUE ACCESS
+    // EXACT ISSUE ACCESS - CITIZEN
     // =========================================================
 
     @Query("""
@@ -158,11 +173,15 @@ public interface AiContextRepository extends JpaRepository<Issue, UUID> {
             WHERE i.id = :issueId
               AND i.reportedBy.id = :userId
             """)
-    java.util.Optional<Issue> findCitizenIssue(
+    Optional<Issue> findCitizenIssue(
             @Param("issueId") UUID issueId,
             @Param("userId") UUID userId
     );
 
+
+    // =========================================================
+    // EXACT ISSUE ACCESS - FIELD WORKER
+    // =========================================================
 
     @Query("""
             SELECT i
@@ -170,7 +189,7 @@ public interface AiContextRepository extends JpaRepository<Issue, UUID> {
             WHERE i.id = :issueId
               AND i.assignedTo.id = :workerId
             """)
-    java.util.Optional<Issue> findWorkerIssue(
+    Optional<Issue> findWorkerIssue(
             @Param("issueId") UUID issueId,
             @Param("workerId") UUID workerId
     );

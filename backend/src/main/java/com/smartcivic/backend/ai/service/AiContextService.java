@@ -7,7 +7,6 @@ import com.smartcivic.backend.issue.entity.IssueStatusHistory;
 import com.smartcivic.backend.issue.enums.IssuePriority;
 import com.smartcivic.backend.issue.enums.IssueStatus;
 import com.smartcivic.backend.user.entity.User;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,7 +40,6 @@ public class AiContextService {
         this.aiStatusHistoryRepository = aiStatusHistoryRepository;
     }
 
-
     // =========================================================
     // MAIN ENTRY POINT
     // =========================================================
@@ -69,7 +67,6 @@ public class AiContextService {
                     );
         };
     }
-
 
     // =========================================================
     // CITIZEN CONTEXT
@@ -155,7 +152,9 @@ public class AiContextService {
 
         if (recentIssues.isEmpty()) {
 
-            context.append("No issues have been reported by this citizen.\n");
+            context.append(
+                    "No issues have been reported by this citizen.\n"
+            );
 
         } else {
 
@@ -200,7 +199,6 @@ public class AiContextService {
 
         return context.toString();
     }
-
 
     // =========================================================
     // FIELD WORKER CONTEXT
@@ -308,9 +306,16 @@ public class AiContextService {
         LocalDateTime oneHourLater =
                 now.plusHours(1);
 
+        /*
+         * IMPORTANT:
+         * This query MUST be scoped to the authenticated worker.
+         * A field worker must never receive SLA information
+         * belonging to other workers.
+         */
         long approaching =
                 aiContextRepository
-                        .countBySlaDueAtBetweenAndSlaBreachedFalseAndStatusNot(
+                        .countByAssignedToAndSlaDueAtBetweenAndSlaBreachedFalseAndStatusNot(
+                                worker,
                                 now,
                                 oneHourLater,
                                 IssueStatus.RESOLVED
@@ -381,7 +386,6 @@ public class AiContextService {
 
         return context.toString();
     }
-
 
     // =========================================================
     // ADMIN CONTEXT
@@ -477,6 +481,9 @@ public class AiContextService {
         LocalDateTime oneHourLater =
                 now.plusHours(1);
 
+        /*
+         * ADMIN is authorized to see global SLA information.
+         */
         long approaching =
                 aiContextRepository
                         .countBySlaDueAtBetweenAndSlaBreachedFalseAndStatusNot(
@@ -615,7 +622,6 @@ public class AiContextService {
         return context.toString();
     }
 
-
     // =========================================================
     // ISSUE SUMMARY
     // =========================================================
@@ -677,7 +683,6 @@ public class AiContextService {
         }
     }
 
-
     // =========================================================
     // DETAILED ISSUE
     // =========================================================
@@ -733,6 +738,7 @@ public class AiContextService {
                                     )
                             )
             );
+
         } else {
 
             context.append(
@@ -745,7 +751,6 @@ public class AiContextService {
                 issue
         );
     }
-
 
     // =========================================================
     // STATUS HISTORY
@@ -792,7 +797,6 @@ public class AiContextService {
         }
     }
 
-
     // =========================================================
     // UUID EXTRACTION
     // =========================================================
@@ -833,7 +837,6 @@ public class AiContextService {
         }
     }
 
-
     // =========================================================
     // FORMAT HELPERS
     // =========================================================
@@ -849,7 +852,6 @@ public class AiContextService {
         return value.format(DATE_FORMAT);
     }
 
-
     private String format(
             Instant value
     ) {
@@ -863,7 +865,6 @@ public class AiContextService {
                 .toLocalDateTime()
                 .format(DATE_FORMAT);
     }
-
 
     private String safe(
             String value

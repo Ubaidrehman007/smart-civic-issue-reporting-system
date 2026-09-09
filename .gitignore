@@ -11,3 +11,7 @@ out/
 # OS generated files
 .DS_Store
 Thumbs.db
+
+# Uploaded issue images
+backend/uploads/issue-images/
+uploads/issue-images/

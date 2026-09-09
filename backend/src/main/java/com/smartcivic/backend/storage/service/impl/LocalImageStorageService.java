@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
@@ -38,28 +40,76 @@ public class LocalImageStorageService implements ImageStorageService {
     public String storeImage(MultipartFile file) {
 
         if (file == null || file.isEmpty()) {
-            throw new IllegalArgumentException("File must not be empty.");
+            throw new IllegalArgumentException(
+                    "File must not be empty."
+            );
         }
 
-        String originalFileName = StringUtils.cleanPath(file.getOriginalFilename());
+        final long maxFileSize = 5L * 1024 * 1024;
 
-        if (originalFileName.contains("..")) {
-            throw new IllegalArgumentException("Invalid file name.");
+        if (file.getSize() > maxFileSize) {
+            throw new IllegalArgumentException(
+                    "Image size must not exceed 5 MB."
+            );
         }
-
-        String fileExtension = "";
-
-        int dotIndex = originalFileName.lastIndexOf('.');
-
-        if (dotIndex > 0) {
-            fileExtension = originalFileName.substring(dotIndex);
-        }
-
-        String storedFileName = UUID.randomUUID() + fileExtension;
-
-        Path targetLocation = this.fileStorageLocation.resolve(storedFileName);
 
         try {
+
+            BufferedImage image =
+                    ImageIO.read(file.getInputStream());
+
+            if (image == null) {
+                throw new IllegalArgumentException(
+                        "Uploaded file is not a valid image."
+                );
+            }
+
+            if (image.getWidth() > 8000 ||
+                    image.getHeight() > 8000) {
+
+                throw new IllegalArgumentException(
+                        "Image dimensions are too large."
+                );
+            }
+
+            String contentType =
+                    file.getContentType();
+
+            if (contentType == null ||
+                    (!contentType.equalsIgnoreCase("image/jpeg")
+                            && !contentType.equalsIgnoreCase("image/png")
+                            && !contentType.equalsIgnoreCase("image/gif"))) {
+
+                throw new IllegalArgumentException(
+                        "Only JPEG, PNG and GIF images are allowed."
+                );
+            }
+
+            String extension;
+
+            if (contentType.equalsIgnoreCase("image/jpeg")) {
+                extension = ".jpg";
+            } else if (contentType.equalsIgnoreCase("image/png")) {
+                extension = ".png";
+            } else {
+                extension = ".gif";
+            }
+
+            String storedFileName =
+                    UUID.randomUUID() + extension;
+
+            Path targetLocation =
+                    fileStorageLocation
+                            .resolve(storedFileName)
+                            .normalize();
+
+            if (!targetLocation.startsWith(
+                    fileStorageLocation
+            )) {
+                throw new IllegalArgumentException(
+                        "Invalid file path."
+                );
+            }
 
             Files.copy(
                     file.getInputStream(),
@@ -67,13 +117,15 @@ public class LocalImageStorageService implements ImageStorageService {
                     StandardCopyOption.REPLACE_EXISTING
             );
 
+            return storedFileName;
+
         } catch (IOException ex) {
 
-            throw new RuntimeException("Could not store file.", ex);
-
+            throw new RuntimeException(
+                    "Could not store image.",
+                    ex
+            );
         }
-
-        return storedFileName;
     }
 
 
@@ -82,7 +134,18 @@ public class LocalImageStorageService implements ImageStorageService {
 
         try {
 
-            Path filePath = this.fileStorageLocation.resolve(fileName).normalize();
+            Path filePath =
+                    this.fileStorageLocation
+                            .resolve(fileName)
+                            .normalize();
+
+            if (!filePath.startsWith(
+                    this.fileStorageLocation
+            )) {
+                throw new IllegalArgumentException(
+                        "Invalid file path."
+                );
+            }
 
             Resource resource = new UrlResource(filePath.toUri());
 
@@ -105,7 +168,18 @@ public class LocalImageStorageService implements ImageStorageService {
 
         try {
 
-            Path filePath = this.fileStorageLocation.resolve(fileName).normalize();
+            Path filePath =
+                    this.fileStorageLocation
+                            .resolve(fileName)
+                            .normalize();
+
+            if (!filePath.startsWith(
+                    this.fileStorageLocation
+            )) {
+                throw new IllegalArgumentException(
+                        "Invalid file path."
+                );
+            }
 
             Files.deleteIfExists(filePath);
 

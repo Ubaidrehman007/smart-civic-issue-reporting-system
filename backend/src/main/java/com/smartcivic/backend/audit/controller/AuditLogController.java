@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -17,6 +18,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/v1/audit-logs")
 @RequiredArgsConstructor
+@PreAuthorize("hasAuthority('ADMIN')")
 public class AuditLogController {
 
 
@@ -26,6 +28,35 @@ public class AuditLogController {
     // =====================================================
     // GET ALL AUDIT LOGS
     // =====================================================
+
+
+    // HELPER METHOD
+    private Pageable createPageable(
+            int page,
+            int size
+    ) {
+
+        if (page < 0) {
+            throw new IllegalArgumentException(
+                    "Page must be greater than or equal to 0"
+            );
+        }
+
+        if (size < 1 || size > 100) {
+            throw new IllegalArgumentException(
+                    "Page size must be between 1 and 100"
+            );
+        }
+
+        return PageRequest.of(
+                page,
+                size,
+                Sort.by(
+                        Sort.Direction.DESC,
+                        "createdAt"
+                )
+        );
+    }
 
     @GetMapping
     public ResponseEntity<Page<AuditLogResponse>> getAllAuditLogs(
@@ -39,14 +70,7 @@ public class AuditLogController {
     ) {
 
         Pageable pageable =
-                PageRequest.of(
-                        page,
-                        size,
-                        Sort.by(
-                                Sort.Direction.DESC,
-                                "createdAt"
-                        )
-                );
+                createPageable(page, size);
 
 
         return ResponseEntity.ok(

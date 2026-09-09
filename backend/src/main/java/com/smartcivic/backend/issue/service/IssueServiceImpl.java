@@ -273,7 +273,8 @@ public class IssueServiceImpl implements IssueService {
         if (user.getRole() == Role.FIELD_WORKER) {
 
             if (issue.getAssignedTo() == null ||
-                    !issue.getAssignedTo().getId().equals(user.getId())) {
+                    !issue.getAssignedTo().getId()
+                            .equals(user.getId())) {
 
                 throw new IssueAccessDeniedException(
                         "You are not allowed to access this issue"
@@ -281,6 +282,21 @@ public class IssueServiceImpl implements IssueService {
             }
         }
 
+        if (user.getRole() == Role.CITIZEN) {
+
+            if (issue.getReportedBy() == null ||
+                    !issue.getReportedBy().getId()
+                            .equals(user.getId())) {
+
+                throw new IssueAccessDeniedException(
+                        "You are not allowed to access this issue"
+                );
+            }
+        }
+
+        /*
+         * ADMIN has access to all issues.
+         */
         return mapToIssueResponse(issue);
     }
 
@@ -1088,11 +1104,7 @@ public class IssueServiceImpl implements IssueService {
                                 : null
                 )
 
-                .assignedToEmail(
-                        issue.getAssignedTo() != null
-                                ? issue.getAssignedTo().getEmail()
-                                : null
-                )
+
 
                 .build();
     }
@@ -1110,7 +1122,10 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<IssueStatusHistoryResponse> getIssueStatusHistory(UUID issueId) {
+    public List<IssueStatusHistoryResponse> getIssueStatusHistory(
+            UUID issueId,
+            String userEmail
+    ) {
 
         // Check whether issue exists
         Issue issue = issueRepository.findById(issueId)

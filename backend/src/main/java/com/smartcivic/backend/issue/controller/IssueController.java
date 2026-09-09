@@ -443,10 +443,15 @@ public class IssueController {
 
     @GetMapping("/{issueId}/status-history")
     public ResponseEntity<List<IssueStatusHistoryResponse>> getIssueStatusHistory(
-            @PathVariable UUID issueId
+            @PathVariable UUID issueId,
+            Authentication authentication
     ) {
+
         return ResponseEntity.ok(
-                issueService.getIssueStatusHistory(issueId)
+                issueService.getIssueStatusHistory(
+                        issueId,
+                        authentication.getName()
+                )
         );
     }
 

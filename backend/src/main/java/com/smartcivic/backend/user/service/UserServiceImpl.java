@@ -12,6 +12,7 @@ import com.smartcivic.backend.user.entity.Role;
 import com.smartcivic.backend.user.entity.User;
 import com.smartcivic.backend.user.exception.UserAlreadyExistsException;
 import com.smartcivic.backend.user.exception.UserNotFoundException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import com.smartcivic.backend.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -381,7 +382,8 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void updateProfile(
             UUID userId,
-            UpdateProfileRequest request
+            UpdateProfileRequest request,
+            String email
     ) {
 
         // =====================================================
@@ -395,7 +397,13 @@ public class UserServiceImpl implements UserService {
                         )
                 );
 
+        if (user.getRole() != Role.ADMIN
+                && !user.getId().equals(userId)) {
 
+            throw new AccessDeniedException(
+                    "You are not authorized to update this profile."
+            );
+        }
         // =====================================================
         // CAPTURE OLD VALUES
         // =====================================================

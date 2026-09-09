@@ -48,7 +48,8 @@ public interface UserService {
 
     void updateProfile(
             UUID userId,
-            UpdateProfileRequest request
+            UpdateProfileRequest request,
+            String email
     );
 
     void changePassword(

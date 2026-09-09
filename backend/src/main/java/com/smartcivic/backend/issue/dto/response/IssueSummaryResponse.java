@@ -41,5 +41,5 @@ public class IssueSummaryResponse {
 
     private String assignedToName;
 
-    private String assignedToEmail;
+
 }

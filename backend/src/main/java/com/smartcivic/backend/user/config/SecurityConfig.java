@@ -80,6 +80,12 @@ public class SecurityConfig {
                                 "/api/v1/issues/*/assign"
                         ).hasAuthority("ADMIN")
 
+                        .requestMatchers("/api/v1/admin/**")
+                        .hasAuthority("ADMIN")
+
+                        .requestMatchers("/api/v1/audit-logs/**")
+                        .hasAuthority("ADMIN")
+
                         .requestMatchers(
                                 HttpMethod.PATCH,
                                 "/api/v1/users/*/account-status"

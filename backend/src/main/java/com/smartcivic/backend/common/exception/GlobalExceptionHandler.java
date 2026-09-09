@@ -8,6 +8,8 @@ import com.smartcivic.backend.issue.exception.IssueDeletionNotAllowedException;
 import com.smartcivic.backend.issue.exception.IssueNotFoundException;
 import com.smartcivic.backend.user.exception.UserAlreadyExistsException;
 import com.smartcivic.backend.user.exception.UserNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -198,15 +200,29 @@ public class GlobalExceptionHandler {
                 );
     }
 
+    private static final Logger log =
+            LoggerFactory.getLogger(
+                    GlobalExceptionHandler.class
+            );
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<Void>> handleGeneralException(
-            Exception ex) {
+            Exception ex
+    ) {
 
-        ex.printStackTrace();
+        log.error(
+                "Unhandled exception while processing request",
+                ex
+        );
+
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(ApiResponse.error("Something went wrong.", null));
+                .body(
+                        ApiResponse.error(
+                                "Something went wrong.",
+                                null
+                        )
+                );
     }
 
 

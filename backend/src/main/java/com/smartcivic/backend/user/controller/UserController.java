@@ -146,10 +146,15 @@ public class UserController {
     @PutMapping("/{userId}/profile")
     public ResponseEntity<ApiResponse<Void>> updateProfile(
             @PathVariable UUID userId,
-            @Valid @RequestBody UpdateProfileRequest request
+            @Valid @RequestBody UpdateProfileRequest request,
+            Authentication authentication
     ) {
 
-        userService.updateProfile(userId, request);
+        userService.updateProfile(
+                userId,
+                request,
+                authentication.getName()
+        );
 
         return ResponseEntity.ok(
                 ApiResponse.success(

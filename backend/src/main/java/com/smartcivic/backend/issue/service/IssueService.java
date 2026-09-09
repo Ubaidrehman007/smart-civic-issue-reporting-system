@@ -83,7 +83,10 @@ public interface IssueService {
             Pageable pageable
     );
 
-    List<IssueStatusHistoryResponse> getIssueStatusHistory(UUID issueId);
+    List<IssueStatusHistoryResponse> getIssueStatusHistory(
+            UUID issueId,
+            String userEmail
+    );
 
     void assignIssue(
             UUID issueId,

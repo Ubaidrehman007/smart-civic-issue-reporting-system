@@ -20,6 +20,8 @@ CREATE TABLE issues
 
     address TEXT NOT NULL,
 
+    location geometry(Point, 4326),
+
     reported_by UUID NOT NULL,
 
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),

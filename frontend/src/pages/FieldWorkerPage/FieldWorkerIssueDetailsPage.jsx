@@ -724,7 +724,10 @@ function FieldWorkerIssueDetailsPage() {
                         <div className="worker-issue-image-wrapper">
 
                             <img
-                                src={`http://localhost:8080/api/images/${encodeURIComponent(issue.imageUrl)}`}
+                                src={`${new URL(
+                                    import.meta.env.VITE_API_BASE_URL,
+                                    window.location.origin
+                                ).origin}/api/images/${encodeURIComponent(issue.imageUrl)}`}
                                 alt={issue.title}
                                 className="worker-issue-image"
                             />
@@ -1580,7 +1583,10 @@ function FieldWorkerIssueDetailsPage() {
                                                     </span>
 
                                                     <img
-                                                        src={`http://localhost:8080/api/images/${encodeURIComponent(history.evidencePhotoUrl)}`}
+                                                        src={`${new URL(
+                                                            import.meta.env.VITE_API_BASE_URL,
+                                                            window.location.origin
+                                                        ).origin}/api/images/${encodeURIComponent(history.evidencePhotoUrl)}`}
                                                         alt="Status evidence"
                                                     />
 

@@ -1,6 +1,7 @@
+
 import { useEffect, useMemo, useState } from 'react'
 import '../../styles/adminCSS/adminAuditLogs.css'
-
+import apiClient from '../../api/apiClient.js'
 function AdminAuditLogsPage() {
 
     // =====================================================
@@ -8,9 +9,6 @@ function AdminAuditLogsPage() {
     // =====================================================
 
     const PAGE_SIZE = 20
-
-    const API_URL =
-        'http://localhost:8080/api/v1/audit-logs'
 
 
     // =====================================================
@@ -135,131 +133,50 @@ function AdminAuditLogsPage() {
     // =====================================================
 
     const fetchAuditLogs = async () => {
-
         try {
-
             setLoading(true)
-
             setError('')
-
-
-            const token =
-                localStorage.getItem('token')
-
-
-            if (!token) {
-
-                throw new Error(
-                    'Authentication token not found. Please login again.'
-                )
-            }
-
 
             const params =
                 new URLSearchParams()
-
 
             params.append(
                 'page',
                 String(page)
             )
 
-
             params.append(
                 'size',
                 String(PAGE_SIZE)
             )
 
-
             if (keyword.trim()) {
-
                 params.append(
                     'keyword',
                     keyword.trim()
                 )
             }
 
-
             if (action) {
-
                 params.append(
                     'action',
                     action
                 )
             }
 
-
             if (entityType) {
-
                 params.append(
                     'entityType',
                     entityType
                 )
             }
 
-
             const response =
-                await fetch(
-                    `${API_URL}/filter?${params.toString()}`,
-                    {
-                        method: 'GET',
-
-                        headers: {
-                            Authorization:
-                                `Bearer ${token}`,
-
-                            'Content-Type':
-                                'application/json'
-                        }
-                    }
+                await apiClient.get(
+                    `/audit-logs/filter?${params.toString()}`
                 )
 
-
-            if (!response.ok) {
-
-                if (response.status === 401) {
-
-                    throw new Error(
-                        'Your session has expired. Please login again.'
-                    )
-                }
-
-
-                if (response.status === 403) {
-
-                    throw new Error(
-                        'You are not authorized to view audit logs.'
-                    )
-                }
-
-
-                let message =
-                    'Failed to fetch audit logs.'
-
-                try {
-
-                    const body =
-                        await response.json()
-
-                    if (body?.message) {
-
-                        message =
-                            body.message
-                    }
-
-                } catch {
-
-                    // Ignore invalid JSON response
-                }
-
-
-                throw new Error(message)
-            }
-
-
-            const data =
-                await response.json()
-
+            const data = response.data
 
             setAuditLogs(
                 Array.isArray(data?.content)
@@ -267,13 +184,11 @@ function AdminAuditLogsPage() {
                     : []
             )
 
-
             setTotalPages(
                 Number.isFinite(data?.totalPages)
                     ? data.totalPages
                     : 0
             )
-
 
             setTotalElements(
                 Number.isFinite(data?.totalElements)
@@ -282,27 +197,21 @@ function AdminAuditLogsPage() {
             )
 
         } catch (err) {
-
             console.error(
                 'Error fetching audit logs:',
                 err
             )
-
 
             setError(
                 err?.message ||
                 'Unable to load audit logs.'
             )
 
-
             setAuditLogs([])
-
             setTotalPages(0)
-
             setTotalElements(0)
 
         } finally {
-
             setLoading(false)
         }
     }

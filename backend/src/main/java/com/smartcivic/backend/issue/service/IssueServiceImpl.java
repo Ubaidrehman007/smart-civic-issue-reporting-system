@@ -224,6 +224,29 @@ public class IssueServiceImpl implements IssueService {
                 null
         );
 
+        // =====================================================
+// ADMIN NOTIFICATION — NEW ISSUE REPORTED
+// =====================================================
+
+        List<User> admins =
+                userRepository.findByRole(Role.ADMIN);
+
+        for (User admin : admins) {
+
+            notificationService.createNotification(
+
+                    admin,
+
+                    NotificationType.ISSUE_REPORTED,
+
+                    "New Issue Reported",
+
+                    "A new civic issue has been reported: "
+                            + savedIssue.getTitle(),
+
+                    savedIssue.getId()
+            );
+        }
 
         // =====================================================
         // RETURN RESPONSE

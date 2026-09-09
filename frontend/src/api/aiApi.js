@@ -1,42 +1,11 @@
-import axios from 'axios'
-
-
-const API_BASE_URL =
-    'http://localhost:8080/api'
-
+import apiClient from './apiClient'
 
 export async function sendAiMessage(
     message
 ) {
 
-    const token =
-        localStorage.getItem('token')
-
-
-    /*
-     * =====================================================
-     * AUTHENTICATION CHECK
-     * =====================================================
-     */
-
-    if (!token) {
-
-        throw new Error(
-            'Authentication required.'
-        )
-
-    }
-
-
-    /*
-     * =====================================================
-     * MESSAGE VALIDATION
-     * =====================================================
-     */
-
     const trimmedMessage =
         message?.trim()
-
 
     if (!trimmedMessage) {
 
@@ -46,39 +15,40 @@ export async function sendAiMessage(
 
     }
 
+    const apiBaseUrl =
+        import.meta.env.VITE_API_BASE_URL
+
+    const apiRoot =
+        apiBaseUrl?.replace(
+            /\/v1\/?$/,
+            ''
+        )
+
+    if (!apiRoot) {
+
+        throw new Error(
+            'API base URL is not configured.'
+        )
+
+    }
 
     try {
 
         const response =
-            await axios.post(
+            await apiClient.post(
 
-                `${API_BASE_URL}/ai/chat`,
+                '/ai/chat',
 
                 {
                     message: trimmedMessage
                 },
 
                 {
-                    headers: {
-                        Authorization:
-                            `Bearer ${token}`,
-
-                        'Content-Type':
-                            'application/json'
-                    },
-
+                    baseURL: apiRoot,
                     timeout: 60000
-
                 }
 
             )
-
-
-        /*
-         * =================================================
-         * RESPONSE VALIDATION
-         * =================================================
-         */
 
         if (!response.data) {
 
@@ -87,7 +57,6 @@ export async function sendAiMessage(
             )
 
         }
-
 
         if (
             response.data.success === false
@@ -100,7 +69,6 @@ export async function sendAiMessage(
 
         }
 
-
         if (
             !response.data.message
         ) {
@@ -111,9 +79,7 @@ export async function sendAiMessage(
 
         }
 
-
         return response.data
-
 
     } catch (error) {
 
@@ -122,22 +88,13 @@ export async function sendAiMessage(
             error
         )
 
-
-        /*
-         * =================================================
-         * BACKEND RESPONSE ERROR
-         * =================================================
-         */
-
         if (error.response) {
 
             const status =
                 error.response.status
 
-
             const backendMessage =
                 error.response.data?.message
-
 
             if (
                 status === 401 ||
@@ -150,7 +107,6 @@ export async function sendAiMessage(
 
             }
 
-
             if (status === 429) {
 
                 throw new Error(
@@ -159,7 +115,6 @@ export async function sendAiMessage(
 
             }
 
-
             if (status === 503) {
 
                 throw new Error(
@@ -167,7 +122,6 @@ export async function sendAiMessage(
                 )
 
             }
-
 
             if (status >= 500) {
 
@@ -178,20 +132,12 @@ export async function sendAiMessage(
 
             }
 
-
             throw new Error(
                 backendMessage ||
                 'Unable to get a response from the AI Assistant.'
             )
 
         }
-
-
-        /*
-         * =================================================
-         * REQUEST SENT BUT NO RESPONSE
-         * =================================================
-         */
 
         if (error.request) {
 
@@ -201,17 +147,11 @@ export async function sendAiMessage(
 
         }
 
-
-        /*
-         * =================================================
-         * LOCAL / VALIDATION ERROR
-         * =================================================
-         */
-
         throw new Error(
             error.message ||
             'Something went wrong.'
         )
 
     }
+
 }

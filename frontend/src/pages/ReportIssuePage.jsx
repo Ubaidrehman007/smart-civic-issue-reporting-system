@@ -269,10 +269,7 @@ function ReportIssuePage() {
                 radius: 1,
             })
 
-            console.log(
-                'Possible duplicate response:',
-                response
-            )
+
 
             return response
 
@@ -342,10 +339,7 @@ function ReportIssuePage() {
                 const duplicateResult =
                     await checkForDuplicates()
 
-                console.log(
-                    'DUPLICATE RESULT:',
-                    duplicateResult
-                )
+
 
                 if (
                     duplicateResult?.possibleDuplicate &&

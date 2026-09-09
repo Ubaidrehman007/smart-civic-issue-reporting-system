@@ -100,10 +100,7 @@ function FieldWorkerProfilePage() {
                 const response =
                     await getCurrentUser()
 
-                console.log(
-                    'Field worker profile:',
-                    response
-                )
+
 
                 const currentUser =
                     response?.data

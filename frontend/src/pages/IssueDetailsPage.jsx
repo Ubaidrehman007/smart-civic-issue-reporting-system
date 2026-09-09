@@ -32,15 +32,7 @@ function IssueDetailsPage() {
                 const historyResponse =
                     await getIssueStatusHistory(issueId)
 
-                console.log(
-                    'Issue details response:',
-                    issueResponse
-                )
 
-                console.log(
-                    'Issue status history:',
-                    historyResponse
-                )
 
                 setIssue(issueResponse)
 
@@ -345,7 +337,10 @@ function IssueDetailsPage() {
                             <div className="issue-image-wrapper">
 
                                 <img
-                                    src={`http://localhost:8080/api/images/${encodeURIComponent(
+                                    src={`${new URL(
+                                        import.meta.env.VITE_API_BASE_URL,
+                                        window.location.origin
+                                    ).origin}/api/images/${encodeURIComponent(
                                         issue.imageUrl
                                     )}`}
                                     alt={`Original report for ${issue?.title || 'issue'}`}
@@ -618,7 +613,10 @@ function IssueDetailsPage() {
                                                 <div className="status-timeline-evidence-wrapper">
 
                                                     <img
-                                                        src={`http://localhost:8080/api/images/${encodeURIComponent(
+                                                        src={`${new URL(
+                                                            import.meta.env.VITE_API_BASE_URL,
+                                                            window.location.origin
+                                                        ).origin}/api/images/${encodeURIComponent(
                                                             history.evidencePhotoUrl
                                                         )}`}
                                                         alt={`${formatStatus(

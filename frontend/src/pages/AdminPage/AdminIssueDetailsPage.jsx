@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
+
 import {
     getIssueById,
     getIssueStatusHistory,
@@ -83,18 +84,19 @@ function AdminIssueDetailsPage() {
             return null
         }
 
-        /*
-         * Backend returns the stored image path/name.
-         *
-         * Keep the same image endpoint already
-         * used by the project.
-         */
+        const apiBaseUrl =
+            import.meta.env.VITE_API_BASE_URL
 
-        return `http://localhost:8080/api/images/${encodeURIComponent(
+        const apiOrigin =
+            new URL(
+                apiBaseUrl,
+                window.location.origin
+            ).origin
+
+        return `${apiOrigin}/api/images/${encodeURIComponent(
             imageUrl
         )}`
     }
-
 
     /* =========================
        FETCH ISSUE DETAILS
@@ -119,15 +121,9 @@ function AdminIssueDetailsPage() {
             ])
 
 
-            console.log(
-                'Admin issue details:',
-                issueResponse
-            )
 
-            console.log(
-                'Admin issue status history:',
-                historyResponse
-            )
+
+
 
 
             setIssue(issueResponse)
@@ -182,10 +178,7 @@ function AdminIssueDetailsPage() {
                 await getActiveFieldWorkers()
 
 
-            console.log(
-                'Active field workers:',
-                response
-            )
+
 
 
             setFieldWorkers(
@@ -563,10 +556,7 @@ function AdminIssueDetailsPage() {
                 await getIssueById(issueId)
 
 
-            console.log(
-                'Updated issue after assignment:',
-                updatedIssue
-            )
+
 
 
             setIssue(updatedIssue)

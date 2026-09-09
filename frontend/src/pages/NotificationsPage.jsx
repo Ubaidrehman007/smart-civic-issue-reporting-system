@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import '../styles/citizenCSS/notifications.css'
+import apiClient from '../api/apiClient'
 
 function NotificationsPage() {
 
@@ -11,9 +12,6 @@ function NotificationsPage() {
     const [error, setError] = useState('')
     const [markingAll, setMarkingAll] = useState(false)
 
-    const getToken = () => {
-        return localStorage.getItem('token')
-    }
 
     // =====================================================
     // FETCH NOTIFICATIONS
@@ -26,40 +24,12 @@ function NotificationsPage() {
             setLoading(true)
             setError('')
 
-            const token = getToken()
-
-            if (!token) {
-                navigate('/login')
-                return
-            }
-
-            const response = await fetch(
-                'http://localhost:8080/api/v1/notifications',
-                {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    }
-                }
-            )
-
-            if (response.status === 401) {
-                localStorage.removeItem('token')
-                localStorage.removeItem('user')
-                localStorage.removeItem('userRole')
-
-                navigate('/login')
-                return
-            }
-
-            if (!response.ok) {
-                throw new Error(
-                    'Failed to fetch notifications'
+            const response =
+                await apiClient.get(
+                    '/notifications'
                 )
-            }
 
-            const data = await response.json()
+            const data = response.data
 
             setNotifications(
                 Array.isArray(data)
@@ -75,6 +45,7 @@ function NotificationsPage() {
             )
 
             setError(
+                err.message ||
                 'Unable to load notifications. Please try again.'
             )
 
@@ -83,6 +54,7 @@ function NotificationsPage() {
             setLoading(false)
 
         }
+
     }
 
 
@@ -94,24 +66,9 @@ function NotificationsPage() {
 
         try {
 
-            const token = getToken()
-
-            const response = await fetch(
-                `http://localhost:8080/api/v1/notifications/${notificationId}/read`,
-                {
-                    method: 'PUT',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    }
-                }
+            await apiClient.put(
+                `/notifications/${notificationId}/read`
             )
-
-            if (!response.ok) {
-                throw new Error(
-                    'Failed to mark notification as read'
-                )
-            }
 
             setNotifications(prev =>
                 prev.map(notification =>
@@ -132,6 +89,7 @@ function NotificationsPage() {
             )
 
         }
+
     }
 
 
@@ -145,24 +103,9 @@ function NotificationsPage() {
 
             setMarkingAll(true)
 
-            const token = getToken()
-
-            const response = await fetch(
-                'http://localhost:8080/api/v1/notifications/read-all',
-                {
-                    method: 'PUT',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    }
-                }
+            await apiClient.put(
+                '/notifications/read-all'
             )
-
-            if (!response.ok) {
-                throw new Error(
-                    'Failed to mark all notifications as read'
-                )
-            }
 
             setNotifications(prev =>
                 prev.map(notification => ({
@@ -183,6 +126,7 @@ function NotificationsPage() {
             setMarkingAll(false)
 
         }
+
     }
 
 
@@ -207,7 +151,9 @@ function NotificationsPage() {
             navigate(
                 `/my-issues/${notification.referenceId}`
             )
+
         }
+
     }
 
 
@@ -250,7 +196,9 @@ function NotificationsPage() {
 
             default:
                 return '🔔'
+
         }
+
     }
 
 
@@ -275,7 +223,9 @@ function NotificationsPage() {
 
             default:
                 return 'notification-default'
+
         }
+
     }
 
 
@@ -301,6 +251,7 @@ function NotificationsPage() {
                 minute: '2-digit'
             }
         )
+
     }
 
 
@@ -345,10 +296,12 @@ function NotificationsPage() {
                         onClick={markAllAsRead}
                         disabled={markingAll}
                     >
+
                         {markingAll
                             ? 'Marking...'
                             : 'Mark all as read'
                         }
+
                     </button>
 
                 )}
@@ -500,9 +453,11 @@ function NotificationsPage() {
                                             )
                                         }`}
                                     >
+
                                         {getNotificationIcon(
                                             notification.type
                                         )}
+
                                     </div>
 
 
@@ -572,7 +527,9 @@ function NotificationsPage() {
                 )}
 
         </div>
+
     )
+
 }
 
 export default NotificationsPage

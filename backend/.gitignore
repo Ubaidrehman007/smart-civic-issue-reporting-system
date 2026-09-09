@@ -33,3 +33,7 @@ build/
 .vscode/
 
 .env
+
+# Uploaded issue images
+backend/uploads/issue-images/
+uploads/issue-images/

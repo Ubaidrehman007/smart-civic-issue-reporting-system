@@ -31,10 +31,7 @@ function LoginPage() {
 
             const userResponse = await getCurrentUser()
 
-            console.log(
-                'Current user after login:',
-                userResponse
-            )
+
 
             const user = userResponse.data
 

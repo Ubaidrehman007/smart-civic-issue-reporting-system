@@ -135,10 +135,7 @@ function AdminIssuesPage() {
                 }
 
 
-                console.log(
-                    'Admin issues response:',
-                    response
-                )
+
 
 
                 setIssues(

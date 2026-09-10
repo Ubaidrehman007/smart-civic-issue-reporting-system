@@ -1,5 +1,6 @@
 package com.smartcivic.backend.storage.service.impl;
 
+import com.smartcivic.backend.common.exception.StorageException;
 import com.smartcivic.backend.config.FileStorageProperties;
 import com.smartcivic.backend.storage.service.ImageStorageService;
 import org.springframework.core.io.Resource;
@@ -32,7 +33,10 @@ public class LocalImageStorageService implements ImageStorageService {
         try {
             Files.createDirectories(this.fileStorageLocation);
         } catch (IOException ex) {
-            throw new RuntimeException("Could not create upload directory.", ex);
+            throw new StorageException(
+                    "Could not initialize image storage.",
+                    ex
+            );
         }
     }
 
@@ -103,9 +107,7 @@ public class LocalImageStorageService implements ImageStorageService {
                             .resolve(storedFileName)
                             .normalize();
 
-            if (!targetLocation.startsWith(
-                    fileStorageLocation
-            )) {
+            if (!targetLocation.startsWith(fileStorageLocation)) {
                 throw new IllegalArgumentException(
                         "Invalid file path."
                 );
@@ -121,61 +123,72 @@ public class LocalImageStorageService implements ImageStorageService {
 
         } catch (IOException ex) {
 
-            throw new RuntimeException(
+            throw new StorageException(
                     "Could not store image.",
                     ex
             );
         }
     }
 
-
     @Override
     public Resource loadImage(String fileName) {
+
+        if (!StringUtils.hasText(fileName)) {
+            throw new IllegalArgumentException(
+                    "File name must not be empty."
+            );
+        }
 
         try {
 
             Path filePath =
-                    this.fileStorageLocation
+                    fileStorageLocation
                             .resolve(fileName)
                             .normalize();
 
-            if (!filePath.startsWith(
-                    this.fileStorageLocation
-            )) {
+            if (!filePath.startsWith(fileStorageLocation)) {
                 throw new IllegalArgumentException(
                         "Invalid file path."
                 );
             }
 
-            Resource resource = new UrlResource(filePath.toUri());
+            Resource resource =
+                    new UrlResource(filePath.toUri());
 
             if (resource.exists() && resource.isReadable()) {
                 return resource;
             }
 
-            throw new RuntimeException("File not found: " + fileName);
+            throw new StorageException(
+                    "Requested image could not be found."
+            );
 
         } catch (MalformedURLException ex) {
 
-            throw new RuntimeException("File not found: " + fileName, ex);
-
+            throw new StorageException(
+                    "Could not load image.",
+                    ex
+            );
         }
-
     }
 
     @Override
     public void deleteImage(String fileName) {
 
+        if (!StringUtils.hasText(fileName)) {
+            throw new IllegalArgumentException(
+                    "File name must not be empty."
+            );
+        }
+
         try {
 
             Path filePath =
-                    this.fileStorageLocation
+                    fileStorageLocation
                             .resolve(fileName)
                             .normalize();
 
-            if (!filePath.startsWith(
-                    this.fileStorageLocation
-            )) {
+            if (!filePath.startsWith(fileStorageLocation)) {
                 throw new IllegalArgumentException(
                         "Invalid file path."
                 );
@@ -185,9 +198,10 @@ public class LocalImageStorageService implements ImageStorageService {
 
         } catch (IOException ex) {
 
-            throw new RuntimeException("Could not delete file: " + fileName, ex);
-
+            throw new StorageException(
+                    "Could not delete image.",
+                    ex
+            );
         }
-
     }
 }

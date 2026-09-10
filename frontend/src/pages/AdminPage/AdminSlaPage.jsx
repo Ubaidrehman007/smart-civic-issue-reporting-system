@@ -62,15 +62,7 @@ function AdminSlaPage() {
             ])
 
 
-            console.log(
-                'SLA statistics:',
-                statisticsResponse
-            )
 
-            console.log(
-                'SLA breached issues:',
-                breachedResponse
-            )
 
 
             /* =========================

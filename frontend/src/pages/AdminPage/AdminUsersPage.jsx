@@ -105,10 +105,7 @@ function AdminUsersPage() {
             }
 
 
-            console.log(
-                'Admin users response:',
-                response
-            )
+
 
 
             setUsers(

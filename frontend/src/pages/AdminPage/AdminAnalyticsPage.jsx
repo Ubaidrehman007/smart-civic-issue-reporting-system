@@ -25,10 +25,7 @@ function AdminAnalyticsPage() {
             const response =
                 await getAdminAnalytics()
 
-            console.log(
-                'Admin analytics:',
-                response
-            )
+
 
             setAnalytics(
                 response?.data ||

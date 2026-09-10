@@ -34,20 +34,14 @@ function AdminAssignmentsPage() {
                 sort: 'createdAt,desc',
             })
 
-            console.log(
-                'Admin assignments raw response:',
-                response
-            )
+
 
             const issuesData =
                 response?.data?.content ||
                 response?.content ||
                 []
 
-            console.log(
-                'Admin assignments extracted issues:',
-                issuesData
-            )
+
 
             setIssues(issuesData)
 

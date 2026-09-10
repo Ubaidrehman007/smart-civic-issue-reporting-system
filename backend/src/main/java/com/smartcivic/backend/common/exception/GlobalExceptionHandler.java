@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
+import com.smartcivic.backend.common.exception.StorageException;
 
 import java.util.List;
 
@@ -225,7 +226,25 @@ public class GlobalExceptionHandler {
                 );
     }
 
+    @ExceptionHandler(StorageException.class)
+    public ResponseEntity<ApiResponse<Void>> handleStorageException(
+            StorageException ex
+    ) {
 
+        log.error(
+                "Image storage operation failed",
+                ex
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(
+                        ApiResponse.error(
+                                "Unable to process the image right now.",
+                                null
+                        )
+                );
+    }
 
     @ExceptionHandler(InvalidCredentialsException.class)
     public ResponseEntity<ApiResponse<Void>> handleInvalidCredentials(

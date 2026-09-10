@@ -21,7 +21,7 @@ function MyIssuesPage() {
 
                 const response = await getMyIssues()
 
-                console.log('My issues response:', response)
+
 
                 setIssues(response.content || [])
 

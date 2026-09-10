@@ -29,7 +29,7 @@ function DashboardPage() {
 
                 const response = await getMyIssues()
 
-                console.log('Dashboard issues response:', response)
+
 
                 setIssues(response.content || [])
             } catch (err) {

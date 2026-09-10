@@ -365,50 +365,57 @@
 
 
 /* =========================================================
-   ASSIGNMENTS
+   DASHBOARD ASSIGNMENTS
+   Scoped intentionally under .worker-dashboard
+   to avoid collision with My Assignments page CSS.
 ========================================================= */
 
-.worker-assignment-list {
-    display: flex;
-    flex-direction: column;
-
-    gap: 10px;
-}
-
-.worker-assignment-card {
+.worker-dashboard .worker-assignment-list {
     display: grid;
 
     grid-template-columns:
-        minmax(0, 1fr) auto auto;
+        repeat(2, minmax(0, 1fr));
 
-    align-items: center;
+    gap: 18px;
+}
 
-    gap: 22px;
+.worker-dashboard .worker-assignment-card {
+    display: flex;
+    flex-direction: column;
 
-    padding: 16px;
+    min-width: 0;
+    min-height: 100%;
+
+    padding: 20px;
 
     border: 1px solid #e2e8f0;
-    border-radius: 10px;
+    border-radius: 14px;
 
     background: #ffffff;
 
+    box-shadow:
+            0 3px 12px rgba(15, 23, 42, 0.04);
+
     transition:
             border-color 0.2s ease,
-            box-shadow 0.2s ease;
+            box-shadow 0.2s ease,
+            transform 0.2s ease;
 }
 
-.worker-assignment-card:hover {
+.worker-dashboard .worker-assignment-card:hover {
     border-color: #cbd5e1;
 
     box-shadow:
-            0 5px 14px rgba(15, 23, 42, 0.05);
+            0 8px 22px rgba(15, 23, 42, 0.08);
+
+    transform: translateY(-2px);
 }
 
-.worker-assignment-main {
+.worker-dashboard .worker-assignment-main {
     min-width: 0;
 }
 
-.worker-assignment-title-row {
+.worker-dashboard .worker-assignment-title-row {
     display: flex;
     align-items: center;
 
@@ -417,24 +424,24 @@
     min-width: 0;
 }
 
-.worker-assignment-title-row h3 {
+.worker-dashboard .worker-assignment-title-row h3 {
     margin: 0;
 
     overflow: hidden;
 
     color: #0f172a;
 
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 700;
 
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
-.worker-issue-id {
+.worker-dashboard .worker-issue-id {
     display: block;
 
-    margin-top: 5px;
+    margin-top: 6px;
 
     color: #94a3b8;
 
@@ -443,14 +450,15 @@
     word-break: break-all;
 }
 
-.worker-assignment-address {
-    margin: 8px 0 0;
+.worker-dashboard .worker-assignment-address {
+    margin: 9px 0 0;
 
     overflow: hidden;
 
     color: #64748b;
 
     font-size: 12px;
+    line-height: 1.5;
 
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -461,7 +469,7 @@
    STATUS BADGES
 ========================================================= */
 
-.worker-status-badge {
+.worker-dashboard .worker-status-badge {
     flex-shrink: 0;
 
     padding: 5px 8px;
@@ -501,23 +509,31 @@
 
 
 /* =========================================================
-   ASSIGNMENT META
+   DASHBOARD ASSIGNMENT META
 ========================================================= */
 
-.worker-assignment-meta {
-    display: flex;
-    align-items: center;
+.worker-dashboard .worker-assignment-meta {
+    display: grid;
 
-    gap: 26px;
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
 
-    min-width: 300px;
+    gap: 12px;
+
+    min-width: 0;
+
+    margin-top: 18px;
+
+    padding-top: 16px;
+
+    border-top: 1px solid #f1f5f9;
 }
 
-.worker-assignment-meta > div {
-    min-width: 70px;
+.worker-dashboard .worker-assignment-meta > div {
+    min-width: 0;
 }
 
-.worker-assignment-meta span {
+.worker-dashboard .worker-assignment-meta span {
     display: block;
 
     margin-bottom: 5px;
@@ -530,30 +546,39 @@
     text-transform: uppercase;
 }
 
-.worker-assignment-meta strong {
+.worker-dashboard .worker-assignment-meta strong {
     display: block;
+
+    overflow: hidden;
 
     color: #334155;
 
     font-size: 11px;
     font-weight: 700;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
-.worker-sla-breached {
+.worker-dashboard .worker-sla-breached {
     color: #dc2626 !important;
 }
 
 
 /* =========================================================
-   VIEW ISSUE BUTTON
+   DASHBOARD ASSIGNMENT BUTTON
 ========================================================= */
 
-.worker-view-issue-btn {
+.worker-dashboard .worker-view-issue-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
 
+    align-self: flex-end;
+
     gap: 7px;
+
+    margin-top: 18px;
 
     padding: 9px 13px;
 
@@ -575,14 +600,14 @@
             transform 0.2s ease;
 }
 
-.worker-view-issue-btn span {
+.worker-dashboard .worker-view-issue-btn span {
     font-size: 14px;
 
     transition:
             transform 0.2s ease;
 }
 
-.worker-view-issue-btn:hover {
+.worker-dashboard .worker-view-issue-btn:hover {
     border-color: #bfdbfe;
 
     background: #dbeafe;
@@ -590,14 +615,14 @@
     transform: translateY(-1px);
 }
 
-.worker-view-issue-btn:hover span {
+.worker-dashboard .worker-view-issue-btn:hover span {
     transform: translateX(2px);
 }
 
-.worker-view-all-btn {
+.worker-dashboard .worker-view-all-btn {
     display: block;
 
-    margin: 16px auto 0;
+    margin: 18px auto 0;
 
     padding: 10px 16px;
 
@@ -618,7 +643,7 @@
             transform 0.2s ease;
 }
 
-.worker-view-all-btn:hover {
+.worker-dashboard .worker-view-all-btn:hover {
     background: #dbeafe;
 
     transform: translateY(-1px);
@@ -639,7 +664,8 @@
 .worker-activity-item {
     display: grid;
 
-    grid-template-columns: 24px minmax(0, 1fr);
+    grid-template-columns:
+        24px minmax(0, 1fr);
 
     gap: 12px;
 
@@ -1091,18 +1117,34 @@
     }
 
 
-    .worker-assignment-card {
+    /* Dashboard assignments remain cards */
+    .worker-dashboard .worker-assignment-list {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+
+    .worker-dashboard .worker-assignment-meta {
+        grid-template-columns:
+            repeat(3, minmax(0, 1fr));
+    }
+
+}
+
+
+/* =========================================================
+   MEDIUM TABLET
+========================================================= */
+
+@media (max-width: 900px) {
+
+    .worker-dashboard .worker-assignment-list {
         grid-template-columns: 1fr;
     }
 
 
-    .worker-assignment-meta {
-        min-width: 0;
-    }
-
-
-    .worker-view-issue-btn {
-        justify-self: start;
+    .worker-dashboard .worker-assignment-card {
+        padding: 18px;
     }
 
 }
@@ -1181,13 +1223,16 @@
     }
 
 
-    .worker-assignment-meta {
-        display: grid;
-
+    .worker-dashboard .worker-assignment-meta {
         grid-template-columns:
             repeat(3, minmax(0, 1fr));
 
-        gap: 12px;
+        gap: 10px;
+    }
+
+
+    .worker-dashboard .worker-assignment-card {
+        padding: 17px;
     }
 
 
@@ -1237,20 +1282,47 @@
     }
 
 
-    .worker-assignment-title-row {
+    .worker-dashboard .worker-assignment-card {
+        padding: 16px;
+    }
+
+
+    .worker-dashboard .worker-assignment-title-row {
         align-items: flex-start;
 
         flex-direction: column;
     }
 
 
-    .worker-assignment-title-row h3 {
+    .worker-dashboard .worker-assignment-title-row h3 {
+        width: 100%;
+
         white-space: normal;
     }
 
 
-    .worker-assignment-meta {
+    .worker-dashboard .worker-assignment-address {
+        white-space: normal;
+    }
+
+
+    .worker-dashboard .worker-assignment-meta {
         grid-template-columns: 1fr;
+
+        gap: 10px;
+
+        margin-top: 16px;
+
+        padding-top: 14px;
+    }
+
+
+    .worker-dashboard .worker-view-issue-btn {
+        width: 100%;
+
+        align-self: stretch;
+
+        margin-top: 16px;
     }
 
 

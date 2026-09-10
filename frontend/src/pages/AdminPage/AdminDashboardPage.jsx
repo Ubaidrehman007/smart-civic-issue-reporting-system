@@ -75,10 +75,7 @@ function AdminDashboardPage() {
                 await getAdminDashboardStatistics()
 
 
-            console.log(
-                'Admin dashboard statistics:',
-                response
-            )
+
 
 
             /*
@@ -152,10 +149,7 @@ function AdminDashboardPage() {
                     )
 
 
-                console.log(
-                    'Admin notifications:',
-                    response
-                )
+
 
 
                 const data =
@@ -219,10 +213,7 @@ function AdminDashboardPage() {
                     )
 
 
-                console.log(
-                    'Unread notification response:',
-                    response
-                )
+
 
 
                 const data =

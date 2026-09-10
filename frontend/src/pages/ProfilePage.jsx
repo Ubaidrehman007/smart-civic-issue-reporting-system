@@ -51,7 +51,7 @@ function ProfilePage() {
 
                 const response = await getCurrentUser()
 
-                console.log('Current user response:', response)
+
 
                 setUser(response.data)
 

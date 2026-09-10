@@ -1,25 +1,148 @@
-/* =========================
+/* =====================================================
    CITIZEN LAYOUT
-========================= */
+   Shared layout styles for all citizen pages
+===================================================== */
+
+
+/* =====================================================
+   LAYOUT
+===================================================== */
 
 .dashboard-layout {
-    min-height: 100vh;
-    display: flex;
     width: 100%;
-    background: #f8fafc;
+    min-height: 100vh;
 
+    display: flex;
+
+    background: #f8fafc;
 }
 
 
-/* =========================
+/* =====================================================
+   MAIN CONTENT
+===================================================== */
+
+.dashboard-main {
+    flex: 1 1 auto;
+
+    width: calc(100% - 260px);
+    min-width: 0;
+    min-height: 100vh;
+
+    margin-left: 260px;
+
+    overflow-x: hidden;
+}
+
+
+/* =====================================================
+   SHARED PAGE HEADER
+===================================================== */
+
+.dashboard-header {
+    width: 100%;
+    min-height: 88px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 40px;
+
+    border-bottom: 1px solid #e2e8f0;
+
+    background: #ffffff;
+}
+
+
+/* =====================================================
+   BREADCRUMB
+===================================================== */
+
+.dashboard-breadcrumb {
+    margin: 0 0 4px;
+
+    color: #64748b;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    letter-spacing: 1.2px;
+}
+
+
+/* =====================================================
+   PAGE TITLE
+===================================================== */
+
+.dashboard-header h1 {
+    margin: 0;
+
+    color: #0f172a;
+
+    font-size: 24px;
+
+    letter-spacing: -0.5px;
+}
+
+
+/* =====================================================
+   HEADER USER
+===================================================== */
+
+.dashboard-user {
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+}
+
+
+.dashboard-user-avatar {
+    width: 40px;
+    height: 40px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #dbeafe;
+    color: #2563eb;
+
+    font-size: 14px;
+    font-weight: 700;
+}
+
+
+/* =====================================================
+   SHARED PAGE CONTENT
+===================================================== */
+
+.dashboard-content {
+    width: 100%;
+    max-width: 1500px;
+
+    margin: 0 auto;
+
+    padding: 40px;
+
+    box-sizing: border-box;
+}
+
+
+/* =====================================================
    SIDEBAR
-========================= */
+===================================================== */
 
 .dashboard-sidebar {
     position: fixed;
 
     top: 0;
     left: 0;
+
+    z-index: 1100;
 
     width: 260px;
     height: 100vh;
@@ -29,25 +152,37 @@
 
     padding: 24px 16px;
 
+    box-sizing: border-box;
+
     background: #0f172a;
     color: #ffffff;
 }
 
+
+/* =====================================================
+   BRAND
+===================================================== */
+
 .dashboard-brand {
     display: flex;
     align-items: center;
+
     gap: 12px;
 
     padding: 0 10px;
+
     margin-bottom: 48px;
 
     font-size: 18px;
     font-weight: 700;
 }
 
+
 .dashboard-brand-logo {
     width: 38px;
     height: 38px;
+
+    flex-shrink: 0;
 
     display: flex;
     align-items: center;
@@ -61,11 +196,18 @@
     font-weight: 800;
 }
 
+
+/* =====================================================
+   NAVIGATION
+===================================================== */
+
 .dashboard-nav {
     display: flex;
     flex-direction: column;
+
     gap: 8px;
 }
+
 
 .dashboard-nav-item {
     width: 100%;
@@ -73,8 +215,12 @@
     display: flex;
     align-items: center;
 
+    box-sizing: border-box;
+
     padding: 13px 14px;
+
     text-decoration: none;
+
     border: none;
     border-radius: 10px;
 
@@ -89,47 +235,59 @@
     font-size: 14px;
     font-weight: 500;
 
-    transition: 0.2s ease;
+    transition:
+            background 0.2s ease,
+            color 0.2s ease;
 }
+
 
 .dashboard-nav-item:hover {
     background: #1e293b;
     color: #ffffff;
 }
 
+
 .dashboard-nav-item.active {
     background: #2563eb;
     color: #ffffff;
 }
 
+
+/* =====================================================
+   SIDEBAR BOTTOM
+===================================================== */
+
 .dashboard-sidebar-bottom {
     margin-top: auto;
+
     padding-top: 20px;
 
     border-top: 1px solid #1e293b;
 }
 
 
-/* =========================
+/* =====================================================
    MOBILE HEADER
-========================= */
+===================================================== */
 
 .mobile-dashboard-header {
     display: none;
 }
 
+
 .mobile-sidebar-overlay {
     display: none;
 }
+
 
 .mobile-sidebar-close {
     display: none;
 }
 
 
-/* =========================
+/* =====================================================
    TABLET
-========================= */
+===================================================== */
 
 @media (max-width: 900px) {
 
@@ -137,14 +295,47 @@
         width: 220px;
     }
 
+
+    .dashboard-main {
+        width: calc(100% - 220px);
+
+        margin-left: 220px;
+    }
+
+
+    .dashboard-header {
+        padding-left: 28px;
+        padding-right: 28px;
+    }
+
+
+    .dashboard-content {
+        padding-left: 28px;
+        padding-right: 28px;
+    }
 }
 
 
-/* =========================
+/* =====================================================
    MOBILE
-========================= */
+===================================================== */
 
 @media (max-width: 640px) {
+
+    .dashboard-main {
+        width: 100%;
+
+        min-width: 0;
+
+        margin-left: 0;
+
+        padding-top: 64px;
+    }
+
+
+    /* -------------------------------------------------
+       MOBILE HEADER
+    ------------------------------------------------- */
 
     .mobile-dashboard-header {
         position: fixed;
@@ -155,10 +346,13 @@
 
         z-index: 1000;
 
+        width: 100%;
         height: 64px;
 
         display: flex;
         align-items: center;
+
+        box-sizing: border-box;
 
         padding: 0 16px;
 
@@ -167,13 +361,18 @@
         border-bottom: 1px solid #e2e8f0;
     }
 
+
     .mobile-menu-button {
         width: 40px;
         height: 40px;
 
+        flex-shrink: 0;
+
         display: flex;
         align-items: center;
         justify-content: center;
+
+        padding: 0;
 
         border: none;
         border-radius: 10px;
@@ -184,9 +383,11 @@
         font-size: 22px;
     }
 
+
     .mobile-dashboard-brand {
         display: flex;
         align-items: center;
+
         gap: 10px;
 
         margin-left: 12px;
@@ -197,11 +398,18 @@
         font-weight: 700;
     }
 
+
     .mobile-dashboard-brand .dashboard-brand-logo {
         width: 34px;
         height: 34px;
+
         border-radius: 9px;
     }
+
+
+    /* -------------------------------------------------
+       MOBILE SIDEBAR
+    ------------------------------------------------- */
 
     .dashboard-sidebar {
         position: fixed;
@@ -218,12 +426,15 @@
 
         transition: transform 0.25s ease;
 
-        box-shadow: 8px 0 30px rgba(15, 23, 42, 0.18);
+        box-shadow:
+                8px 0 30px rgba(15, 23, 42, 0.18);
     }
+
 
     .dashboard-sidebar.mobile-sidebar-open {
         transform: translateX(0);
     }
+
 
     .mobile-sidebar-close {
         display: flex;
@@ -236,6 +447,8 @@
         width: 34px;
         height: 34px;
 
+        padding: 0;
+
         border: none;
         border-radius: 8px;
 
@@ -245,6 +458,7 @@
         font-size: 24px;
         line-height: 1;
     }
+
 
     .mobile-sidebar-overlay {
         display: block;
@@ -258,4 +472,26 @@
         background: rgba(15, 23, 42, 0.45);
     }
 
+
+    /* -------------------------------------------------
+       MOBILE SHARED HEADER
+    ------------------------------------------------- */
+
+    .dashboard-header {
+        min-height: 76px;
+
+        padding: 0 20px;
+    }
+
+
+    .dashboard-header h1 {
+        font-size: 22px;
+    }
+
+
+    .dashboard-content {
+        width: 100%;
+
+        padding: 24px 16px;
+    }
 }

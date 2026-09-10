@@ -15,3 +15,6 @@ Thumbs.db
 # Uploaded issue images
 backend/uploads/issue-images/
 uploads/issue-images/
+
+*.dump
+restore.list

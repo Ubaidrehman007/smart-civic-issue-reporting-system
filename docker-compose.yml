@@ -46,10 +46,20 @@ services:
       MAIL_PASSWORD: ${MAIL_PASSWORD}
 
     volumes:
-        - ./uploads:/app/uploads
+      - ./uploads:/app/uploads
 
     ports:
       - "8080:8080"
+
+  frontend:
+    image: smart-civic-frontend:latest
+    container_name: smart-civic-frontend
+
+    depends_on:
+      - backend
+
+    ports:
+      - "5173:80"
 
 volumes:
   smart-civic-postgres-data:

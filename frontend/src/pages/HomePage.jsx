@@ -184,6 +184,7 @@ function HomePage() {
 
 
                 <div
+                    id="mobile-navigation"
                     className={
                         `nav-links ${
                             menuOpen
@@ -283,7 +284,13 @@ function HomePage() {
                     onClick={() =>
                         setMenuOpen(!menuOpen)
                     }
-                    aria-label="Toggle navigation menu"
+                    aria-label={
+                        menuOpen
+                            ? 'Close navigation menu'
+                            : 'Open navigation menu'
+                    }
+                    aria-expanded={menuOpen}
+                    aria-controls="mobile-navigation"
                 >
 
                     {menuOpen

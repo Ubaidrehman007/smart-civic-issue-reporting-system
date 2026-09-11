@@ -1,139 +1,96 @@
+Smart Civic Issue Reporting System — Deployment Guide
 
-# Smart Civic Issue Reporting System — Deployment Guide
+This guide documents the actual deployment setup of the Smart Civic Issue Reporting System.
 
-This document explains how to configure, build, run, verify, maintain, and troubleshoot the Smart Civic Issue Reporting System using Docker.
+The project has two deployment contexts:
 
-The deployment consists of three containers:
+Public deployment: Vercel frontend + Render backend
 
-```text
-Frontend
-   │
-   ▼
-Backend
-   │
-   ▼
+Local/containerized deployment: Docker Compose with PostgreSQL/PostGIS
+
+No AWS EC2, GitHub Actions CI/CD, RabbitMQ, Redis, or S3 deployment is claimed here.
+
+1. Current Public Deployment
+
+Browser
+│
+▼
+Vercel
+React + Vite Frontend
+│
+│ HTTPS API requests
+▼
+Render
+Spring Boot Backend
+│
+▼
+Supabase
 PostgreSQL + PostGIS
-````
 
----
+Backend
 
-# 1. Deployment Architecture
+https://smart-civic-issue-reporting-system.onrender.com
 
-The Docker deployment contains:
+The API base path used by the frontend is:
 
-```text
-┌─────────────────────────────────────────────┐
-│                  Browser                    │
-│                                             │
-│             http://localhost:5173          │
-└──────────────────────┬──────────────────────┘
-                       │
-                       ▼
-┌─────────────────────────────────────────────┐
-│              Frontend Container             │
-│                                             │
-│               React + Vite                  │
-│                  Nginx                      │
-│                  Port 80                    │
-└──────────────────────┬──────────────────────┘
-                       │
-                       ▼
-┌─────────────────────────────────────────────┐
-│               Backend Container             │
-│                                             │
-│                Spring Boot                  │
-│                  Java 21                    │
-│                  Port 8080                  │
-└──────────────────────┬──────────────────────┘
-                       │
-                       ▼
-┌─────────────────────────────────────────────┐
-│          PostgreSQL + PostGIS               │
-│                                             │
-│             PostgreSQL 17                   │
-│               PostGIS                       │
-│             Port 5432                      │
-└─────────────────────────────────────────────┘
-```
+https://smart-civic-issue-reporting-system.onrender.com/api/v1
 
----
+Frontend
 
-# 2. Prerequisites
+The frontend is deployed on Vercel.
 
-Before deployment, install:
+The frontend uses the environment variable:
 
-* Docker Desktop
-* Docker Compose
-* Git
+VITE_API_BASE_URL=https://smart-civic-issue-reporting-system.onrender.com/api/v1
 
-Recommended environment:
+The exact Vercel project/domain can be viewed in the Vercel deployment configuration.
 
-```text
-Docker Desktop
-WSL2
-Windows 10/11
-```
+2. Public Deployment Responsibilities
 
-Verify Docker:
+Vercel
 
-```powershell
-docker --version
-```
+Vercel hosts the React/Vite frontend.
 
-Verify Docker Compose:
+The frontend build uses:
 
-```powershell
-docker compose version
-```
+React
+Vite
+JavaScript
+React Router
+Axios
+Leaflet
+OpenStreetMap
+CSS
 
----
+Render
 
-# 3. Project Structure
+Render hosts the Spring Boot backend.
 
-The deployment expects the following structure:
+The backend uses:
 
-```text
-Smart_Civic_Issue_Reporting_System/
-│
-├── backend/
-│   ├── src/
-│   ├── Dockerfile
-│   ├── .dockerignore
-│   ├── pom.xml
-│   └── mvnw
-│
-├── frontend/
-│   ├── src/
-│   ├── Dockerfile
-│   ├── nginx.conf
-│   ├── .dockerignore
-│   ├── package.json
-│   └── package-lock.json
-│
-├── uploads/
-│   └── issue-images/
-│
-├── docker-compose.yml
-├── .env
-├── .gitignore
-├── README.md
-└── DEPLOYMENT.md
-```
+Java 21
+Spring Boot
+Spring Security
+JWT
+Spring Data JPA
+Hibernate
+Hibernate Spatial
+PostgreSQL
+PostGIS
+Flyway
+JavaMail / SMTP
+Gemini API
 
----
+The backend receives its production configuration through environment variables.
 
-# 4. Environment Variables
+3. Production Environment Variables
 
-The deployment uses environment variables for sensitive configuration.
+Do not commit real values to Git.
 
-The root `.env` file is used by Docker Compose.
+Backend configuration includes:
 
-Required values include:
-
-```env
-POSTGRES_DB=<database-name>
-POSTGRES_USER=<database-user>
-
+DB_URL=<database-url>
+DB_USERNAME=<database-username>
 DB_PASSWORD=<database-password>
 
 JWT_SECRET=<strong-jwt-secret>
@@ -142,607 +99,358 @@ GEMINI_API_KEY=<gemini-api-key>
 
 MAIL_USERNAME=<smtp-username>
 MAIL_PASSWORD=<smtp-password>
-```
 
-Do not commit the `.env` file to Git.
+Frontend configuration:
 
-Never place real secrets inside:
+VITE_API_BASE_URL=https://smart-civic-issue-reporting-system.onrender.com/api/v1
 
-* Source code
-* README.md
-* DEPLOYMENT.md
-* Dockerfiles
-* Frontend source
-* Frontend build
-* GitHub repositories
+Important
 
----
+Vite environment variables are embedded during the frontend build.
 
-# 5. Production Spring Profile
+If VITE_API_BASE_URL changes, the frontend must be rebuilt/redeployed.
 
-The Docker backend runs using the production Spring profile.
+4. CORS
 
-Docker Compose sets:
+The backend uses Spring Security CORS configuration.
 
-```yaml
-SPRING_PROFILES_ACTIVE: prod
-```
+For the public deployment, the backend must allow the actual Vercel frontend origin.
 
-The backend therefore loads:
+The required request methods include:
 
-```text
-application-prod.yaml
-```
+GET
+POST
+PUT
+PATCH
+DELETE
+OPTIONS
 
-Production configuration uses environment variables instead of local `.env` importing.
+JWT authorization headers must also be allowed.
 
----
+If the frontend loads but API requests fail in the browser, check:
 
-# 6. Production Configuration
+Vercel frontend origin
 
-The production backend uses:
+Backend CORS configuration
 
-```text
-spring.jpa.hibernate.ddl-auto=validate
-```
+VITE_API_BASE_URL
 
-Hibernate validates the existing database schema instead of automatically changing it.
+Render backend status
 
-Flyway manages database migrations.
+Browser developer-console errors
 
-The production profile also disables SQL statement output:
+Render backend logs
 
-```text
-show-sql=false
-```
+5. Local Development
 
-This reduces unnecessary SQL logging in production.
+Backend
 
----
+cd backend
+.\mvnw spring-boot:run
 
-# 7. Docker Services
+Frontend
 
-The deployment contains three services.
+cd frontend
+npm install
+npm run dev
 
-## PostgreSQL
+Typical local URLs:
 
-```text
-Service: postgres
-Container: smart-civic-postgres
-Image: postgis/postgis:latest
-```
+Frontend: http://localhost:5173
+Backend:  http://localhost:8080
 
-Host port:
+6. Local Docker Deployment
 
-```text
-5433
-```
+The repository also contains a Docker Compose setup.
 
-Container port:
+Services:
 
-```text
-5432
-```
-
----
-
-## Backend
-
-```text
-Service: backend
-Container: smart-civic-backend
-Image: smart-civic-backend:latest
-```
-
-Port:
-
-```text
-8080
-```
-
-Spring profile:
-
-```text
-prod
-```
-
----
-
-## Frontend
-
-```text
-Service: frontend
-Container: smart-civic-frontend
-Image: smart-civic-frontend:latest
-```
-
-Host port:
-
-```text
-5173
-```
-
-Container port:
-
-```text
-80
-```
-
-Nginx serves the React production build.
-
----
-
-# 8. Build Docker Images
-
-Navigate to the project root:
-
-```powershell
-cd Smart_Civic_Issue_Reporting_System
-```
-
-Build all images:
-
-```powershell
-docker compose build
-```
-
-Or build individually:
-
-```powershell
-docker build -t smart-civic-backend ./backend
-```
-
-```powershell
-docker build -t smart-civic-frontend ./frontend
-```
-
----
-
-# 9. Start the Application
-
-Start all services:
-
-```powershell
-docker compose up -d
-```
-
-The `-d` option runs containers in detached mode.
-
----
-
-# 10. Verify Containers
-
-Run:
-
-```powershell
-docker compose ps
-```
-
-Expected state:
-
-```text
-smart-civic-backend     Up
-smart-civic-frontend    Up
-smart-civic-postgres    Up (healthy)
-```
-
-PostgreSQL has a healthcheck using:
-
-```text
-pg_isready
-```
-
-The backend waits for PostgreSQL to become healthy before starting.
-
----
-
-# 11. Frontend Verification
-
-Open:
-
-```text
-http://localhost:5173
-```
-
-The React application should load.
-
-Verify:
-
-* Login page
-* Registration
-* Navigation
-* Dashboard
-* Protected routes
-
----
-
-# 12. Backend Verification
-
-Backend is exposed at:
-
-```text
-http://localhost:8080
-```
-
-The root endpoint may return:
-
-```text
-403 Forbidden
-```
-
-if the endpoint is protected by Spring Security.
-
-This does not indicate that the backend is down.
-
-Backend startup should instead be verified through logs.
-
----
-
-# 13. Backend Logs
-
-View recent backend logs:
-
-```powershell
-docker compose logs backend --tail 50
-```
-
-A successful startup should contain:
-
-```text
-The following 1 profile is active: "prod"
-```
-
-and:
-
-```text
-Tomcat started on port 8080
-```
-
-and:
-
-```text
-Started BackendApplication
-```
-
----
-
-# 14. PostgreSQL Logs
-
-View PostgreSQL logs:
-
-```powershell
-docker compose logs postgres --tail 50
-```
-
-Check container health:
-
-```powershell
-docker compose ps
-```
-
-PostgreSQL should show:
-
-```text
-healthy
-```
-
----
-
-# 15. Frontend Logs
-
-View frontend logs:
-
-```powershell
-docker compose logs frontend --tail 50
-```
-
-Nginx should remain running without fatal errors.
-
----
-
-# 16. Database Configuration
-
-Inside Docker, the backend connects to PostgreSQL using the Docker service name:
-
-```text
 postgres
-```
+backend
+frontend
 
-The backend database URL is:
+Build:
 
-```text
-jdbc:postgresql://postgres:5432/<database-name>
-```
+docker compose build
 
-Important:
+Start:
 
-```text
-postgres:5432
-```
-
-is the internal Docker connection.
-
-It should not be replaced with:
-
-```text
-localhost:5433
-```
-
-inside the backend container.
-
----
-
-# 17. PostgreSQL Host Connection
-
-From the host machine, PostgreSQL is exposed on:
-
-```text
-localhost:5433
-```
-
-Connection information:
-
-```text
-Host: localhost
-Port: 5433
-Database: <database-name>
-Username: <database-user>
-Password: <database-password>
-```
-
----
-
-# 18. pgAdmin Connection
-
-For pgAdmin:
-
-```text
-Host: localhost
-Port: 5433
-Database: <database-name>
-Username: <database-user>
-Password: <database-password>
-```
-
-Do not use:
-
-```text
-localhost:5432
-```
-
-for the Docker database if local PostgreSQL is already using port 5432.
-
----
-
-# 19. Flyway Migration Verification
-
-The backend automatically runs Flyway during startup.
+docker compose up -d
 
 Check:
 
-```powershell
-docker compose logs backend --tail 100
-```
+docker compose ps
 
-Successful migration output should indicate:
+7. Local Docker Architecture
 
-```text
-Successfully validated migrations
-```
+Browser
+│
+▼
+Frontend Container
+React + Nginx
+│
+▼
+Backend Container
+Spring Boot + Java 21
+│
+▼
+PostgreSQL + PostGIS Container
 
-and:
+Local Docker Ports
 
-```text
-Schema "public" is up to date.
-```
+Component
 
-The current application schema version is:
+Container Port
 
-```text
-18
-```
+Host Port
 
----
+Frontend / Nginx
 
-# 20. PostGIS Verification
+80
 
-The PostgreSQL image includes PostGIS.
+5173
 
-The backend uses Hibernate Spatial.
+Backend / Spring Boot
 
-Startup logs should contain:
+8080
 
-```text
-Hibernate Spatial integration enabled: true
-```
+8080
 
-The issue location is stored as a geographic point using:
+PostgreSQL / PostGIS
 
-```text
+5432
+
+5433
+
+Inside Docker, the backend connects to:
+
+postgres:5432
+
+The host machine connects to the Docker PostgreSQL instance through:
+
+localhost:5433
+
+8. Docker Environment
+
+The root .env file is used for Docker Compose configuration.
+
+Example structure:
+
+POSTGRES_DB=<database-name>
+POSTGRES_USER=<database-user>
+DB_PASSWORD=<database-password>
+
+JWT_SECRET=<strong-jwt-secret>
+
+GEMINI_API_KEY=<gemini-api-key>
+
+MAIL_USERNAME=<smtp-username>
+MAIL_PASSWORD=<smtp-password>
+
+Never commit the real .env file.
+
+9. Production Spring Profile
+
+The Docker deployment supports the production Spring profile:
+
+prod
+
+The production configuration uses:
+
+spring.jpa.hibernate.ddl-auto=validate
+
+Hibernate validates the database schema rather than modifying it automatically.
+
+Flyway handles schema migrations.
+
+10. Database & PostGIS
+
+The project uses:
+
+PostgreSQL
+PostGIS
+Hibernate Spatial
+Flyway
+
+Issue locations use:
+
 geometry(Point, 4326)
-```
 
-Spatial indexes support geographic queries.
+The application supports:
 
----
+Geographic location storage
 
-# 21. Uploaded Images
+Nearby issue searches
 
-Issue images are persisted outside the backend container.
+Duplicate detection
+
+Geographic filtering
+
+Map-based issue interaction
+
+Spatial indexing
+
+11. Uploaded Images
+
+Issue images use the application's local storage layer.
 
 Docker maps:
 
-```text
 ./uploads:/app/uploads
-```
 
-This prevents uploaded files from being lost when the backend container is recreated.
+This is a local/containerized storage approach.
 
-Do not delete the `uploads` directory unless the stored issue images are intentionally being removed.
+The project does not use AWS S3 for issue-image storage.
 
----
+12. Flyway Migrations
 
-# 22. Docker Persistent Database Storage
+Flyway manages database schema changes.
 
-PostgreSQL uses the Docker named volume:
+The backend validates migrations during startup.
 
-```text
-smart-civic-postgres-data
-```
+Useful Docker log command:
 
-The database data is stored in this persistent volume.
+docker compose logs backend --tail 100
 
-Recreating containers does not automatically delete the database volume.
+13. Verify the Local Deployment
 
----
+Check services:
 
-# 23. Stop the Application
+docker compose ps
 
-Stop all services:
+Expected:
 
-```powershell
-docker compose down
-```
-
-This removes the containers and network but keeps the named PostgreSQL volume.
-
----
-
-# 24. Start the Existing Deployment Again
-
-Run:
-
-```powershell
-docker compose up -d
-```
-
-The existing PostgreSQL data should remain available because the database uses a persistent Docker volume.
-
----
-
-# 25. Recreate Containers
-
-If configuration changes:
-
-```powershell
-docker compose up -d --force-recreate
-```
-
-This recreates containers using the current Compose configuration.
-
----
-
-# 26. Rebuild After Backend Code Changes
-
-After backend source changes:
-
-```powershell
-docker build -t smart-civic-backend ./backend
-```
-
-Then:
-
-```powershell
-docker compose up -d --force-recreate backend
-```
-
-Check:
-
-```powershell
-docker compose logs backend --tail 50
-```
-
----
-
-# 27. Rebuild After Frontend Code Changes
-
-After frontend source changes:
-
-```powershell
-docker build -t smart-civic-frontend ./frontend
-```
-
-Then:
-
-```powershell
-docker compose up -d --force-recreate frontend
-```
-
----
-
-# 28. Full Rebuild
-
-To rebuild both application images:
-
-```powershell
-docker compose build --no-cache
-```
-
-Then:
-
-```powershell
-docker compose up -d
-```
-
-Use `--no-cache` only when a clean image rebuild is actually required.
-
----
-
-# 29. Restart a Single Service
-
-Backend:
-
-```powershell
-docker compose restart backend
-```
+smart-civic-postgres    Up (healthy)
+smart-civic-backend     Up
+smart-civic-frontend    Up
 
 Frontend:
 
-```powershell
-docker compose restart frontend
-```
+http://localhost:5173
+
+Backend:
+
+http://localhost:8080
+
+14. Docker Logs
+
+Backend:
+
+docker compose logs backend --tail 50
+
+Frontend:
+
+docker compose logs frontend --tail 50
 
 PostgreSQL:
 
-```powershell
-docker compose restart postgres
-```
+docker compose logs postgres --tail 50
 
-Avoid restarting PostgreSQL unnecessarily in a production environment.
+Follow backend logs:
 
----
+docker compose logs -f backend
 
-# 30. Complete Application Health Check
+15. Rebuild After Changes
 
-Run:
+Backend
 
-```powershell
-docker compose ps
-```
+docker build -t smart-civic-backend ./backend
+docker compose up -d --force-recreate backend
 
-Verify:
+Frontend
 
-```text
-PostgreSQL → Up (healthy)
-Backend     → Up
-Frontend    → Up
-```
+docker build -t smart-civic-frontend ./frontend
+docker compose up -d --force-recreate frontend
 
-Then open:
+Full rebuild
 
-```text
-http://localhost:5173
-```
+docker compose build --no-cache
+docker compose up -d
 
----
+Use --no-cache only when a clean rebuild is actually needed.
 
-# 31. Functional Smoke Test
+16. Stop / Start
 
-After deployment, verify the following.
+Stop:
 
-## Citizen
+docker compose down
 
-```text
+Start:
+
+docker compose up -d
+
+Recreate:
+
+docker compose up -d --force-recreate
+
+17. Database Persistence
+
+The Docker PostgreSQL setup uses a named volume:
+
+smart-civic-postgres-data
+
+The issue-image directory is:
+
+./uploads
+
+Do not delete either when you need to preserve the local database and uploaded images.
+
+Warning
+
+This command removes the PostgreSQL Docker volume:
+
+docker compose down -v
+
+Use it only when an intentional database reset is required.
+
+18. Public Deployment Troubleshooting
+
+Frontend opens but API calls fail
+
+Check:
+
+VITE_API_BASE_URL
+
+It should point to:
+
+https://smart-civic-issue-reporting-system.onrender.com/api/v1
+
+Then check backend CORS and Render logs.
+
+CORS error
+
+Check:
+
+Vercel frontend origin
+↓
+Spring Security CORS
+↓
+Render backend
+
+The backend must allow the deployed Vercel origin.
+
+Backend unavailable
+
+Check the Render service status and backend logs.
+
+The backend is:
+
+https://smart-civic-issue-reporting-system.onrender.com
+
+Images not loading
+
+For local Docker deployment, check:
+
+uploads/
+
+and:
+
+./uploads:/app/uploads
+
+19. Functional Smoke Test
+
+Citizen
+
 Login
 ↓
 Dashboard
@@ -760,13 +468,9 @@ View Status
 View Notifications
 ↓
 Use AI Assistant
-```
 
----
+Admin
 
-## Admin
-
-```text
 Login
 ↓
 Admin Dashboard
@@ -782,13 +486,9 @@ View Audit Logs
 View Notifications
 ↓
 Use AI Assistant
-```
 
----
+Field Worker
 
-## Field Worker
-
-```text
 Login
 ↓
 Field Worker Dashboard
@@ -800,740 +500,103 @@ Open Issue
 Update Status
 ↓
 View Notifications
-```
 
----
+20. Full Issue Lifecycle
 
-# 32. Complete Issue Lifecycle Test
-
-Verify the complete workflow:
-
-```text
 Citizen creates issue
-        ↓
+↓
 Issue stored in PostgreSQL
-        ↓
+↓
 Location stored in PostGIS
-        ↓
-Admin views issue
-        ↓
+↓
+Duplicate detection
+↓
+Admin reviews issue
+↓
 Admin assigns field worker
-        ↓
-Field worker receives notification
-        ↓
-Field worker updates status
-        ↓
+↓
+Worker receives notification
+↓
+Worker updates status
+↓
 Status history recorded
-        ↓
+↓
 Citizen receives notification
-        ↓
-Issue eventually resolved
-```
+↓
+Issue resolved
 
----
+21. Security Rules
 
-# 33. CORS Configuration
+Never commit:
 
-The current Docker frontend runs at:
-
-```text
-http://localhost:5173
-```
-
-The backend CORS configuration allows the frontend origin.
-
-Allowed methods include:
-
-```text
-GET
-POST
-PUT
-PATCH
-DELETE
-OPTIONS
-```
-
-JWT authorization headers are supported.
-
-For a real production domain, update the allowed frontend origin from the localhost origin to the actual HTTPS frontend domain.
-
----
-
-# 34. Security Requirements
-
-Before public production deployment:
-
-* Use HTTPS.
-* Use a strong JWT secret.
-* Use a strong database password.
-* Never expose `.env`.
-* Never commit API keys.
-* Never commit SMTP passwords.
-* Never expose PostgreSQL unnecessarily.
-* Restrict database access through firewall/network rules.
-* Configure the correct production CORS origin.
-* Keep dependencies updated.
-* Keep Docker images updated.
-
----
-
-# 35. Secrets Management
-
-Secrets must be supplied through the deployment environment.
-
-Do not store secrets in:
-
-```text
-Java source
-JavaScript source
-application source
-Dockerfile
-docker-compose.yml
-README.md
-DEPLOYMENT.md
-Git history
-```
-
-The `.env` file should remain ignored by Git.
-
----
-
-# 36. Docker Image Security
-
-The backend `.dockerignore` excludes sensitive and unnecessary files such as:
-
-```text
-target/
-.git/
 .env
-uploads/
-*.log
-.idea/
-.vscode/
-```
-
-The frontend `.dockerignore` excludes:
-
-```text
-node_modules/
-dist/
-.git/
-.env
-.env.*
-.idea/
-.vscode/
-*.log
-```
-
-This prevents unnecessary local files from entering Docker build contexts.
-
----
-
-# 37. Backup
-
-Create a PostgreSQL custom-format backup:
-
-```powershell
-docker exec smart-civic-postgres pg_dump `
-  -U postgres `
-  -d smart_civic_reportingdb `
-  -Fc `
-  -f /tmp/smart-civic-backup.dump
-```
-
-Copy it to the host:
-
-```powershell
-docker cp `
-  smart-civic-postgres:/tmp/smart-civic-backup.dump `
-  .\smart-civic-backup.dump
-```
-
-Verify that the file exists:
-
-```powershell
-Get-Item .\smart-civic-backup.dump
-```
-
-Do not commit database backup files to Git.
-
----
-
-# 38. Backup Verification
-
-Verify the archive contents:
-
-```powershell
-pg_restore --list .\smart-civic-backup.dump
-```
-
-The archive should contain the application's database objects and data.
-
-Important application tables include:
-
-```text
-users
-issues
-notifications
-issue_status_history
-email_otps
-audit_logs
-admin_settings
-flyway_schema_history
-```
-
----
-
-# 39. Restore
-
-Restore backups only into an appropriate target database.
-
-Example:
-
-```powershell
-docker cp .\smart-civic-backup.dump smart-civic-postgres:/tmp/smart-civic-backup.dump
-```
-
-Then use:
-
-```powershell
-docker exec smart-civic-postgres pg_restore `
-  -U postgres `
-  -d <target-database> `
-  --clean `
-  --if-exists `
-  /tmp/smart-civic-backup.dump
-```
-
-Never restore over the active production database without a verified recovery plan.
-
----
-
-# 40. Database Volume Warning
-
-The following command permanently deletes the PostgreSQL Docker volume:
-
-```powershell
-docker compose down -v
-```
-
-This can destroy the stored database data.
-
-**Do not use `-v` unless you intentionally want to remove the database volume.**
-
----
-
-# 41. Clean Development Reset
-
-If a complete database reset is intentionally required:
-
-```powershell
-docker compose down -v
-```
-
-Then:
-
-```powershell
-docker compose up -d
-```
-
-This creates a fresh PostgreSQL volume.
-
-This should not be used on a production database containing important data.
-
----
-
-# 42. Troubleshooting — Backend
-
-Check:
-
-```powershell
-docker compose logs backend --tail 100
-```
-
-Look for:
-
-```text
-Database connection errors
-Flyway migration errors
-Environment variable errors
-JWT configuration errors
-SMTP configuration errors
-Gemini configuration errors
-Port binding errors
-```
-
----
-
-# 43. Troubleshooting — PostgreSQL
-
-Check:
-
-```powershell
-docker compose logs postgres --tail 100
-```
-
-Then:
-
-```powershell
-docker compose ps
-```
-
-Verify PostgreSQL is:
-
-```text
-healthy
-```
-
-Check:
-
-* Database name
-* Username
-* Password
-* Docker volume
-* Port 5433
-* PostgreSQL container status
-
----
-
-# 44. Troubleshooting — Frontend
-
-Check:
-
-```powershell
-docker compose logs frontend --tail 100
-```
-
-If the frontend loads but API calls fail, verify the frontend API base URL.
-
-For the local Docker deployment:
-
-```text
-http://localhost:8080/api/v1
-```
-
-The frontend must be rebuilt if the Vite environment variable changes because Vite environment variables are embedded during the build process.
-
----
-
-# 45. Troubleshooting — CORS
-
-If the browser reports a CORS error:
-
-1. Verify the frontend origin.
-2. Verify the backend CORS configuration.
-3. Verify the API base URL.
-4. Verify the backend is running.
-5. Verify the request is reaching the backend.
-6. Check browser developer tools.
-7. Check backend logs.
-
-For the current local Docker deployment:
-
-```text
-Frontend:
-http://localhost:5173
-
-Backend:
-http://localhost:8080
-```
-
----
-
-# 46. Troubleshooting — Images
-
-If issue images do not appear:
-
-Verify the host directory:
-
-```text
-uploads/
-```
-
-Verify the Docker mapping:
-
-```text
-./uploads:/app/uploads
-```
-
-Check backend logs:
-
-```powershell
-docker compose logs backend --tail 100
-```
-
-Verify the required image files exist in the host upload directory.
-
----
-
-# 47. Troubleshooting — pgAdmin
-
-If pgAdmin reports:
-
-```text
-password authentication failed
-```
-
-verify that you are connecting to the correct PostgreSQL instance.
-
-Local PostgreSQL may use:
-
-```text
-localhost:5432
-```
-
-Docker PostgreSQL uses:
-
-```text
-localhost:5433
-```
-
-Use the Docker database credentials from the current deployment environment.
-
----
-
-# 48. Updating the Application
-
-For a new backend version:
-
-```powershell
-docker build -t smart-civic-backend ./backend
-```
-
-Then:
-
-```powershell
-docker compose up -d --force-recreate backend
-```
-
-For a new frontend version:
-
-```powershell
-docker build -t smart-civic-frontend ./frontend
-```
-
-Then:
-
-```powershell
-docker compose up -d --force-recreate frontend
-```
-
-After deployment:
-
-```powershell
-docker compose ps
-```
-
-Then perform the smoke tests.
-
----
-
-# 49. Deployment Verification Checklist
-
-Before considering a deployment successful:
-
-```text
-[ ] Docker is running
-[ ] Environment variables are configured
-[ ] Backend image built successfully
-[ ] Frontend image built successfully
-[ ] PostgreSQL container running
-[ ] PostgreSQL healthy
-[ ] Backend container running
-[ ] Frontend container running
-[ ] Production Spring profile active
-[ ] Flyway migrations validated
-[ ] Database schema up to date
-[ ] Hibernate Spatial enabled
-[ ] Frontend accessible
-[ ] Backend accessible
-[ ] Citizen login tested
-[ ] Admin login tested
-[ ] Field worker login tested
-[ ] Issue creation tested
-[ ] Issue assignment tested
-[ ] Status update tested
-[ ] Notifications tested
-[ ] AI assistant tested
-[ ] Image upload tested
-[ ] Image serving tested
-[ ] CORS verified
-[ ] No secrets committed
-[ ] Backup created
-```
-
----
-
-# 50. Production Deployment Checklist
-
-For public deployment:
-
-```text
-[ ] HTTPS configured
-[ ] Production domain configured
-[ ] Production frontend URL configured
-[ ] Production CORS origin configured
-[ ] Secure secrets configured
-[ ] Database firewall configured
-[ ] PostgreSQL not publicly exposed unnecessarily
-[ ] Persistent database storage configured
-[ ] Persistent image storage configured
-[ ] Automated backups configured
-[ ] Monitoring configured
-[ ] Logging configured
-[ ] Resource limits evaluated
-[ ] Docker images updated
-[ ] Dependencies updated
-[ ] Final smoke test completed
-```
-
----
-
-# 51. Useful Docker Commands
-
-Show running containers:
-
-```powershell
-docker compose ps
-```
-
-Show all logs:
-
-```powershell
-docker compose logs
-```
-
-Backend logs:
-
-```powershell
-docker compose logs backend
-```
-
-Frontend logs:
-
-```powershell
-docker compose logs frontend
-```
-
-PostgreSQL logs:
-
-```powershell
-docker compose logs postgres
-```
-
-Follow backend logs:
-
-```powershell
-docker compose logs -f backend
-```
-
-Stop stack:
-
-```powershell
-docker compose down
-```
-
-Start stack:
-
-```powershell
-docker compose up -d
-```
-
-Recreate stack:
-
-```powershell
-docker compose up -d --force-recreate
-```
-
-Build images:
-
-```powershell
-docker compose build
-```
-
----
-
-# 52. Deployment Ports
-
-| Component           | Container Port | Host Port |
-| ------------------- | -------------: | --------: |
-| Frontend/Nginx      |             80 |      5173 |
-| Backend/Spring Boot |           8080 |      8080 |
-| PostgreSQL/PostGIS  |           5432 |      5433 |
-
----
-
-# 53. Internal Docker Ports
-
-Containers communicate using Docker service names.
-
-Backend → PostgreSQL:
-
-```text
-postgres:5432
-```
-
-Browser → Frontend:
-
-```text
-localhost:5173
-```
-
-Browser/API Client → Backend:
-
-```text
-localhost:8080
-```
-
----
-
-# 54. Important Production Notes
-
-The current Docker configuration is suitable for local/containerized deployment and production-oriented testing.
-
-For a public production environment, additional infrastructure should normally be added around the application:
-
-* HTTPS
-* Domain/reverse proxy
-* Firewall
-* Secure secret management
-* Database backup automation
-* Monitoring
-* Log aggregation
-* Persistent production storage
-
-These infrastructure concerns are separate from the core application implementation.
-
----
-
-# 55. Final Deployment Verification
-
-Run:
-
-```powershell
-docker compose ps
-```
-
-Then:
-
-```powershell
-docker compose logs backend --tail 40
-```
-
-Confirm:
-
-```text
-The following 1 profile is active: "prod"
-```
-
-Confirm:
-
-```text
-Started BackendApplication
-```
-
-Confirm PostgreSQL:
-
-```text
-Up (healthy)
-```
-
-Open:
-
-```text
-http://localhost:5173
-```
-
-Finally perform the complete application smoke test.
-
----
-
-# 56. Deployment Status
-
-The Smart Civic Issue Reporting System has completed:
-
-```text
-Docker Backend              COMPLETE
-Docker Frontend             COMPLETE
-PostgreSQL/PostGIS          COMPLETE
-Docker Compose              COMPLETE
-Production Profile          COMPLETE
-Environment Configuration   COMPLETE
-Persistent DB Storage       COMPLETE
-Persistent Image Storage    COMPLETE
-CORS Audit                  COMPLETE
-Docker Smoke Testing        COMPLETE
-Backup Creation             COMPLETE
-Backup Verification         COMPLETE
-```
-
----
-
-# 57. Final Architecture
-
-```text
-                    ┌──────────────────────┐
-                    │       Browser        │
-                    └──────────┬───────────┘
-                               │
-                               ▼
-                    ┌──────────────────────┐
-                    │ Frontend / Nginx     │
-                    │ React + Vite         │
-                    │ localhost:5173       │
-                    └──────────┬───────────┘
-                               │
-                               ▼
-                    ┌──────────────────────┐
-                    │ Backend              │
-                    │ Spring Boot          │
-                    │ Java 21              │
-                    │ localhost:8080       │
-                    └──────────┬───────────┘
-                               │
-                 ┌─────────────┴─────────────┐
-                 │                           │
-                 ▼                           ▼
-       ┌──────────────────┐        ┌──────────────────┐
-       │ PostgreSQL       │        │ Gemini AI        │
-       │ + PostGIS        │        │ Assistant        │
-       │ Docker           │        │                  │
-       └──────────────────┘        └──────────────────┘
-                 │
-                 ▼
-       ┌──────────────────┐
-       │ Persistent Data  │
-       │ Docker Volume    │
-       └──────────────────┘
-
-                 +
-       ┌──────────────────┐
-       │ Upload Storage   │
-       │ ./uploads        │
-       └──────────────────┘
-```
-
----
-
-# 58. End of Deployment Guide
-
-For normal local Docker deployment:
-
-```powershell
-docker compose build
-docker compose up -d
-docker compose ps
-```
-
-Then open:
-
-```text
-http://localhost:5173
-```
-
-For production deployment, configure HTTPS, domain, secure secrets, database protection, persistent storage, backups, monitoring, and the production CORS origin before exposing the application publicly.
-
-````
-
-
-
+JWT secrets
+Database passwords
+Gemini API keys
+SMTP passwords
+
+Production configuration should be supplied through the hosting platform's environment-variable settings.
+
+The backend remains the authoritative authorization layer.
+
+22. Actual Technology Scope
+
+The current project uses:
+
+Java 21
+Spring Boot
+Spring Security
+JWT
+Spring Data JPA
+Hibernate
+Hibernate Spatial
+PostgreSQL
+PostGIS
+Flyway
+Jakarta Validation
+Maven
+JavaMail / SMTP
+Gemini API
+React
+Vite
+JavaScript
+React Router
+Axios
+Leaflet
+OpenStreetMap
+CSS
+Docker
+Docker Compose
+Nginx
+Git
+GitHub
+Render
+Vercel
+
+The project does not claim these technologies as implemented:
+
+RabbitMQ
+Redis
+AWS S3
+AWS EC2
+GitHub Actions CI/CD
+Kubernetes
+Node.js backend
+
+Node/npm may exist as part of the React/Vite frontend tooling environment; there is no Node.js backend in this project.
+
+23. Deployment Summary
+
+Public
+
+Frontend → Vercel
+Backend  → Render
+Database → Supabase=PostgreSQL + PostGIS
+
+Local
+
+Frontend → React + Nginx Docker container
+Backend  → Spring Boot Docker container
+Database → PostgreSQL + PostGIS Docker container
+
+This document intentionally separates the actual public deployment from the local Docker deployment and does not describe unimplemented AWS or CI/CD infrastructure as comp

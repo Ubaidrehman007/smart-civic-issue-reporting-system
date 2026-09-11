@@ -13,7 +13,7 @@ The system includes secure authentication, role-based access control, geospatial
 | Database | PostgreSQL + PostGIS |
 | Source Code | GitHub |
 
-**Frontend:**`https://smart-civic-issue-reporting-system-omega.vercel.app`
+**Frontend:** https://smart-civic-issue-reporting-system-omega.vercel.app/
 **Backend:** `https://smart-civic-issue-reporting-system.onrender.com`
 
 The frontend is deployed separately on Vercel and communicates with the Render backend through the configured `VITE_API_BASE_URL`.
